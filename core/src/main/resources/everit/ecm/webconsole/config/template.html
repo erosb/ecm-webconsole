@@ -21,4 +21,33 @@
 		"rootPath" : "${rootPath}" 
 	};
 </script>
-csá!
+<script type="text/javascript" src="${rootPath}/underscore-min.js"></script>
+<script type="text/javascript" src="${rootPath}/backbone.js"></script>
+<!-- <script type="text/javascript" src="${rootPath}/backbone.queryparams.min.js"></script>
+<script type="text/javascript" src="${rootPath}/backbone.queryparams-1.1-shim.js"></script> -->
+<script type="text/javascript" src="${rootPath}/app/models.js"></script>
+<script type="text/javascript" src="${rootPath}/app/views.js"></script>
+<script type="text/javascript" src="${rootPath}/config.js"></script>
+
+<script type="text/template" id="tmpl-config-admin-list">
+	<div id="cnt-header" class="ui-widget-header ui-corner-top">
+	<select name="sel-configadmin" class="ui-widget ui-widget-content">
+	<% configAdmins.forEach(function(configAdmin) { %>
+		<option value="<%= configAdmin.get("pid") %>"><%= configAdmin.get("description") %></option>
+	<% }); %>
+	</select>
+	</div>
+	<table class="tablesorter" style="width: 100%">
+		<thead>
+			<tr>
+				<th class="ui-widget-header header">Name</th>
+				<th class="ui-widget-header header">Bundle</th>
+				<th class="ui-widget-header header">Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+</script>
+
+<div id="cnt-main" style="width: 100%"></div>

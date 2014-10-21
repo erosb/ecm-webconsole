@@ -37,7 +37,8 @@ public class ConfigActivator implements BundleActivator {
         props.put("felix.webconsole.label", ConfigServlet.CONFIG_LABEL);
         ServiceTracker<ConfigurationAdmin, ConfigurationAdmin> cfgAdminTracker = new ServiceTracker<ConfigurationAdmin, ConfigurationAdmin>(
                 context, ConfigurationAdmin.class, null);
-        registration = context.registerService(Servlet.class, new ConfigServlet(cfgAdminTracker), props);
+        cfgAdminTracker.open();
+        registration = context.registerService(Servlet.class, new ConfigServlet(context, cfgAdminTracker), props);
     }
 
     @Override
