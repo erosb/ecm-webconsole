@@ -137,6 +137,8 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
                 writer.object();
                 writer.key("pid");
                 writer.value(config.getPid());
+                writer.key("description");
+                writer.value(config.getProperties().get("service.description"));
                 writer.endObject();
             });
             writer.endArray();
@@ -167,23 +169,44 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
     }
 
     private Configuration[] lookupConfigurationsByConfigAdminPid(final String configAdminPid) {
-        Configuration[] configs = configAdminStream()
-                .filter((serviceRef) -> serviceRef.getProperty("service.pid").equals(configAdminPid))
-                .map((serviceRef) -> {
-                    try {
-                        Configuration[] rval = bundleCtx.getService(serviceRef).listConfigurations(null);
+        try {
+            ServiceReference<ConfigurationAdmin>[] serviceRefs = cfgAdminTracker.getServiceReferences();
+            if (serviceRefs != null) {
+                for (ServiceReference<ConfigurationAdmin> serviceRef : serviceRefs) {
+                    if (Objects.equals(serviceRef.getProperty("service.pid"), configAdminPid)) {
+                        Configuration[] rval = bundleCtx.getService(serviceRef).listConfigurations(
+                                null);
+                        if (rval == null) {
+                            System.out.println("no configurations found");
+                        } else {
+                            System.out.println(rval.length + " configurations found");
+                        }
                         return rval == null ? new Configuration[0] : rval;
-                    } catch (InvalidSyntaxException | IOException e) {
-                        throw new RuntimeException(e);
                     }
-                })
-                .findFirst().orElse(new Configuration[0]);
-        return configs;
+                }
+            }
+        } catch (IOException | InvalidSyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("no configadmin service found with pid " + configAdminPid);
+        throw new IllegalArgumentException("no configadmin service found with pid " + configAdminPid);
+        // Configuration[] configs = configAdminStream()
+        // .filter((serviceRef) -> serviceRef.getProperty("service.pid").equals(configAdminPid))
+        // .map((serviceRef) -> {
+        // try {
+        // Configuration[] rval = bundleCtx.getService(serviceRef).listConfigurations(null);
+        // return rval == null ? new Configuration[0] : rval;
+        // } catch (InvalidSyntaxException | IOException e) {
+        // throw new RuntimeException(e);
+        // }
+        // })
+        // .findFirst().orElse(new Configuration[0]);
+        // return configs;
     }
 
     @Override
     protected void renderContent(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-            IOException {
+    IOException {
         String pathInfo = req.getPathInfo();
         if (isMainPageRequest(pathInfo)) {
             loadMainPage(resp, req.getAttribute("felix.webconsole.pluginRoot").toString());
