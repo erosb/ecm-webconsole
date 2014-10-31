@@ -17,24 +17,36 @@
 $(document).ready(function() {
 (function(ecmconfig) {
 	
+	var ManagedServiceRowView = ecmconfig.ManagedServiceRowView = Backbone.View.extend({
+		tagName: "tr",
+		className: "ui-state-default",
+		render: function() {
+			var dom = _.template($("#tmpl-managed-service-row").text())({service: this.model});
+			this.$el.append(dom);
+			return this.$el;
+		}
+	});
+	
 	var ManagedServiceListView = ecmconfig.ManagedServiceListView = Backbone.View.extend({
 		initialize: function(options) {
 			this.listenTo(this.model, "reset", this.render);
 		},
 		render: function() {
-			this.$el.empty();
+			//this.$el.empty();
 			console.log("rendering ManagedServiceList", this.model);
-			var dom = _.template($("#tmpl-managed-service-list").text())({
-				managedServices: this.model
-			});
-			this.$el.append(dom);
+			var $tbody = this.$el.find("tbody");
+			$tbody.empty();
+			console.log("tbody", $tbody);
+			this.model.forEach(function(service) {
+				var rowView = new ManagedServiceRowView({model: service});
+				console.log("adding row view for", service);
+				$tbody.append(rowView.render());
+			}, this);
+			this.$el.append($tbody);
 			this.$el.tablesorter();
+			console.log(this.$el);
 			return this.$el;
 		} 
-	});
-	
-	var ConfigurationListView = ecmconfig.ConfigurationListView = Backbone.View.extend({
-		tagName : "tbody"
 	});
 	
 	var ConfigAdminListView = ecmconfig.ConfigAdminListView = Backbone.View.extend({
@@ -49,11 +61,11 @@ $(document).ready(function() {
 			});
 			this.$el.append(dom);
 			var selectedConfigAdmin = this.model.get("selectedConfigAdmin");
-			if (selectedConfigAdmin != null) {
-				selectedConfigAdmin.getConfigurations(function(config) {
-					console.log("config: ", config);
-				})
-			}
+//			if (selectedConfigAdmin != null) {
+//				selectedConfigAdmin.getConfigurations(function(config) {
+//					console.log("config: ", config);
+//				})
+//			}
 			return this.$el;
 		}
 	});

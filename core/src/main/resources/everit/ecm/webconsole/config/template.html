@@ -43,7 +43,24 @@
 	</select>
 </script>
 
-<script type="text/template" id="tmpl-managed-service-list">
+<script type="text/template" id="tmpl-managed-service-row">
+		<td><%= service.get("name") %></td>
+		<td><%= service.get("bundleName") %></td>
+		<td>
+			<ul class="icons">
+				<li class="dynhover ui-state-default ui-corner-all">
+					<span class="ui-icon ui-icon-trash" label="Delete"></span>
+				</li>
+				<li class="dynhover ui-state-default ui-corner-all">
+					<span class="ui-icon ui-icon-pencil" label="Edit"></span>
+				</li>
+			</ul>
+		</td>
+</script>
+
+<div id="cnt-main" style="width: 100%">
+	<div id="cnt-header" class="ui-widget-header ui-corner-top"></div>
+	<table id="tbl-managedservices" class="tablesorter nicetable noauto ui-widget" style="width: 100%">
 		<thead>
 			<tr>
 				<th class="ui-widget-header header">Name</th>
@@ -51,28 +68,6 @@
 				<th class="ui-widget-header header">Actions</th>
 			</tr>
 		</thead>
-		<tbody>
-		<% managedServices.forEach(function(service) {%>
-			<tr class="ui-state-default">
-				<td><%= service.get("name") %></td>
-				<td><%= service.get("bundleName") %></td>
-				<td>
-					<ul class="icons">
-						<li class="dynhover ui-state-default ui-corner-all">
-							<span class="ui-icon ui-icon-trash" label="Delete"></span>
-						</li>
-						<li class="dynhover ui-state-default ui-corner-all">
-							<span class="ui-icon ui-icon-pencil" label="Edit"></span>
-						</li>
-					</ul>
-				</td>
-			</tr>
-		<%});%>
-		</tbody>
+		<tbody></tbody>	
 	</table>
-</script>
-
-<div id="cnt-main" style="width: 100%">
-	<div id="cnt-header" class="ui-widget-header ui-corner-top"></div>
-	<table id="tbl-managedservices" class="tablesorter nicetable noauto ui-widget" style="width: 100%"></table>
 </div>

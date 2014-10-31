@@ -32,24 +32,7 @@ $(document).ready(function() {
 		pid: null,
 		bundleId: null,
 		description: null,
-		configurations: new ConfigurationList(),
-		getConfigurations: function(onSuccess) {
-			var configList = this.get("configurations");
-			if (configList.length === 0) {
-				var url = ecmconfig.rootPath + "/configurations.json?configAdmin=" + this.get("pid");
-				var self = this;
-				$.getJSON(url, function(data) {
-					var newList = [];
-					data.forEach(function(rawConfig) {
-						newList.push(new ConfigurationModel(rawConfig));
-					});
-					configList.reset(newList);
-					onSuccess(configList);
-				});
-			} else {
-				onSuccess(configList);
-			}
-		}
+		configurations: new ConfigurationList()
 	});
 	
 	var ConfigAdminList = ecmconfig.ConfigAdminList = Backbone.Collection.extend({

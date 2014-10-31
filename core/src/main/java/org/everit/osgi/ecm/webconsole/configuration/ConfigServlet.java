@@ -229,8 +229,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             if (serviceRefs != null) {
                 for (ServiceReference<ConfigurationAdmin> serviceRef : serviceRefs) {
                     if (Objects.equals(serviceRef.getProperty("service.pid"), configAdminPid)) {
-                        Configuration[] rval = bundleCtx.getService(serviceRef).listConfigurations(
-                                null);
+                        Configuration[] rval = bundleCtx.getService(serviceRef).listConfigurations(null);
                         if (rval == null) {
                             System.out.println("no configurations found");
                         } else {
@@ -261,7 +260,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void renderContent(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-    IOException {
+            IOException {
         String pathInfo = req.getPathInfo();
         if (isMainPageRequest(pathInfo)) {
             loadMainPage(resp, req.getAttribute("felix.webconsole.pluginRoot").toString());
