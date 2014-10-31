@@ -91,6 +91,22 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
                 Optional.ofNullable(cfgAdminTracker.getServiceReferences()).orElse(new ServiceReference[0]));
     }
 
+    private void deleteConfiguration(final String servicePid, final String configAdminPid) {
+        System.out.println(String.format("deleting configuration: servicePid = %s, configAdminPid = %s", servicePid,
+                configAdminPid));
+    }
+
+    @Override
+    protected void doDelete(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
+    IOException {
+        String pathInfo = req.getPathInfo();
+        if (pathInfo.endsWith("/configurations.json")) {
+            String servicePid = req.getParameter("pid");
+            String configAdminPid = req.getParameter("configAdminPid");
+            deleteConfiguration(servicePid, configAdminPid);
+        }
+    }
+
     @Override
     public String getCategory() {
         return "Everit";
@@ -189,6 +205,8 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
                 writer.value(objClassDef.getName());
                 writer.key("description");
                 writer.value(objClassDef.getDescription());
+                writer.key("pid");
+                writer.value(serviceRef.getProperty("service.pid"));
                 writer.endObject();
                 System.out.println("managedservice prop keys: " + Arrays.asList(serviceRef.getPropertyKeys()));
                 for (String key : serviceRef.getPropertyKeys()) {
@@ -260,7 +278,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void renderContent(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-            IOException {
+    IOException {
         String pathInfo = req.getPathInfo();
         if (isMainPageRequest(pathInfo)) {
             loadMainPage(resp, req.getAttribute("felix.webconsole.pluginRoot").toString());

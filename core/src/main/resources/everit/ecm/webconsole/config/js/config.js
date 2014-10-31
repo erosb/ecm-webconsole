@@ -29,7 +29,7 @@ $(document).ready(function() {
 	});
 	
 	var managedServiceListView = new ecmconfig.ManagedServiceListView({
-		el: document.getElementById("tbl-managedservices"),
+		//el: document.getElementById("tbl-managedservices"),
 		model: managedServiceList
 	});
 	$("#cnt-main").append(managedServiceListView.render());

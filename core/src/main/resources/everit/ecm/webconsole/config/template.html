@@ -43,6 +43,12 @@
 	</select>
 </script>
 
+<script type="text/template" id="tmpl-confirm-delete-configuration">
+	<div title="Confirm configuration deletion">
+		<p>Are you sure you want to delete configuration of managed service <b><%= service.get("name") %></b>?</p>
+	</div>
+</script>
+
 <script type="text/template" id="tmpl-managed-service-row">
 		<td><%= service.get("name") %></td>
 		<td><%= service.get("bundleName") %></td>
@@ -58,9 +64,7 @@
 		</td>
 </script>
 
-<div id="cnt-main" style="width: 100%">
-	<div id="cnt-header" class="ui-widget-header ui-corner-top"></div>
-	<table id="tbl-managedservices" class="tablesorter nicetable noauto ui-widget" style="width: 100%">
+<script type="text/template" id="tmpl-managed-service-list">
 		<thead>
 			<tr>
 				<th class="ui-widget-header header">Name</th>
@@ -68,6 +72,9 @@
 				<th class="ui-widget-header header">Actions</th>
 			</tr>
 		</thead>
-		<tbody></tbody>	
-	</table>
+		<tbody></tbody>
+</script>
+
+<div id="cnt-main" style="width: 100%">
+	<div id="cnt-header" class="ui-widget-header ui-corner-top"></div>
 </div>

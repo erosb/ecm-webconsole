@@ -17,9 +17,35 @@
 $(document).ready(function() {
 (function(ecmconfig) {
 	
+	function loadTemplate(templateId) {
+		return _.template($("#" + templateId).text());
+	}
+	
 	var ManagedServiceRowView = ecmconfig.ManagedServiceRowView = Backbone.View.extend({
 		tagName: "tr",
 		className: "ui-state-default",
+		events: {
+			"click .ui-icon-trash" : "deleteConfig"
+		},
+		deleteConfig: function() {
+			var model = this.model;
+			var $dlg = $(loadTemplate("tmpl-confirm-delete-configuration")({
+				service: this.model
+			}));
+			$dlg.dialog({
+				modal: true,
+				buttons: {
+					"Yes" : function() {
+						model.deleteConfig(function() {
+							$dlg.dialog("close");
+						});
+					},
+					"Cancel" : function() {
+						$dlg.dialog("close");
+					}
+				}
+			});
+		},
 		render: function() {
 			var dom = _.template($("#tmpl-managed-service-row").text())({service: this.model});
 			this.$el.append(dom);
@@ -28,23 +54,19 @@ $(document).ready(function() {
 	});
 	
 	var ManagedServiceListView = ecmconfig.ManagedServiceListView = Backbone.View.extend({
+		tagName: "table",
+		className: "tablesorter nicetable noauto ui-widget",
 		initialize: function(options) {
 			this.listenTo(this.model, "reset", this.render);
 		},
 		render: function() {
-			//this.$el.empty();
-			console.log("rendering ManagedServiceList", this.model);
+			this.$el.empty().html($("#tmpl-managed-service-list").text());
 			var $tbody = this.$el.find("tbody");
-			$tbody.empty();
-			console.log("tbody", $tbody);
 			this.model.forEach(function(service) {
 				var rowView = new ManagedServiceRowView({model: service});
-				console.log("adding row view for", service);
 				$tbody.append(rowView.render());
 			}, this);
-			this.$el.append($tbody);
 			this.$el.tablesorter();
-			console.log(this.$el);
 			return this.$el;
 		} 
 	});

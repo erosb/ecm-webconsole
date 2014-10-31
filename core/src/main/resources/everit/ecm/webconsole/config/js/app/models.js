@@ -17,22 +17,10 @@
 $(document).ready(function() {
 (function(ecmconfig) {
 
-	var ConfigurationModel = ecmconfig.ConfigurationModel = Backbone.Model.extend({
-
-	});
-	
-	var ConfigurationList = ecmconfig.ConfigurationList = Backbone.Collection.extend({
-		model: ConfigurationModel
-	});
-
 	var ConfigAdminModel = ecmconfig.ConfigAminModel = Backbone.Model.extend({
-		initialize: function() {
-			this.set("configurations", new ConfigurationList());
-		},
 		pid: null,
 		bundleId: null,
 		description: null,
-		configurations: new ConfigurationList()
 	});
 	
 	var ConfigAdminList = ecmconfig.ConfigAdminList = Backbone.Collection.extend({
@@ -40,7 +28,15 @@ $(document).ready(function() {
 	});
 	
 	var ManagedServiceModel = ecmconfig.ManagedServiceModel = Backbone.Model.extend({
-		
+		deleteConfig: function(onSuccess) {
+			var configAdminPid = this.get("appModel").get("selectedConfigAdmin").get("pid");
+			$.ajax(ecmconfig.rootPath + "/configurations.json?pid="
+					+ this.get("pid")
+					+ "&configAdminPid=" + configAdminPid, {
+				type: "DELETE",
+				dataType: "json",
+			});
+		}
 	});
 	
 	var ManagedServiceList = ecmconfig.ManagedServiceList = Backbone.Collection.extend({
@@ -83,10 +79,10 @@ $(document).ready(function() {
 		refreshManagedServiceList : function() {
 			var self = this;
 			$.getJSON(ecmconfig.rootPath + "/managedservices.json", function(data) {
-				console.log("received: ", data);
 				var newList = [];
 				data.forEach(function(rawService) {
 					var managedService = new ManagedServiceModel(rawService);
+					managedService.set("appModel", self);
 					newList.push(managedService);
 				});
 				self.get("managedServiceList").reset(newList);
