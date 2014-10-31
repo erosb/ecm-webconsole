@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -41,6 +42,10 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.cm.ManagedService;
+import org.osgi.service.cm.ManagedServiceFactory;
+import org.osgi.service.metatype.MetaTypeService;
+import org.osgi.service.metatype.ObjectClassDefinition;
 import org.osgi.util.tracker.ServiceTracker;
 
 public class ConfigServlet extends AbstractWebConsolePlugin {
@@ -62,10 +67,23 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     private final BundleContext bundleCtx;
 
+    private final ServiceTracker<ManagedService, ManagedService> managedSrvTracker;
+
+    private final ServiceTracker<ManagedServiceFactory, ManagedServiceFactory> managedSrvFactoryTracker;
+
+    private final ServiceTracker<MetaTypeService, MetaTypeService> metaTypeSrvTracker;
+
     public ConfigServlet(final BundleContext bundleCtx,
-            final ServiceTracker<ConfigurationAdmin, ConfigurationAdmin> cfgAdminTracker) {
+            final ServiceTracker<ConfigurationAdmin, ConfigurationAdmin> cfgAdminTracker,
+            final ServiceTracker<ManagedService, ManagedService> managedSrvTracker,
+            final ServiceTracker<ManagedServiceFactory, ManagedServiceFactory> managedSrvFactoryTracker,
+            final ServiceTracker<MetaTypeService, MetaTypeService> metaTypeSrvTracker) {
         this.bundleCtx = Objects.requireNonNull(bundleCtx, "bundleCtx cannot be null");
         this.cfgAdminTracker = Objects.requireNonNull(cfgAdminTracker, "cfgAdminTracker cannot be null");
+        this.managedSrvTracker = Objects.requireNonNull(managedSrvTracker, "managedSrvTracker cannot be null");
+        this.managedSrvFactoryTracker = Objects.requireNonNull(managedSrvFactoryTracker,
+                "managedSrvFactoryTracker cannot be null");
+        this.metaTypeSrvTracker = Objects.requireNonNull(metaTypeSrvTracker, "metaTypeSrvTracker cannot be null");
     }
 
     private Stream<ServiceReference<ConfigurationAdmin>> configAdminStream() {
@@ -81,6 +99,13 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
     @Override
     public String getLabel() {
         return CONFIG_LABEL;
+    }
+
+    private ObjectClassDefinition getObjectClassDefinition(final ServiceReference<ManagedService> serviceRef) {
+        MetaTypeService metaTypeSrv = metaTypeSrvTracker.getService();
+        ObjectClassDefinition objClassDef = metaTypeSrv.getMetaTypeInformation(serviceRef.getBundle())
+                .getObjectClassDefinition((String) serviceRef.getProperty("service.pid"), null);
+        return objClassDef;
     }
 
     public URL getResource(final String path) {
@@ -143,6 +168,36 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             });
             writer.endArray();
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void listManagedServices(final HttpServletResponse resp) {
+        try {
+            JSONWriter writer = new JSONWriter(resp.getWriter());
+            Collection<ServiceReference<ManagedService>> serviceRefs = bundleCtx.getServiceReferences(
+                    ManagedService.class, null);
+            writer.array();
+            for (ServiceReference<ManagedService> serviceRef : serviceRefs) {
+                writer.object();
+                writer.key("bundleSymName");
+                writer.value(serviceRef.getBundle().getSymbolicName());
+                writer.key("bundleName");
+                writer.value(serviceRef.getBundle().getHeaders().get("Bundle-Name"));
+                ObjectClassDefinition objClassDef = getObjectClassDefinition(serviceRef);
+                writer.key("name");
+                writer.value(objClassDef.getName());
+                writer.key("description");
+                writer.value(objClassDef.getDescription());
+                writer.endObject();
+                System.out.println("managedservice prop keys: " + Arrays.asList(serviceRef.getPropertyKeys()));
+                for (String key : serviceRef.getPropertyKeys()) {
+                    System.out.println("\t\t" + key + ": " + serviceRef.getProperty(key));
+                }
+            }
+            writer.endArray();
+            System.out.println(serviceRefs.size() + " managed services found");
+        } catch (InvalidSyntaxException | IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -219,6 +274,8 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             } else if (pathInfo.endsWith("/configurations.json")) {
                 String configAdminPid = req.getParameter("configAdmin");
                 listConfigurationsByConfigAdmin(resp, configAdminPid);
+            } else if (pathInfo.endsWith("/managedservices.json")) {
+                listManagedServices(resp);
             }
         }
     }

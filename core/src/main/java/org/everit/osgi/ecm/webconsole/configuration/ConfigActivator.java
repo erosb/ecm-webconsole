@@ -25,24 +25,51 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.cm.ManagedService;
+import org.osgi.service.cm.ManagedServiceFactory;
+import org.osgi.service.metatype.MetaTypeService;
 import org.osgi.util.tracker.ServiceTracker;
 
 public class ConfigActivator implements BundleActivator {
 
     private ServiceRegistration<Servlet> registration;
 
+    private ServiceTracker<ConfigurationAdmin, ConfigurationAdmin> cfgAdminTracker;
+
+    private ServiceTracker<ManagedService, ManagedService> managedSrvTracker;
+
+    private ServiceTracker<ManagedServiceFactory, ManagedServiceFactory> managedSrvFactoryTracker;
+
+    private ServiceTracker<MetaTypeService, MetaTypeService> metaTypeSrvTracker;
+
+    private void initServiceTrackers(final BundleContext context) {
+        cfgAdminTracker = new ServiceTracker<ConfigurationAdmin, ConfigurationAdmin>(context, ConfigurationAdmin.class,
+                null);
+        cfgAdminTracker.open();
+        managedSrvTracker = new ServiceTracker<ManagedService, ManagedService>(context, ManagedService.class, null);
+        managedSrvTracker.open();
+        managedSrvFactoryTracker = new ServiceTracker<ManagedServiceFactory, ManagedServiceFactory>(context,
+                ManagedServiceFactory.class, null);
+        managedSrvFactoryTracker.open();
+        metaTypeSrvTracker = new ServiceTracker<MetaTypeService, MetaTypeService>(context, MetaTypeService.class, null);
+        metaTypeSrvTracker.open();
+    }
+
     @Override
     public void start(final BundleContext context) throws Exception {
         Dictionary<String, String> props = new Hashtable<String, String>(2);
         props.put("felix.webconsole.label", ConfigServlet.CONFIG_LABEL);
-        ServiceTracker<ConfigurationAdmin, ConfigurationAdmin> cfgAdminTracker = new ServiceTracker<ConfigurationAdmin, ConfigurationAdmin>(
-                context, ConfigurationAdmin.class, null);
-        cfgAdminTracker.open();
-        registration = context.registerService(Servlet.class, new ConfigServlet(context, cfgAdminTracker), props);
+        initServiceTrackers(context);
+        ConfigServlet servlet = new ConfigServlet(context, cfgAdminTracker, managedSrvTracker,
+                managedSrvFactoryTracker, metaTypeSrvTracker);
+        registration = context.registerService(Servlet.class, servlet, props);
     }
 
     @Override
     public void stop(final BundleContext context) throws Exception {
+        cfgAdminTracker.close();
+        managedSrvTracker.close();
+        managedSrvFactoryTracker.close();
         registration.unregister();
     }
 

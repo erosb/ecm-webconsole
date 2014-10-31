@@ -17,6 +17,22 @@
 $(document).ready(function() {
 (function(ecmconfig) {
 	
+	var ManagedServiceListView = ecmconfig.ManagedServiceListView = Backbone.View.extend({
+		initialize: function(options) {
+			this.listenTo(this.model, "reset", this.render);
+		},
+		render: function() {
+			this.$el.empty();
+			console.log("rendering ManagedServiceList", this.model);
+			var dom = _.template($("#tmpl-managed-service-list").text())({
+				managedServices: this.model
+			});
+			this.$el.append(dom);
+			this.$el.tablesorter();
+			return this.$el;
+		} 
+	});
+	
 	var ConfigurationListView = ecmconfig.ConfigurationListView = Backbone.View.extend({
 		tagName : "tbody"
 	});

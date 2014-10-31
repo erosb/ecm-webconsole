@@ -17,14 +17,24 @@
 $(document).ready(function() {
 (function(threadviewer) {
 	
-	var appModel = new ecmconfig.ApplicationModel();
+	var managedServiceList = new ecmconfig.ManagedServiceList();
+	
+	var appModel = new ecmconfig.ApplicationModel({
+		managedServiceList : managedServiceList
+	});
 	
 	var configAdminListView = new ecmconfig.ConfigAdminListView({
-		el: document.getElementById("cnt-main"),
+		el: document.getElementById("cnt-header"),
 		model: appModel
 	});
 	
+	var managedServiceListView = new ecmconfig.ManagedServiceListView({
+		el: document.getElementById("tbl-managedservices"),
+		model: managedServiceList
+	})
+	
 	appModel.refreshConfigAdminList();
+	appModel.refreshManagedServiceList();
 	
 })(window.ecmconfig);
 });

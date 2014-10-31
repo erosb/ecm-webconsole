@@ -18,7 +18,6 @@ $(document).ready(function() {
 (function(ecmconfig) {
 
 	var ConfigurationModel = ecmconfig.ConfigurationModel = Backbone.Model.extend({
-		
 
 	});
 	
@@ -52,9 +51,17 @@ $(document).ready(function() {
 			}
 		}
 	});
-
+	
 	var ConfigAdminList = ecmconfig.ConfigAdminList = Backbone.Collection.extend({
 		model: ConfigAdminModel
+	});
+	
+	var ManagedServiceModel = ecmconfig.ManagedServiceModel = Backbone.Model.extend({
+		
+	});
+	
+	var ManagedServiceList = ecmconfig.ManagedServiceList = Backbone.Collection.extend({
+		model: ManagedServiceModel
 	});
 
 	var ApplicationModel = ecmconfig.ApplicationModel = Backbone.Model.extend({
@@ -74,6 +81,7 @@ $(document).ready(function() {
 				this.set("selectedConfigAdmin", selectedConfigAdmin);
 			}
 		},
+		managedServiceList: null,
 		configAdminList: new ConfigAdminList(),
 		selectedConfigAdminPid: null,
 		selectedConfigAdmin: null,
@@ -87,6 +95,18 @@ $(document).ready(function() {
 					newList.push(configAdmin);
 				});
 				self.get("configAdminList").reset(newList);
+			});
+		},
+		refreshManagedServiceList : function() {
+			var self = this;
+			$.getJSON(ecmconfig.rootPath + "/managedservices.json", function(data) {
+				console.log("received: ", data);
+				var newList = [];
+				data.forEach(function(rawService) {
+					var managedService = new ManagedServiceModel(rawService);
+					newList.push(managedService);
+				});
+				self.get("managedServiceList").reset(newList);
 			});
 		}
 	});

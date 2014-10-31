@@ -29,15 +29,21 @@
 <script type="text/javascript" src="${rootPath}/app/views.js"></script>
 <script type="text/javascript" src="${rootPath}/config.js"></script>
 
+<style>
+#cnt-header {
+	padding: 7px 5px 7px 5px;
+}
+</style>
+
 <script type="text/template" id="tmpl-config-admin-list">
-	<div id="cnt-header" class="ui-widget-header ui-corner-top">
-	<select name="sel-configadmin" class="ui-widget ui-widget-content">
+	<select name="sel-configadmin" class="ui-widget ui-widget-content ui-state-default">
 	<% configAdmins.forEach(function(configAdmin) { %>
 		<option value="<%= configAdmin.get("pid") %>"><%= configAdmin.get("description") %></option>
 	<% }); %>
 	</select>
-	</div>
-	<table class="tablesorter" style="width: 100%">
+</script>
+
+<script type="text/template" id="tmpl-managed-service-list">
 		<thead>
 			<tr>
 				<th class="ui-widget-header header">Name</th>
@@ -46,8 +52,27 @@
 			</tr>
 		</thead>
 		<tbody>
+		<% managedServices.forEach(function(service) {%>
+			<tr class="ui-state-default">
+				<td><%= service.get("name") %></td>
+				<td><%= service.get("bundleName") %></td>
+				<td>
+					<ul class="icons">
+						<li class="dynhover ui-state-default ui-corner-all">
+							<span class="ui-icon ui-icon-trash" label="Delete"></span>
+						</li>
+						<li class="dynhover ui-state-default ui-corner-all">
+							<span class="ui-icon ui-icon-pencil" label="Edit"></span>
+						</li>
+					</ul>
+				</td>
+			</tr>
+		<%});%>
 		</tbody>
 	</table>
 </script>
 
-<div id="cnt-main" style="width: 100%"></div>
+<div id="cnt-main" style="width: 100%">
+	<div id="cnt-header" class="ui-widget-header ui-corner-top"></div>
+	<table id="tbl-managedservices" class="tablesorter nicetable noauto ui-widget" style="width: 100%"></table>
+</div>
