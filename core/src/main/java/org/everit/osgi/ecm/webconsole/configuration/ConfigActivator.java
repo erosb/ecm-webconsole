@@ -60,7 +60,8 @@ public class ConfigActivator implements BundleActivator {
         Dictionary<String, String> props = new Hashtable<String, String>(2);
         props.put("felix.webconsole.label", ConfigServlet.CONFIG_LABEL);
         initServiceTrackers(context);
-        ConfigServlet servlet = new ConfigServlet(context, cfgAdminTracker, managedSrvTracker,
+        ConfigManager configManager = new ConfigManager(cfgAdminTracker, context);
+        ConfigServlet servlet = new ConfigServlet(context, configManager, managedSrvTracker,
                 managedSrvFactoryTracker, metaTypeSrvTracker);
         registration = context.registerService(Servlet.class, servlet, props);
     }

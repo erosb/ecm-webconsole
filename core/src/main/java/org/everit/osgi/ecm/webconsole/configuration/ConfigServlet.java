@@ -22,14 +22,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Stream;
+import java.util.function.Consumer;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -38,10 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.felix.webconsole.AbstractWebConsolePlugin;
 import org.json.JSONWriter;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.cm.ManagedService;
 import org.osgi.service.cm.ManagedServiceFactory;
 import org.osgi.service.metatype.MetaTypeService;
@@ -63,8 +58,6 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             "underscore-min.js"
             ));
 
-    private final ServiceTracker<ConfigurationAdmin, ConfigurationAdmin> cfgAdminTracker;
-
     private final BundleContext bundleCtx;
 
     private final ServiceTracker<ManagedService, ManagedService> managedSrvTracker;
@@ -73,37 +66,52 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     private final ServiceTracker<MetaTypeService, MetaTypeService> metaTypeSrvTracker;
 
+    private final ConfigManager configManager;
+
     public ConfigServlet(final BundleContext bundleCtx,
-            final ServiceTracker<ConfigurationAdmin, ConfigurationAdmin> cfgAdminTracker,
+            final ConfigManager configManager,
             final ServiceTracker<ManagedService, ManagedService> managedSrvTracker,
             final ServiceTracker<ManagedServiceFactory, ManagedServiceFactory> managedSrvFactoryTracker,
             final ServiceTracker<MetaTypeService, MetaTypeService> metaTypeSrvTracker) {
         this.bundleCtx = Objects.requireNonNull(bundleCtx, "bundleCtx cannot be null");
-        this.cfgAdminTracker = Objects.requireNonNull(cfgAdminTracker, "cfgAdminTracker cannot be null");
+        this.configManager = Objects.requireNonNull(configManager, "configManager cannot be null");
         this.managedSrvTracker = Objects.requireNonNull(managedSrvTracker, "managedSrvTracker cannot be null");
         this.managedSrvFactoryTracker = Objects.requireNonNull(managedSrvFactoryTracker,
                 "managedSrvFactoryTracker cannot be null");
         this.metaTypeSrvTracker = Objects.requireNonNull(metaTypeSrvTracker, "metaTypeSrvTracker cannot be null");
     }
 
-    private Stream<ServiceReference<ConfigurationAdmin>> configAdminStream() {
-        return Arrays.stream(
-                Optional.ofNullable(cfgAdminTracker.getServiceReferences()).orElse(new ServiceReference[0]));
-    }
-
-    private void deleteConfiguration(final String servicePid, final String configAdminPid) {
-        System.out.println(String.format("deleting configuration: servicePid = %s, configAdminPid = %s", servicePid,
-                configAdminPid));
+    private Consumer<ServiceReference<ManagedService>> createManagedServiceJSONSerializer(
+            final JSONWriter writer) {
+        return (serviceRef) -> {
+            writer.object();
+            writer.key("bundleSymName");
+            writer.value(serviceRef.getBundle().getSymbolicName());
+            writer.key("bundleName");
+            writer.value(serviceRef.getBundle().getHeaders().get("Bundle-Name"));
+            ObjectClassDefinition objClassDef = getObjectClassDefinition(serviceRef);
+            writer.key("name");
+            writer.value(objClassDef.getName());
+            writer.key("description");
+            writer.value(objClassDef.getDescription());
+            writer.key("pid");
+            writer.value(serviceRef.getProperty("service.pid"));
+            writer.endObject();
+            System.out.println("managedservice prop keys: " + Arrays.asList(serviceRef.getPropertyKeys()));
+            for (String key : serviceRef.getPropertyKeys()) {
+                System.out.println("\t\t" + key + ": " + serviceRef.getProperty(key));
+            }
+        };
     }
 
     @Override
     protected void doDelete(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-    IOException {
+            IOException {
         String pathInfo = req.getPathInfo();
         if (pathInfo.endsWith("/configurations.json")) {
             String servicePid = req.getParameter("pid");
             String configAdminPid = req.getParameter("configAdminPid");
-            deleteConfiguration(servicePid, configAdminPid);
+            configManager.deleteConfiguration(servicePid, configAdminPid);
         }
     }
 
@@ -153,7 +161,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
         try {
             JSONWriter writer = new JSONWriter(resp.getWriter());
             writer.array();
-            configAdminStream().forEach((confAdmin) -> {
+            configManager.configAdminStream().forEach((confAdmin) -> {
                 writer.object();
                 writer.key("pid");
                 writer.value(confAdmin.getProperty("service.pid"));
@@ -169,53 +177,14 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
         }
     }
 
-    private void listConfigurationsByConfigAdmin(final HttpServletResponse resp, final String configAdminPid) {
-        Configuration[] configs = lookupConfigurationsByConfigAdminPid(configAdminPid);
-        try {
-            JSONWriter writer = new JSONWriter(resp.getWriter());
-            writer.array();
-            Arrays.stream(configs).forEach((config) -> {
-                writer.object();
-                writer.key("pid");
-                writer.value(config.getPid());
-                writer.key("description");
-                writer.value(config.getProperties().get("service.description"));
-                writer.endObject();
-            });
-            writer.endArray();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private void listManagedServices(final HttpServletResponse resp) {
         try {
             JSONWriter writer = new JSONWriter(resp.getWriter());
-            Collection<ServiceReference<ManagedService>> serviceRefs = bundleCtx.getServiceReferences(
-                    ManagedService.class, null);
             writer.array();
-            for (ServiceReference<ManagedService> serviceRef : serviceRefs) {
-                writer.object();
-                writer.key("bundleSymName");
-                writer.value(serviceRef.getBundle().getSymbolicName());
-                writer.key("bundleName");
-                writer.value(serviceRef.getBundle().getHeaders().get("Bundle-Name"));
-                ObjectClassDefinition objClassDef = getObjectClassDefinition(serviceRef);
-                writer.key("name");
-                writer.value(objClassDef.getName());
-                writer.key("description");
-                writer.value(objClassDef.getDescription());
-                writer.key("pid");
-                writer.value(serviceRef.getProperty("service.pid"));
-                writer.endObject();
-                System.out.println("managedservice prop keys: " + Arrays.asList(serviceRef.getPropertyKeys()));
-                for (String key : serviceRef.getPropertyKeys()) {
-                    System.out.println("\t\t" + key + ": " + serviceRef.getProperty(key));
-                }
-            }
+            configManager.listManagedServices().forEach(
+                    (serviceRef) -> createManagedServiceJSONSerializer(writer).accept(serviceRef));
             writer.endArray();
-            System.out.println(serviceRefs.size() + " managed services found");
-        } catch (InvalidSyntaxException | IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -241,56 +210,16 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
         }
     }
 
-    private Configuration[] lookupConfigurationsByConfigAdminPid(final String configAdminPid) {
-        try {
-            ServiceReference<ConfigurationAdmin>[] serviceRefs = cfgAdminTracker.getServiceReferences();
-            if (serviceRefs != null) {
-                for (ServiceReference<ConfigurationAdmin> serviceRef : serviceRefs) {
-                    if (Objects.equals(serviceRef.getProperty("service.pid"), configAdminPid)) {
-                        Configuration[] rval = bundleCtx.getService(serviceRef).listConfigurations(null);
-                        if (rval == null) {
-                            System.out.println("no configurations found");
-                        } else {
-                            System.out.println(rval.length + " configurations found");
-                        }
-                        return rval == null ? new Configuration[0] : rval;
-                    }
-                }
-            }
-        } catch (IOException | InvalidSyntaxException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.println("no configadmin service found with pid " + configAdminPid);
-        throw new IllegalArgumentException("no configadmin service found with pid " + configAdminPid);
-        // Configuration[] configs = configAdminStream()
-        // .filter((serviceRef) -> serviceRef.getProperty("service.pid").equals(configAdminPid))
-        // .map((serviceRef) -> {
-        // try {
-        // Configuration[] rval = bundleCtx.getService(serviceRef).listConfigurations(null);
-        // return rval == null ? new Configuration[0] : rval;
-        // } catch (InvalidSyntaxException | IOException e) {
-        // throw new RuntimeException(e);
-        // }
-        // })
-        // .findFirst().orElse(new Configuration[0]);
-        // return configs;
-    }
-
     @Override
     protected void renderContent(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-    IOException {
+            IOException {
         String pathInfo = req.getPathInfo();
         if (isMainPageRequest(pathInfo)) {
             loadMainPage(resp, req.getAttribute("felix.webconsole.pluginRoot").toString());
-            System.out.println("configadmin service references: " + cfgAdminTracker.getServiceReferences().length);
-            System.out.println("configadmin services: " + cfgAdminTracker.getServices().length);
         } else {
             resp.setHeader("Content-Type", "application/json");
             if (pathInfo.endsWith("/configadmin.json")) {
                 listConfigAdminServices(resp);
-            } else if (pathInfo.endsWith("/configurations.json")) {
-                String configAdminPid = req.getParameter("configAdmin");
-                listConfigurationsByConfigAdmin(resp, configAdminPid);
             } else if (pathInfo.endsWith("/managedservices.json")) {
                 listManagedServices(resp);
             }
