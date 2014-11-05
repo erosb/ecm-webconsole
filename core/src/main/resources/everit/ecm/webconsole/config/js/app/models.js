@@ -32,9 +32,11 @@ $(document).ready(function() {
 			var configAdminPid = this.get("appModel").get("selectedConfigAdmin").get("pid");
 			$.ajax(ecmconfig.rootPath + "/configurations.json?pid="
 					+ this.get("pid")
+					+ "&location=" + this.get("location")
 					+ "&configAdminPid=" + configAdminPid, {
 				type: "DELETE",
 				dataType: "json",
+				success: onSuccess
 			});
 		}
 	});

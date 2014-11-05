@@ -38,10 +38,7 @@ import org.json.JSONWriter;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.ManagedService;
-import org.osgi.service.cm.ManagedServiceFactory;
-import org.osgi.service.metatype.MetaTypeService;
 import org.osgi.service.metatype.ObjectClassDefinition;
-import org.osgi.util.tracker.ServiceTracker;
 
 public class ConfigServlet extends AbstractWebConsolePlugin {
     private static final long serialVersionUID = 1957046444200622859L;
@@ -60,25 +57,12 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     private final BundleContext bundleCtx;
 
-    private final ServiceTracker<ManagedService, ManagedService> managedSrvTracker;
-
-    private final ServiceTracker<ManagedServiceFactory, ManagedServiceFactory> managedSrvFactoryTracker;
-
-    private final ServiceTracker<MetaTypeService, MetaTypeService> metaTypeSrvTracker;
-
     private final ConfigManager configManager;
 
     public ConfigServlet(final BundleContext bundleCtx,
-            final ConfigManager configManager,
-            final ServiceTracker<ManagedService, ManagedService> managedSrvTracker,
-            final ServiceTracker<ManagedServiceFactory, ManagedServiceFactory> managedSrvFactoryTracker,
-            final ServiceTracker<MetaTypeService, MetaTypeService> metaTypeSrvTracker) {
+            final ConfigManager configManager) {
         this.bundleCtx = Objects.requireNonNull(bundleCtx, "bundleCtx cannot be null");
         this.configManager = Objects.requireNonNull(configManager, "configManager cannot be null");
-        this.managedSrvTracker = Objects.requireNonNull(managedSrvTracker, "managedSrvTracker cannot be null");
-        this.managedSrvFactoryTracker = Objects.requireNonNull(managedSrvFactoryTracker,
-                "managedSrvFactoryTracker cannot be null");
-        this.metaTypeSrvTracker = Objects.requireNonNull(metaTypeSrvTracker, "metaTypeSrvTracker cannot be null");
     }
 
     private Consumer<ServiceReference<ManagedService>> createManagedServiceJSONSerializer(
@@ -89,7 +73,9 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             writer.value(serviceRef.getBundle().getSymbolicName());
             writer.key("bundleName");
             writer.value(serviceRef.getBundle().getHeaders().get("Bundle-Name"));
-            ObjectClassDefinition objClassDef = getObjectClassDefinition(serviceRef);
+            writer.key("location");
+            writer.value(serviceRef.getBundle().getLocation());
+            ObjectClassDefinition objClassDef = configManager.getObjectClassDefinition(serviceRef);
             writer.key("name");
             writer.value(objClassDef.getName());
             writer.key("description");
@@ -111,7 +97,9 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
         if (pathInfo.endsWith("/configurations.json")) {
             String servicePid = req.getParameter("pid");
             String configAdminPid = req.getParameter("configAdminPid");
-            configManager.deleteConfiguration(servicePid, configAdminPid);
+            String location = req.getParameter("location");
+            configManager.deleteConfiguration(servicePid, location, configAdminPid);
+            printSuccess(resp);
         }
     }
 
@@ -123,13 +111,6 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
     @Override
     public String getLabel() {
         return CONFIG_LABEL;
-    }
-
-    private ObjectClassDefinition getObjectClassDefinition(final ServiceReference<ManagedService> serviceRef) {
-        MetaTypeService metaTypeSrv = metaTypeSrvTracker.getService();
-        ObjectClassDefinition objClassDef = metaTypeSrv.getMetaTypeInformation(serviceRef.getBundle())
-                .getObjectClassDefinition((String) serviceRef.getProperty("service.pid"), null);
-        return objClassDef;
     }
 
     public URL getResource(final String path) {
@@ -210,6 +191,18 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
         }
     }
 
+    private void printSuccess(final HttpServletResponse resp) {
+        try {
+            JSONWriter writer = new JSONWriter(resp.getWriter());
+            writer.object();
+            writer.key("status");
+            writer.value("success");
+            writer.endObject();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     protected void renderContent(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
             IOException {
@@ -224,6 +217,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
                 listManagedServices(resp);
             }
         }
+        // metaTypeSrvTracker.getService().getMetaTypeInformation(bundle)
     }
 
     private String resolveVariables(String rval, final Map<String, String> templateVars) {
