@@ -33,6 +33,10 @@
 #cnt-header {
 	padding: 7px 5px 7px 5px;
 }
+
+td.managedservice-name {
+	cursor: pointer;
+}
 </style>
 
 <script type="text/template" id="tmpl-config-admin-list">
@@ -50,7 +54,7 @@
 </script>
 
 <script type="text/template" id="tmpl-managed-service-row">
-		<td><%= service.get("name") %></td>
+		<td class="managedservice-name"><%= service.get("name") %></td>
 		<td><%= service.get("bundleName") %></td>
 		<td>
 			<ul class="icons">

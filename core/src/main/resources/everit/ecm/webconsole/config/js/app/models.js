@@ -30,7 +30,7 @@ $(document).ready(function() {
 	var ManagedServiceModel = ecmconfig.ManagedServiceModel = Backbone.Model.extend({
 		deleteConfig: function(onSuccess) {
 			var configAdminPid = this.get("appModel").get("selectedConfigAdmin").get("pid");
-			$.ajax(ecmconfig.rootPath + "/configurations.json?pid="
+			$.ajax(ecmconfig.rootPath + "/configuration.json?pid="
 					+ this.get("pid")
 					+ "&location=" + this.get("location")
 					+ "&configAdminPid=" + configAdminPid, {
@@ -38,6 +38,9 @@ $(document).ready(function() {
 				dataType: "json",
 				success: onSuccess
 			});
+		},
+		loadConfiguration: function(onSuccess) {
+			
 		}
 	});
 	

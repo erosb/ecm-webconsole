@@ -16,18 +16,17 @@
  */
 package org.everit.osgi.ecm.webconsole.configuration;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.metatype.MetaTypeInformation;
 import org.osgi.service.metatype.MetaTypeService;
+import org.osgi.service.metatype.ObjectClassDefinition;
 import org.osgi.util.tracker.ServiceTracker;
 
 public class ConfigurationLookup {
@@ -51,14 +50,18 @@ public class ConfigurationLookup {
     }
 
     private Collection<Configurable> collectResults() {
-        // TODO Auto-generated method stub
-        return null;
+        ArrayList<Configurable> rval = new ArrayList<Configurable>(configurablesByPid.size()
+                + configurablesByFactoryPid.size());
+        rval.addAll(configurablesByPid.values());
+        rval.addAll(configurablesByFactoryPid.values());
+        return rval;
     }
 
     private Configurable getConfigurableByFactoryPid(final String factoryPid) {
         Configurable rval = configurablesByPid.get(factoryPid);
         if (rval == null) {
             rval = new Configurable();
+            rval.setFactoryPid(factoryPid);
             configurablesByPid.put(factoryPid, rval);
         }
         return rval;
@@ -68,6 +71,7 @@ public class ConfigurationLookup {
         Configurable rval = configurablesByPid.get(pid);
         if (rval == null) {
             rval = new Configurable();
+            rval.setPid(pid);
             configurablesByPid.put(pid, rval);
         }
         return rval;
@@ -78,24 +82,24 @@ public class ConfigurationLookup {
         ConfigurationAdmin configAdmin = cfgAdminTracker.getService();
         for (Bundle bundle : bundleCtx.getBundles()) {
             MetaTypeInformation metatypeInfo = metatypeSrv.getMetaTypeInformation(bundle);
+            if (metatypeInfo == null) {
+                continue;
+            }
             for (String pid : metatypeInfo.getPids()) {
+                ObjectClassDefinition objClassDef = metatypeInfo.getObjectClassDefinition(pid, null);
                 Configurable configurable = getConfigurableByPid(pid);
-                // Configuration config = configAdmin.getConfiguration(pid, null);
-                // configAdmin.
+                configurable.setObjectClassName(objClassDef.getName());
+                configurable.setDescription(objClassDef.getDescription());
+                configurable.setBundleName(bundle.getHeaders().get("Bundle-Name"));
             }
             for (String factoryPid : metatypeInfo.getFactoryPids()) {
+                ObjectClassDefinition objClassDef = metatypeInfo.getObjectClassDefinition(factoryPid, null);
                 Configurable configurable = getConfigurableByFactoryPid(factoryPid);
+                configurable.setObjectClassName(objClassDef.getName());
+                configurable.setDescription(objClassDef.getDescription());
+                configurable.setBundleName(bundle.getHeaders().get("Bundle-Name"));
             }
-        }
-        try {
-            for (Configuration config : configAdmin.listConfigurations(null)) {
-                Configurable configurable = getConfigurableByPid(config.getPid());
-
-            }
-        } catch (IOException | InvalidSyntaxException e) {
-            throw new RuntimeException(e);
         }
         return collectResults();
     }
-
 }

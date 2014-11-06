@@ -24,7 +24,7 @@ import org.osgi.service.cm.ConfigurationAdmin;
 /**
  * Represents something which may be configured through a {@link ConfigurationAdmin} service.
  */
-public class Configurable {
+public class Configurable implements Comparable<Configurable> {
 
     private String pid;
 
@@ -32,10 +32,37 @@ public class Configurable {
 
     private String factoryPid;
 
+    private String objectClassName;
+
+    private String description;
+
+    private String bundleName;
+
     private Map<String, ConfigurableAttribute> attributes;
+
+    @Override
+    public int compareTo(final Configurable o) {
+        return getDisplayedName().compareTo(o.getDisplayedName());
+    }
 
     public Map<String, ConfigurableAttribute> getAttributes() {
         return attributes;
+    }
+
+    public String getBundleName() {
+        return bundleName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getDisplayedName() {
+        if (objectClassName == null) {
+            return pid;
+        } else {
+            return objectClassName;
+        }
     }
 
     public String getFactoryPid() {
@@ -46,12 +73,24 @@ public class Configurable {
         return location;
     }
 
+    public String getObjectClassName() {
+        return objectClassName;
+    }
+
     public String getPid() {
         return pid;
     }
 
     public void setAttributes(final Map<String, ConfigurableAttribute> attributes) {
         this.attributes = attributes;
+    }
+
+    public void setBundleName(final String bundleName) {
+        this.bundleName = bundleName;
+    }
+
+    public void setDescription(final String description) {
+        this.description = description;
     }
 
     public void setFactoryPid(final String factoryPid) {
@@ -62,12 +101,29 @@ public class Configurable {
         this.location = location;
     }
 
+    public void setObjectClassName(final String objectClassName) {
+        this.objectClassName = objectClassName;
+    }
+
     public void setPid(final String pid) {
         this.pid = pid;
     }
 
     public void toJSON(final JSONWriter writer) {
-
+        writer.object();
+        writer.key("name");
+        writer.value(getDisplayedName());
+        writer.key("description");
+        writer.value(description);
+        writer.key("bundleName");
+        writer.value(bundleName);
+        writer.key("location");
+        writer.value(location);
+        writer.key("pid");
+        writer.value(pid);
+        writer.key("factoryPid");
+        writer.value(factoryPid);
+        writer.endObject();
     }
 
 }

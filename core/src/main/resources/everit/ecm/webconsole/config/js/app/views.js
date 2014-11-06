@@ -21,11 +21,19 @@ $(document).ready(function() {
 		return _.template($("#" + templateId).text());
 	}
 	
+	var ConfigurationView = ecmconfig.ConfigurationView = Backbone.View.extend({
+		tagName: "div",
+		attributes: {
+			title: "Configuration"
+		}
+	});
+	
 	var ManagedServiceRowView = ecmconfig.ManagedServiceRowView = Backbone.View.extend({
 		tagName: "tr",
 		className: "ui-state-default",
 		events: {
-			"click .ui-icon-trash" : "deleteConfig"
+			"click .ui-icon-trash" : "deleteConfig",
+			"click td.managedservice-name" : "displayConfig"
 		},
 		deleteConfig: function() {
 			var model = this.model;
@@ -44,6 +52,11 @@ $(document).ready(function() {
 						$dlg.dialog("close");
 					}
 				}
+			});
+		},
+		displayConfig: function() {
+			this.model.loadConfiguration(function () {
+				
 			});
 		},
 		render: function() {

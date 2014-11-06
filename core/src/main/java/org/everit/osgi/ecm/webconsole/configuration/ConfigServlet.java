@@ -94,7 +94,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
     protected void doDelete(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
             IOException {
         String pathInfo = req.getPathInfo();
-        if (pathInfo.endsWith("/configurations.json")) {
+        if (pathInfo.endsWith("/configuration.json")) {
             String servicePid = req.getParameter("pid");
             String configAdminPid = req.getParameter("configAdminPid");
             String location = req.getParameter("location");
@@ -162,8 +162,9 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
         try {
             JSONWriter writer = new JSONWriter(resp.getWriter());
             writer.array();
-            configManager.listManagedServices().forEach(
-                    (serviceRef) -> createManagedServiceJSONSerializer(writer).accept(serviceRef));
+            configManager.lookupConfigurations().forEach((configurable) -> configurable.toJSON(writer));
+            // configManager.listManagedServices().forEach(
+            // (serviceRef) -> createManagedServiceJSONSerializer(writer).accept(serviceRef));
             writer.endArray();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -215,6 +216,8 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
                 listConfigAdminServices(resp);
             } else if (pathInfo.endsWith("/managedservices.json")) {
                 listManagedServices(resp);
+            } else if (pathInfo.endsWith("/configuration.json")) {
+
             }
         }
         // metaTypeSrvTracker.getService().getMetaTypeInformation(bundle)
