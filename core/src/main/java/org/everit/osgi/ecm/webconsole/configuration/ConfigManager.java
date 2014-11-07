@@ -55,10 +55,7 @@ public class ConfigManager {
 
     public void deleteConfiguration(final String servicePid, final String location, final String configAdminPid) {
         try {
-            ServiceReference<ConfigurationAdmin> cm = configAdminStream().filter((serviceRef)
-                    -> serviceRef.getProperty("service.pid").equals(configAdminPid))
-                    .findFirst().orElseThrow(IllegalArgumentException::new);
-            ConfigurationAdmin configAdmin = bundleCtx.getService(cm);
+            ConfigurationAdmin configAdmin = getConfigAdmin(configAdminPid);
             configAdmin.getConfiguration(servicePid, location).delete();
             System.out.println(String.format("deleting configuration: servicePid = %s, configAdminPid = %s",
                     servicePid,
@@ -66,6 +63,20 @@ public class ConfigManager {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private ConfigurationAdmin getConfigAdmin(final String pid) {
+        ServiceReference<ConfigurationAdmin> ref = configAdminStream()
+                .filter((serviceRef) -> serviceRef.getProperty("service.pid").equals(pid))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("configadmin (service.pid=" + pid + ") not found"));
+        return bundleCtx.getService(ref);
+    }
+
+    public Collection<DisplayedAttribute> getConfigForm(final String servicePid, final String serviceLocation,
+            final String configAdminPid) {
+        return new AttributeLookup(getConfigAdmin(configAdminPid), bundleCtx, metaTypeSrvTracker.getService())
+        .lookupForService(servicePid, serviceLocation);
     }
 
     public ObjectClassDefinition getObjectClassDefinition(final ServiceReference<ManagedService> serviceRef) {
@@ -85,7 +96,8 @@ public class ConfigManager {
     }
 
     public Collection<Configurable> lookupConfigurations() {
-        return new ConfigurationLookup(cfgAdminTracker, bundleCtx, metaTypeSrvTracker).lookupConfigurables();
+        return new ConfigurableLookup(cfgAdminTracker.getService(), bundleCtx, metaTypeSrvTracker.getService())
+        .lookupConfigurables();
     }
 
 }

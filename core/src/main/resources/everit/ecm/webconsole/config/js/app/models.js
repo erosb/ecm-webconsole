@@ -40,7 +40,15 @@ $(document).ready(function() {
 			});
 		},
 		loadConfiguration: function(onSuccess) {
-			
+			var configAdminPid = this.get("appModel").get("selectedConfigAdmin").get("pid");
+			$.ajax(ecmconfig.rootPath + "/configuration.json?pid="
+					+ this.get("pid")
+					+ "&location=" + this.get("location")
+					+ "&configAdminPid=" + configAdminPid, {
+				type: "GET",
+				dataType: "json",
+				success: onSuccess
+			});
 		}
 	});
 	

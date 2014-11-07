@@ -16,8 +16,6 @@
  */
 package org.everit.osgi.ecm.webconsole.configuration;
 
-import java.util.Map;
-
 import org.json.JSONWriter;
 import org.osgi.service.cm.ConfigurationAdmin;
 
@@ -38,26 +36,12 @@ public class Configurable implements Comparable<Configurable> {
 
     private String bundleName;
 
-    private Map<String, ConfigurableAttribute> attributes;
-
     @Override
     public int compareTo(final Configurable o) {
         return getDisplayedName().compareTo(o.getDisplayedName());
     }
 
-    public Map<String, ConfigurableAttribute> getAttributes() {
-        return attributes;
-    }
-
-    public String getBundleName() {
-        return bundleName;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getDisplayedName() {
+    private String getDisplayedName() {
         if (objectClassName == null) {
             return pid;
         } else {
@@ -65,48 +49,34 @@ public class Configurable implements Comparable<Configurable> {
         }
     }
 
-    public String getFactoryPid() {
-        return factoryPid;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public String getObjectClassName() {
-        return objectClassName;
-    }
-
-    public String getPid() {
-        return pid;
-    }
-
-    public void setAttributes(final Map<String, ConfigurableAttribute> attributes) {
-        this.attributes = attributes;
-    }
-
-    public void setBundleName(final String bundleName) {
+    public Configurable setBundleName(final String bundleName) {
         this.bundleName = bundleName;
+        return this;
     }
 
-    public void setDescription(final String description) {
+    public Configurable setDescription(final String description) {
         this.description = description;
+        return this;
     }
 
-    public void setFactoryPid(final String factoryPid) {
+    public Configurable setFactoryPid(final String factoryPid) {
         this.factoryPid = factoryPid;
+        return this;
     }
 
-    public void setLocation(final String location) {
+    public Configurable setLocation(final String location) {
         this.location = location;
+        return this;
     }
 
-    public void setObjectClassName(final String objectClassName) {
+    public Configurable setObjectClassName(final String objectClassName) {
         this.objectClassName = objectClassName;
+        return this;
     }
 
-    public void setPid(final String pid) {
+    public Configurable setPid(final String pid) {
         this.pid = pid;
+        return this;
     }
 
     public void toJSON(final JSONWriter writer) {

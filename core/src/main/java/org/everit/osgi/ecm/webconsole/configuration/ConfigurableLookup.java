@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -27,26 +28,25 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.metatype.MetaTypeInformation;
 import org.osgi.service.metatype.MetaTypeService;
 import org.osgi.service.metatype.ObjectClassDefinition;
-import org.osgi.util.tracker.ServiceTracker;
 
-public class ConfigurationLookup {
+public class ConfigurableLookup {
 
     private final Map<String, Configurable> configurablesByPid = new HashMap<String, Configurable>();
 
     private final Map<String, Configurable> configurablesByFactoryPid = new HashMap<String, Configurable>();
 
-    private final ServiceTracker<ConfigurationAdmin, ConfigurationAdmin> cfgAdminTracker;
+    private final ConfigurationAdmin configAdmin;
 
     private final BundleContext bundleCtx;
 
-    private final ServiceTracker<MetaTypeService, MetaTypeService> metaTypeSrvTracker;
+    private final MetaTypeService metaTypeService;
 
-    public ConfigurationLookup(final ServiceTracker<ConfigurationAdmin, ConfigurationAdmin> cfgAdminTracker,
-            final BundleContext bundleCtx, final ServiceTracker<MetaTypeService, MetaTypeService> metaTypeSrvTracker) {
+    public ConfigurableLookup(final ConfigurationAdmin configAdmin,
+            final BundleContext bundleCtx, final MetaTypeService metaTypeService) {
         super();
-        this.cfgAdminTracker = cfgAdminTracker;
-        this.bundleCtx = bundleCtx;
-        this.metaTypeSrvTracker = metaTypeSrvTracker;
+        this.configAdmin = Objects.requireNonNull(configAdmin, "configAdmin cannot be null");
+        this.bundleCtx = Objects.requireNonNull(bundleCtx, "bundleCtx cannot be null");
+        this.metaTypeService = Objects.requireNonNull(metaTypeService, "metaTypeService cannot be null");
     }
 
     private Collection<Configurable> collectResults() {
@@ -78,10 +78,8 @@ public class ConfigurationLookup {
     }
 
     public Collection<Configurable> lookupConfigurables() {
-        MetaTypeService metatypeSrv = metaTypeSrvTracker.getService();
-        ConfigurationAdmin configAdmin = cfgAdminTracker.getService();
         for (Bundle bundle : bundleCtx.getBundles()) {
-            MetaTypeInformation metatypeInfo = metatypeSrv.getMetaTypeInformation(bundle);
+            MetaTypeInformation metatypeInfo = metaTypeService.getMetaTypeInformation(bundle);
             if (metatypeInfo == null) {
                 continue;
             }

@@ -92,7 +92,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void doDelete(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-            IOException {
+    IOException {
         String pathInfo = req.getPathInfo();
         if (pathInfo.endsWith("/configuration.json")) {
             String servicePid = req.getParameter("pid");
@@ -106,6 +106,20 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
     @Override
     public String getCategory() {
         return "Everit";
+    }
+
+    private void getConfigForm(final HttpServletResponse resp,
+            final String pid,
+            final String location,
+            final String configAdminPid) {
+        try {
+            JSONWriter writer = new JSONWriter(resp.getWriter());
+            writer.array();
+            configManager.getConfigForm(pid, location, configAdminPid).forEach((attr) -> attr.toJSON(writer));
+            writer.endArray();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -206,7 +220,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void renderContent(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-            IOException {
+    IOException {
         String pathInfo = req.getPathInfo();
         if (isMainPageRequest(pathInfo)) {
             loadMainPage(resp, req.getAttribute("felix.webconsole.pluginRoot").toString());
@@ -217,7 +231,10 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             } else if (pathInfo.endsWith("/managedservices.json")) {
                 listManagedServices(resp);
             } else if (pathInfo.endsWith("/configuration.json")) {
-
+                String pid = req.getParameter("pid");
+                String location = req.getParameter("location");
+                String configAdminPid = req.getParameter("configAdminPid");
+                getConfigForm(resp, pid, location, configAdminPid);
             }
         }
         // metaTypeSrvTracker.getService().getMetaTypeInformation(bundle)
