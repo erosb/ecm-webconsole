@@ -21,9 +21,10 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.json.JSONWriter;
+import org.osgi.service.cm.Configuration;
 import org.osgi.service.metatype.AttributeDefinition;
 
-public class DisplayedAttribute {
+public class DisplayedAttribute implements Comparable<DisplayedAttribute> {
 
     private static final Map<Integer, String> codeToTypeName = new HashMap<>();
 
@@ -57,6 +58,23 @@ public class DisplayedAttribute {
     public DisplayedAttribute addOption(final String label, final Object value) {
         options.put(label, value);
         return this;
+    }
+
+    @Override
+    public int compareTo(final DisplayedAttribute o) {
+        return name.compareTo(o.name);
+    }
+
+    public void fetchValue(final Configuration config) {
+        if (config.getProperties() != null) {
+            Object value = config.getProperties().get(id);
+            if (value != null) {
+                if (value instanceof String) {
+                    setValue((String) value);
+                }
+                System.out.println("found value in config: " + value.getClass().getName() + ": " + value);
+            }
+        }
     }
 
     public DisplayedAttribute setDescription(final String description) {

@@ -45,7 +45,8 @@ public class AttributeLookup {
         this.metaTypeService = Objects.requireNonNull(metaTypeService, "metaTypeSrvTracker cannot be null");
     }
 
-    private DisplayedAttribute createDisplayedAttribute(final AttributeDefinition attrDef, final Configuration config) {
+    private DisplayedAttribute createDisplayedAttribute(final AttributeDefinition attrDef,
+            final Optional<Configuration> config) {
         DisplayedAttribute rval = new DisplayedAttribute();
         rval.setName(attrDef.getName())
                 .setId(attrDef.getID())
@@ -61,16 +62,13 @@ public class AttributeLookup {
         for (int i = 0; i < optionValues.length; ++i) {
             rval.addOption(optionLabels[i], optionValues[i]);
         }
-        Object value = config.getProperties().get(attrDef.getName());
-        if (value != null) {
-            System.out.println("found value in config: " + value.getClass().getName() + ": " + value);
-        }
+        config.ifPresent(rval::fetchValue);
         return rval;
     }
 
     public Collection<DisplayedAttribute> lookupForService(final String servicePid, final String location) {
         try {
-            Configuration config = configAdmin.getConfiguration(servicePid, location);
+            Optional<Configuration> config = Optional.ofNullable(configAdmin.getConfiguration(servicePid, location));
             AttributeDefinition[] attrDefs = Arrays.stream(bundleCtx.getBundles())
                     .map(metaTypeService::getMetaTypeInformation)
                     .filter((metatypeInfo) ->
@@ -81,6 +79,7 @@ public class AttributeLookup {
                     .getObjectClassDefinition(servicePid, null).getAttributeDefinitions(ObjectClassDefinition.ALL);
             return Arrays.stream(attrDefs)
                     .map((attrDef) -> createDisplayedAttribute(attrDef, config))
+                    .sorted()
                     .collect(Collectors.toList());
         } catch (IOException e) {
             throw new RuntimeException(e);
