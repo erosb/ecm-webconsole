@@ -27,7 +27,28 @@ $(document).ready(function() {
 		model: ConfigAdminModel
 	});
 	
+	var AttributeModel = ecmconfig.AttributeModel = Backbone.Model.extend({
+		name: null,
+		description: null,
+		value: null,
+		type: null
+	});
+	
+	var AttributeList = ecmconfig.AttributeList = Backbone.Collection.extend({
+		model: AttributeModel
+	});
+	
 	var ManagedServiceModel = ecmconfig.ManagedServiceModel = Backbone.Model.extend({
+		initialize: function() {
+			this.set("attributes", new AttributeList());
+		},
+		name: null,
+		bundleName: null,
+		description: null,
+		location: null,
+		pid: null,
+		factoryPid: null,
+		attributes: new AttributeList(),
 		deleteConfig: function(onSuccess) {
 			var configAdminPid = this.get("appModel").get("selectedConfigAdmin").get("pid");
 			$.ajax(ecmconfig.rootPath + "/configuration.json?pid="
@@ -40,6 +61,7 @@ $(document).ready(function() {
 			});
 		},
 		loadConfiguration: function(onSuccess) {
+			var self = this;
 			var configAdminPid = this.get("appModel").get("selectedConfigAdmin").get("pid");
 			$.ajax(ecmconfig.rootPath + "/configuration.json?pid="
 					+ this.get("pid")
@@ -47,7 +69,15 @@ $(document).ready(function() {
 					+ "&configAdminPid=" + configAdminPid, {
 				type: "GET",
 				dataType: "json",
-				success: onSuccess
+				success: function(data) {
+					var newAttributes = [];
+					data.forEach(function(rawAttr) {
+						newAttributes.push(new AttributeModel(rawAttr));
+					});
+					var attrList = self.get("attributes");
+					attrList.reset(newAttributes);
+					onSuccess(attrList);
+				}
 			});
 		}
 	});

@@ -21,10 +21,51 @@ $(document).ready(function() {
 		return _.template($("#" + templateId).text());
 	}
 	
-	var ConfigurationView = ecmconfig.ConfigurationView = Backbone.View.extend({
+	var SingularPrimitiveAttributeView = ecmconfig.SingularPrimitiveAttributeView = Backbone.View.extend({
+		tagName: "tr",
+		getRenderedValue: function() {
+			var valueArr = this.model.get("value");
+			if (valueArr == undefined || valueArr.length === 0) {
+				return "";
+			}
+			return valueArr[0];
+		},
+		render: function() {
+			this.$el.empty().append(loadTemplate("tmpl-singular-text-attribute")({
+				model: this.model,
+				renderedValue: this.getRenderedValue()
+			}));
+			return this.$el;
+		}
+	});
+	
+	/**
+	 * Factory function for creating input rows for the given configurable attribute 
+	 */
+	function createViewForAttribute(attrModel) {
+		var type = attrModel.get("type");
+		if (type.maxOccurences === 0) {
+			return new SingularPrimitiveAttributeView({model: attrModel});
+		}
+		throw new Error("unsupported type: " + JSON.stringify(type));
+	}
+	
+	var AttributeListView = ecmconfig.AttributeListView = Backbone.View.extend({
 		tagName: "div",
 		attributes: {
 			title: "Configuration"
+		},
+		render: function() {
+			var $el = this.$el;
+			$el.attr("title", "Configuration of " + this.model.get("name"));
+			$el.empty().html(loadTemplate("tmpl-attribute-list")({service: this.model}));
+			var $tbody = $el.find("tbody")
+			this.model.get("attributes").forEach(function(attr) {
+				$tbody.append(createViewForAttribute(attr).render());
+			});
+			$el.dialog({
+				modal: true
+			});
 		}
 	});
 	
@@ -55,8 +96,9 @@ $(document).ready(function() {
 			});
 		},
 		displayConfig: function() {
-			this.model.loadConfiguration(function () {
-				
+			var model = this.model;
+			model.loadConfiguration(function (attrList) {
+				new AttributeListView({model: model}).render();
 			});
 		},
 		render: function() {

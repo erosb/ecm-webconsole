@@ -18,6 +18,7 @@ package org.everit.osgi.ecm.webconsole.configuration;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -54,6 +55,7 @@ public class ConfigurableLookup {
                 + configurablesByFactoryPid.size());
         rval.addAll(configurablesByPid.values());
         rval.addAll(configurablesByFactoryPid.values());
+        Collections.sort(rval);
         return rval;
     }
 

@@ -53,6 +53,23 @@ td.managedservice-name {
 	</div>
 </script>
 
+<script type="text/template" id="tmpl-singular-text-attribute">
+	<td><%= model.get("name") %></td>
+	<td><input type="text" class="ui-state-default ui-corner-all" value="<%= renderedValue %>" /></td>
+</script>
+
+<script type="text/template" id="tmpl-attribute-list">
+	<div>
+		<p class="config-description"><%= service.get("description") %></p>
+		<table>
+			<tbody>
+
+			</tbody>
+		</table>
+		<p>Service PID: <%= service.get("pid") %></p>
+	</div>
+</script>
+
 <script type="text/template" id="tmpl-managed-service-row">
 		<td class="managedservice-name"><%= service.get("name") %></td>
 		<td><%= service.get("bundleName") %></td>

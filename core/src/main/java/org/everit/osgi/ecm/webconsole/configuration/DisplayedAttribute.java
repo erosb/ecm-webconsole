@@ -19,6 +19,7 @@ package org.everit.osgi.ecm.webconsole.configuration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.json.JSONWriter;
 import org.osgi.service.cm.Configuration;
@@ -118,7 +119,8 @@ public class DisplayedAttribute implements Comparable<DisplayedAttribute> {
         writer.value(name);
         writer.key("description");
         writer.value(description);
-        // TODO value
+        writer.key("value");
+        valueToJSON(writer);
         writer.key("type");
         typeToJSON(writer);
         writer.endObject();
@@ -140,6 +142,14 @@ public class DisplayedAttribute implements Comparable<DisplayedAttribute> {
             writer.endObject();
         }
         writer.endObject();
+    }
+
+    private void valueToJSON(final JSONWriter writer) {
+        writer.array();
+        for (String value : Optional.ofNullable(this.value).orElse(new String[0])) {
+            writer.value(value);
+        }
+        writer.endArray();
     }
 
 }
