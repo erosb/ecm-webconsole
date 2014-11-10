@@ -99,6 +99,7 @@ public class DisplayedAttribute implements Comparable<DisplayedAttribute> {
     }
 
     public DisplayedAttribute setType(final int type) {
+        System.out.println("setting type of [" + name + "] to " + type + " = " + codeToTypeName.get(type));
         Objects.requireNonNull(this.type = codeToTypeName.get(type), "type not found by code " + type);
         return this;
     }

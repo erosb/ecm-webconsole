@@ -24,8 +24,9 @@ import org.apache.felix.scr.annotations.Service;
 
 @Component(name = "org.everit.osgi.ecm.webconsole.tests", metatype = true, policy = ConfigurationPolicy.REQUIRE)
 @Properties({
-        @Property(name = "stringProp", label = "string property", description = "description of string property"),
-        @Property(name = "intProp", label = "int property", description = "int property")
+    @Property(name = "stringProp", label = "string property", description = "description of string property"),
+    @Property(name = "intProp", label = "int property", description = "int property"),
+    @Property(name = "flag", label = "flag", description = "boolean flag")
 })
 @Service(TestComponent.class)
 public class TestComponent {
@@ -34,12 +35,22 @@ public class TestComponent {
 
     private int intProp;
 
+    private boolean flag;
+
     public int getIntProp() {
         return intProp;
     }
 
     public String getStringProp() {
         return stringProp;
+    }
+
+    public boolean isFlag() {
+        return flag;
+    }
+
+    public void setFlag(final boolean flag) {
+        this.flag = flag;
     }
 
     public void setIntProp(final int intProp) {
