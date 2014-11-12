@@ -24,21 +24,32 @@ import org.apache.felix.scr.annotations.Service;
 
 @Component(name = "org.everit.osgi.ecm.webconsole.tests", metatype = true, policy = ConfigurationPolicy.REQUIRE)
 @Properties({
-    @Property(name = "stringProp", label = "string property", description = "description of string property"),
-    @Property(name = "intProp", label = "int property", description = "int property"),
-    @Property(name = "flag", label = "flag", description = "boolean flag")
+    @Property(name = "stringProp", label = "string property", description = "description of string property",
+                value = "default value"),
+            @Property(name = "intProp", label = "int property", description = "int property", intValue = 42),
+            @Property(name = "flag", label = "flag", description = "boolean flag", boolValue = true),
+            @Property(name = "passwordProp", label = "password property", passwordValue = "secret"),
+            @Property(name = "someStrings", label = "some strings", value = { "asd", "bsd" })
 })
 @Service(TestComponent.class)
 public class TestComponent {
 
     private String stringProp;
 
+    private String passwordProp;
+
     private int intProp;
 
     private boolean flag;
 
+    private String[] someStrings;
+
     public int getIntProp() {
         return intProp;
+    }
+
+    public String getPasswordProp() {
+        return passwordProp;
     }
 
     public String getStringProp() {
@@ -55,6 +66,10 @@ public class TestComponent {
 
     public void setIntProp(final int intProp) {
         this.intProp = intProp;
+    }
+
+    public void setPasswordProp(final String passwordProp) {
+        this.passwordProp = passwordProp;
     }
 
     public void setStringProp(final String stringProp) {

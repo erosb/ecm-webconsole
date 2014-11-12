@@ -22,7 +22,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.json.JSONWriter;
-import org.osgi.service.cm.Configuration;
 import org.osgi.service.metatype.AttributeDefinition;
 
 public class DisplayedAttribute implements Comparable<DisplayedAttribute> {
@@ -66,15 +65,15 @@ public class DisplayedAttribute implements Comparable<DisplayedAttribute> {
         return name.compareTo(o.name);
     }
 
-    public void fetchValue(final Configuration config) {
-        if (config.getProperties() != null) {
-            Object value = config.getProperties().get(id);
-            if (value != null) {
-                if (value instanceof String) {
-                    setValue((String) value);
-                }
-                System.out.println("found value in config: " + value.getClass().getName() + ": " + value);
+    private void optionsToJSON(final JSONWriter writer) {
+        if (!options.isEmpty()) {
+            writer.key("options");
+            writer.object();
+            for (String key : options.keySet()) {
+                writer.key(key);
+                writer.value(options.get(key));
             }
+            writer.endObject();
         }
     }
 
@@ -101,6 +100,17 @@ public class DisplayedAttribute implements Comparable<DisplayedAttribute> {
     public DisplayedAttribute setType(final int type) {
         System.out.println("setting type of [" + name + "] to " + type + " = " + codeToTypeName.get(type));
         Objects.requireNonNull(this.type = codeToTypeName.get(type), "type not found by code " + type);
+        return this;
+    }
+
+    public DisplayedAttribute setValue(final Object value) {
+        if (value != null) {
+            if (value instanceof String) {
+                setValue((String) value);
+            } else if (value instanceof String[]) {
+                setValue((String[]) value);
+            }
+        }
         return this;
     }
 
@@ -132,16 +142,12 @@ public class DisplayedAttribute implements Comparable<DisplayedAttribute> {
         writer.key("baseType");
         writer.value(type);
         writer.key("maxOccurences");
-        writer.value(maxOccurences);
-        if (!options.isEmpty()) {
-            writer.key("options");
-            writer.object();
-            for (String key : options.keySet()) {
-                writer.key(key);
-                writer.value(options.get(key));
-            }
-            writer.endObject();
+        if (maxOccurences == Integer.MIN_VALUE || maxOccurences == Integer.MAX_VALUE) {
+            writer.value("unbound");
+        } else {
+            writer.value(maxOccurences);
         }
+        optionsToJSON(writer);
         writer.endObject();
     }
 

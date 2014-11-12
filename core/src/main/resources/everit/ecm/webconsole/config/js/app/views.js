@@ -21,8 +21,37 @@ $(document).ready(function() {
 		return _.template($("#" + templateId).text());
 	}
 	
-	var SingularPrimitiveAttributeView = ecmconfig.SingularPrimitiveAttributeView = Backbone.View.extend({
-		tagName: "tr",
+	var SingularCheckboxAttributeView = Backbone.View.extend({
+		tagName: "input",
+		attributes: {
+			type: "checkbox"
+		},
+		getCheckboxValue: function() {
+			var valueArr = this.model.get("value");
+			if (valueArr == undefined || valueArr.length === 0) {
+				return false;
+			}
+			return !!valueArr[0];
+		},
+		render: function() {
+			this.$el.prop("checked", this.getCheckboxValue());
+			return this.$el;
+		}
+	});
+	
+	var UnboundPrimitiveAttributeView = Backbone.View.extend({
+		tagName: "div",
+		render: function() {
+			
+			return this.$el;
+		}
+	});
+	
+	var SingularPrimitiveAttributeView = Backbone.View.extend({
+		initialize: function(options) {
+			this.inputType = options.inputType;
+		},
+		tagName: "input",
 		getRenderedValue: function() {
 			var valueArr = this.model.get("value");
 			if (valueArr == undefined || valueArr.length === 0) {
@@ -31,10 +60,7 @@ $(document).ready(function() {
 			return valueArr[0];
 		},
 		render: function() {
-			this.$el.empty().append(loadTemplate("tmpl-singular-text-attribute")({
-				model: this.model,
-				renderedValue: this.getRenderedValue()
-			}));
+			this.$el.attr("value", this.getRenderedValue()).attr("type", this.inputType);
 			return this.$el;
 		}
 	});
@@ -45,7 +71,14 @@ $(document).ready(function() {
 	function createViewForAttribute(attrModel) {
 		var type = attrModel.get("type");
 		if (type.maxOccurences === 0) {
-			return new SingularPrimitiveAttributeView({model: attrModel});
+			if (type.baseType === "boolean") {
+				return new SingularCheckboxAttributeView({model: attrModel});
+			} else {
+				var inputType = type.baseType === "password" ? "password" : "text";
+				return new SingularPrimitiveAttributeView({model: attrModel, inputType: inputType});
+			}
+		} else if (type.maxOccurences === "unbound") {
+			return new UnboundPrimitiveAttributeView({model: attrModel});
 		}
 		throw new Error("unsupported type: " + JSON.stringify(type));
 	}
@@ -61,7 +94,9 @@ $(document).ready(function() {
 			$el.empty().html(loadTemplate("tmpl-attribute-list")({service: this.model}));
 			var $tbody = $el.find("tbody")
 			this.model.get("attributes").forEach(function(attr) {
-				$tbody.append(createViewForAttribute(attr).render());
+				var $frame = $(loadTemplate("tmpl-attribute-frame")({model: attr}));
+				$frame.find("td:eq(1)").append(createViewForAttribute(attr).render());
+				$tbody.append($frame);
 			});
 			$el.dialog({
 				modal: true

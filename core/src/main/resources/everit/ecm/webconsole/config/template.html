@@ -37,6 +37,11 @@
 td.managedservice-name {
 	cursor: pointer;
 }
+
+.description {
+	color: gray;
+	font-size: 90%;
+}
 </style>
 
 <script type="text/template" id="tmpl-config-admin-list">
@@ -53,14 +58,26 @@ td.managedservice-name {
 	</div>
 </script>
 
+<script type="text/template" id="tmpl-attribute-frame">
+	<tr>
+		<td>
+			<%- model.get("name") %>
+			<div class="description"><%- model.get("description") %></div>
+		</td>
+		<td>
+			
+		</td>
+	</tr>
+</script>
+
 <script type="text/template" id="tmpl-singular-text-attribute">
 	<td><%= model.get("name") %></td>
-	<td><input type="text" class="ui-state-default ui-corner-all" value="<%= renderedValue %>" /></td>
+	<td><input type="text" class="ui-state-default ui-corner-all" value="<%- renderedValue %>" /></td>
 </script>
 
 <script type="text/template" id="tmpl-attribute-list">
 	<div>
-		<p class="config-description"><%= service.get("description") %></p>
+		<p class="description"><%= service.get("description") %></p>
 		<table>
 			<tbody>
 

@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.osgi.framework.BundleContext;
@@ -31,6 +32,8 @@ import org.osgi.service.metatype.MetaTypeService;
 import org.osgi.service.metatype.ObjectClassDefinition;
 
 public class AttributeLookup {
+
+    private static final Supplier<String[]> emptyStringArr = () -> new String[0];
 
     private final ConfigurationAdmin configAdmin;
 
@@ -48,13 +51,14 @@ public class AttributeLookup {
     private DisplayedAttribute createDisplayedAttribute(final AttributeDefinition attrDef,
             final Optional<Configuration> config) {
         DisplayedAttribute rval = new DisplayedAttribute();
+        String attributeId = attrDef.getID();
         rval.setName(attrDef.getName())
-                .setId(attrDef.getID())
+                .setId(attributeId)
                 .setDescription(attrDef.getDescription())
                 .setType(attrDef.getType())
                 .setMaxOccurences(attrDef.getCardinality());
-        String[] optionValues = Optional.ofNullable(attrDef.getOptionValues()).orElse(new String[0]);
-        String[] optionLabels = Optional.ofNullable(attrDef.getOptionLabels()).orElse(new String[0]);
+        String[] optionValues = Optional.ofNullable(attrDef.getOptionValues()).orElseGet(emptyStringArr);
+        String[] optionLabels = Optional.ofNullable(attrDef.getOptionLabels()).orElseGet(emptyStringArr);
         if (optionValues.length != optionLabels.length) {
             throw new IllegalArgumentException("attribute definition has " + optionValues.length
                     + " option values but " + optionLabels.length + " option label");
@@ -62,8 +66,12 @@ public class AttributeLookup {
         for (int i = 0; i < optionValues.length; ++i) {
             rval.addOption(optionLabels[i], optionValues[i]);
         }
-        config.ifPresent(rval::fetchValue);
+        rval.setValue(getValueFromConfig(config, attributeId).orElse(attrDef.getDefaultValue()));
         return rval;
+    }
+
+    private Optional<Object> getValueFromConfig(final Optional<Configuration> config, final String attributeId) {
+        return config.map((cfg) -> cfg.getProperties() == null ? null : cfg.getProperties().get(attributeId));
     }
 
     public Collection<DisplayedAttribute> lookupForService(final String servicePid, final String location) {
