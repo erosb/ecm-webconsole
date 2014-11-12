@@ -22,27 +22,50 @@ $(document).ready(function() {
 	}
 	
 	var SingularCheckboxAttributeView = Backbone.View.extend({
+		initialize: function(options) {
+			this.value = !!options.value;
+		},
 		tagName: "input",
 		attributes: {
 			type: "checkbox"
 		},
-		getCheckboxValue: function() {
-			var valueArr = this.model.get("value");
-			if (valueArr == undefined || valueArr.length === 0) {
-				return false;
-			}
-			return !!valueArr[0];
-		},
 		render: function() {
-			this.$el.prop("checked", this.getCheckboxValue());
+			this.$el.prop("checked", this.value);
+			var self = this;
+			this.$el.on("change", function() {
+				self.trigger("change", self.$el.prop("checked"));
+			});
 			return this.$el;
 		}
 	});
 	
 	var UnboundPrimitiveAttributeView = Backbone.View.extend({
-		tagName: "div",
+		initialize: function() {
+			this.subviews = [];
+			this.listenTo(this.model, "change:value", this.render);
+		},
+		tagName: "ul",
+		events : {
+			"click [type=button]" : "buttonClicked"
+		},
+		buttonClicked: function() {
+			var valueArr = this.model.get("value").slice(0);
+			valueArr.push("");
+			this.model.set("value", valueArr);
+		},
 		render: function() {
-			
+			this.subviews = [];
+			this.$el.empty();
+			var values = this.model.get("value");
+			values.forEach(function(value, index){
+				var entryView = createViewForSingularAttribute(this.model, value);
+				entryView.on("change", function(newValue) {
+					values[index] = newValue;
+				});
+				this.subviews.push(entryView);
+				$("<li></li>").appendTo(this.$el).append(entryView.render());
+			}, this);
+			this.$el.append("<li><input type='button' value='new entry'/></li>");
 			return this.$el;
 		}
 	});
@@ -50,20 +73,41 @@ $(document).ready(function() {
 	var SingularPrimitiveAttributeView = Backbone.View.extend({
 		initialize: function(options) {
 			this.inputType = options.inputType;
+			this.value = options.value;
 		},
 		tagName: "input",
-		getRenderedValue: function() {
-			var valueArr = this.model.get("value");
-			if (valueArr == undefined || valueArr.length === 0) {
-				return "";
-			}
-			return valueArr[0];
-		},
+		className: "ui-state-default ui-corner-all",
 		render: function() {
-			this.$el.attr("value", this.getRenderedValue()).attr("type", this.inputType);
+			var self = this;
+			this.$el.attr("value", this.value).attr("type", this.inputType);
+			this.$el.on("change", function() {
+				self.trigger("change", self.el.value);
+			})
 			return this.$el;
 		}
 	});
+	
+	function getPrimitiveValue(valueArr) {
+		if (valueArr == undefined || valueArr.length === 0) {
+			return "";
+		}
+		return valueArr[0];
+	}
+	
+	function createViewForSingularAttribute(attrModel, value) {
+		var type = attrModel.get("type");
+		if (type.baseType === "boolean") {
+			return new SingularCheckboxAttributeView({
+				value: value
+			});
+		} else {
+			var inputType = type.baseType === "password" ? "password" : "text";
+			return new SingularPrimitiveAttributeView({
+				value: value,
+				inputType: inputType
+			});
+		}
+	}
 	
 	/**
 	 * Factory function for creating input rows for the given configurable attribute 
@@ -71,12 +115,7 @@ $(document).ready(function() {
 	function createViewForAttribute(attrModel) {
 		var type = attrModel.get("type");
 		if (type.maxOccurences === 0) {
-			if (type.baseType === "boolean") {
-				return new SingularCheckboxAttributeView({model: attrModel});
-			} else {
-				var inputType = type.baseType === "password" ? "password" : "text";
-				return new SingularPrimitiveAttributeView({model: attrModel, inputType: inputType});
-			}
+			return createViewForSingularAttribute(attrModel, getPrimitiveValue(attrModel.get("value")));
 		} else if (type.maxOccurences === "unbound") {
 			return new UnboundPrimitiveAttributeView({model: attrModel});
 		}

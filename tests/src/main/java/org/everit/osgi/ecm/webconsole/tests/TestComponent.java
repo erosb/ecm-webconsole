@@ -24,12 +24,12 @@ import org.apache.felix.scr.annotations.Service;
 
 @Component(name = "org.everit.osgi.ecm.webconsole.tests", metatype = true, policy = ConfigurationPolicy.REQUIRE)
 @Properties({
-    @Property(name = "stringProp", label = "string property", description = "description of string property",
-                value = "default value"),
-            @Property(name = "intProp", label = "int property", description = "int property", intValue = 42),
-            @Property(name = "flag", label = "flag", description = "boolean flag", boolValue = true),
-            @Property(name = "passwordProp", label = "password property", passwordValue = "secret"),
-            @Property(name = "someStrings", label = "some strings", value = { "asd", "bsd" })
+        @Property(name = "stringProp", label = "string property", description = "description of string property",
+            value = "default value"),
+        @Property(name = "intProp", label = "int property", description = "int property", intValue = 42),
+        @Property(name = "flag", label = "flag", description = "boolean flag", boolValue = true),
+        @Property(name = "passwordProp", label = "password property", passwordValue = "secret"),
+        @Property(name = "someStrings", label = "some strings", value = { "asd", "bsd", "foo", "bar" })
 })
 @Service(TestComponent.class)
 public class TestComponent {
