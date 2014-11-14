@@ -35,6 +35,18 @@ $(document).ready(function() {
 	$("#cnt-main").append(managedServiceListView.render());
 	
 	appModel.refreshConfigAdminList();
+	
+	var ConfigRouter = Backbone.Router.extend({
+		":configAdminPid" : "showConfigAdmin" 
+	});
+	
+	ecmconfig.router = new ConfigRouter();
+	
+	Backbone.history.start({
+		pushState: true,
+		root: ecmconfig.rootPath
+	});
+	
 	appModel.refreshManagedServiceList();
 	
 })(window.ecmconfig);

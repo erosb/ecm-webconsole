@@ -31,7 +31,11 @@ $(document).ready(function() {
 		name: null,
 		description: null,
 		value: null,
-		type: null
+		type: null,
+		hasOptions: function() {
+			var options = this.get("type").options; 
+			return options !== undefined;
+		}
 	});
 	
 	var AttributeList = ecmconfig.AttributeList = Backbone.Collection.extend({
@@ -91,6 +95,7 @@ $(document).ready(function() {
 			var configAdminList = new ConfigAdminList();
 			configAdminList.on("reset", this.configAdminListChanged, this);
 			this.set("configAdminList", configAdminList);
+			this.on("change:selectedConfigAdmin", this.selectedConfigAdminChanged, this);
 		},
 		configAdminListChanged: function() {
 			var configAdminList = this.get("configAdminList");
@@ -103,11 +108,13 @@ $(document).ready(function() {
 				this.set("selectedConfigAdmin", selectedConfigAdmin);
 			}
 		},
+		selectedConfigAdminChanged: function() {
+			ecmconfig.router.navigate(this.get("selectedConfigAdmin").get("pid"));
+		},
 		managedServiceList: null,
 		configAdminList: new ConfigAdminList(),
-		selectedConfigAdminPid: null,
 		selectedConfigAdmin: null,
-		refreshConfigAdminList: function() {
+		refreshConfigAdminList: function(onReady) {
 			var self = this;
 			$.getJSON(ecmconfig.rootPath + "/configadmin.json", function(data) {
 				var newList = [];

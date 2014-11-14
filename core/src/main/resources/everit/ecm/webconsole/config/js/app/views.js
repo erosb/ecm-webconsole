@@ -21,24 +21,6 @@ $(document).ready(function() {
 		return _.template($("#" + templateId).text());
 	}
 	
-	var SingularCheckboxAttributeView = Backbone.View.extend({
-		initialize: function(options) {
-			this.value = !!options.value;
-		},
-		tagName: "input",
-		attributes: {
-			type: "checkbox"
-		},
-		render: function() {
-			this.$el.prop("checked", this.value);
-			var self = this;
-			this.$el.on("change", function() {
-				self.trigger("change", self.$el.prop("checked"));
-			});
-			return this.$el;
-		}
-	});
-	
 	var UnboundPrimitiveAttributeView = Backbone.View.extend({
 		initialize: function() {
 			this.subviews = [];
@@ -66,9 +48,29 @@ $(document).ready(function() {
 				$("<li></li>").appendTo(this.$el).append(entryView.render());
 			}, this);
 			this.$el.append("<li><input type='button' value='new entry'/></li>");
+			this.$el.sortable();
 			return this.$el;
 		}
 	});
+	
+	var SingularCheckboxAttributeView = Backbone.View.extend({
+		initialize: function(options) {
+			this.value = !!options.value;
+		},
+		tagName: "input",
+		attributes: {
+			type: "checkbox"
+		},
+		render: function() {
+			this.$el.prop("checked", this.value);
+			var self = this;
+			this.$el.on("change", function() {
+				self.trigger("change", self.$el.prop("checked"));
+			});
+			return this.$el;
+		}
+	});
+	
 	
 	var SingularPrimitiveAttributeView = Backbone.View.extend({
 		initialize: function(options) {
@@ -87,6 +89,38 @@ $(document).ready(function() {
 		}
 	});
 	
+	var SingularSelectAttributeView = Backbone.View.extend({
+		initialize: function(options) {
+			this.options = options.options;
+			this.value = options.value;
+		},
+		tagName: "select",
+		className: "ui-state-default ui-corner-all",
+		events: {
+			"change" : "triggerChange"
+		},
+		triggerChange: function() {
+			console.log(this, "change", this.el.value);
+			this.trigger("change", this.el.value);
+		},
+		render: function() {
+			this.$el.empty();
+			console.log("itt", this.options)
+			for (var optValue in this.options) {
+				var name = this.options[optValue];
+				var optElem = document.createElement("option");
+				optElem.setAttribute("value", optValue);
+				if (optValue == this.value) {
+					console.log("found")
+					optElem.setAttribute("selected", true);
+				}
+				optElem.innerHTML = name;
+				this.$el.append(optElem);
+			}
+			return this.$el;
+		}
+	});
+	
 	function getPrimitiveValue(valueArr) {
 		if (valueArr == undefined || valueArr.length === 0) {
 			return "";
@@ -101,6 +135,12 @@ $(document).ready(function() {
 				value: value
 			});
 		} else {
+			if (attrModel.hasOptions()) {
+				return new SingularSelectAttributeView({
+					value: value,
+					options: type.options 
+				}); 
+			}
 			var inputType = type.baseType === "password" ? "password" : "text";
 			return new SingularPrimitiveAttributeView({
 				value: value,
