@@ -53,6 +53,36 @@ $(document).ready(function() {
 		}
 	});
 	
+	var CheckboxListView = Backbone.View.extend({
+		initialize: function(options) {
+			this.values = options.values;
+		},
+		tagName: "div",
+		render: function() {
+			var self = this;
+			var options = this.model.get("type").options;
+			for (var text in options) {
+				var value = options[text];
+				var $checkbox = $('<input type="checkbox" value="' + value + '"/>');
+				$checkbox.on("change", (function(value) {
+					return function() {
+					var values = self.values;
+					var idx = values.indexOf(value);
+					if (idx > -1) {
+						values.splice(idx, 1);
+						//delete values[idx];
+					} else {
+						values.push(value);
+					}
+					console.log(self.values)
+					};
+				})(value));
+				this.$el.append($checkbox).append(text).append("<br>");
+			}
+			return this.$el;
+		}
+	});
+	
 	var SingularCheckboxAttributeView = Backbone.View.extend({
 		initialize: function(options) {
 			this.value = !!options.value;
@@ -105,7 +135,6 @@ $(document).ready(function() {
 		},
 		render: function() {
 			this.$el.empty();
-			console.log("itt", this.options)
 			for (var optValue in this.options) {
 				var name = this.options[optValue];
 				var optElem = document.createElement("option");
@@ -130,17 +159,23 @@ $(document).ready(function() {
 	
 	function createViewForSingularAttribute(attrModel, value) {
 		var type = attrModel.get("type");
+		if (attrModel.hasOptions()) {
+			if (type.maxOccurences == 0) {
+				return new SingularSelectAttributeView({
+					value: value,
+					options: type.options 
+				});
+			} else if (type.maxOccurences === "unbound") {
+				return new SingularCheckboxAttributeView({
+					value: false
+				});
+			}
+		}
 		if (type.baseType === "boolean") {
 			return new SingularCheckboxAttributeView({
 				value: value
 			});
 		} else {
-			if (attrModel.hasOptions()) {
-				return new SingularSelectAttributeView({
-					value: value,
-					options: type.options 
-				}); 
-			}
 			var inputType = type.baseType === "password" ? "password" : "text";
 			return new SingularPrimitiveAttributeView({
 				value: value,
@@ -157,7 +192,13 @@ $(document).ready(function() {
 		if (type.maxOccurences === 0) {
 			return createViewForSingularAttribute(attrModel, getPrimitiveValue(attrModel.get("value")));
 		} else if (type.maxOccurences === "unbound") {
-			return new UnboundPrimitiveAttributeView({model: attrModel});
+			if (attrModel.hasOptions()) {
+				return new CheckboxListView({model: attrModel,
+					values: attrModel.get("value")
+				});
+			} else {
+				return new UnboundPrimitiveAttributeView({model: attrModel});
+			}
 		}
 		throw new Error("unsupported type: " + JSON.stringify(type));
 	}
@@ -178,7 +219,8 @@ $(document).ready(function() {
 				$tbody.append($frame);
 			});
 			$el.dialog({
-				modal: true
+				modal: true,
+				width: "80%"
 			});
 		}
 	});

@@ -35,7 +35,13 @@ import org.apache.felix.scr.annotations.Service;
                     @PropertyOption(name = "name1", value = "value1"),
                     @PropertyOption(name = "name2", value = "value2"),
                     @PropertyOption(name = "name3", value = "value3")
-            }, value = { "value3" })
+            }, value = { "value3" }),
+            @Property(name = "checkbox list", label = "checkboxlist", options = {
+                    @PropertyOption(name = "optionname1", value = "optionvalue1"),
+                    @PropertyOption(name = "optionname2", value = "optionvalue2"),
+                    @PropertyOption(name = "optionname3", value = "optionvalue3"),
+                    @PropertyOption(name = "optionname4", value = "optionvalue4")
+            }, boolValue = { false, true, false, true })
 })
 @Service(TestComponent.class)
 public class TestComponent {
