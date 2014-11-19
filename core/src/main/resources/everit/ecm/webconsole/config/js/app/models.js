@@ -64,6 +64,9 @@ $(document).ready(function() {
 				success: onSuccess
 			});
 		},
+		saveConfiguration: function() {
+			console.log("saving ", this.toJSON());
+		},
 		loadConfiguration: function(onSuccess) {
 			var self = this;
 			var configAdminPid = this.get("appModel").get("selectedConfigAdmin").get("pid");

@@ -64,18 +64,17 @@ $(document).ready(function() {
 			for (var text in options) {
 				var value = options[text];
 				var $checkbox = $('<input type="checkbox" value="' + value + '"/>');
-				$checkbox.on("change", (function(value) {
-					return function() {
-					var values = self.values;
-					var idx = values.indexOf(value);
-					if (idx > -1) {
-						values.splice(idx, 1);
-						//delete values[idx];
-					} else {
-						values.push(value);
-					}
-					console.log(self.values)
-					};
+				$checkbox.prop("checked", self.values.indexOf(value) > -1)
+					.on("change", (function(value) {
+						return function() {
+							var values = self.values;
+							var idx = values.indexOf(value);
+							if (idx > -1) {
+								values.splice(idx, 1);
+							} else {
+								values.push(value);
+							}
+						};
 				})(value));
 				this.$el.append($checkbox).append(text).append("<br>");
 			}
@@ -130,7 +129,6 @@ $(document).ready(function() {
 			"change" : "triggerChange"
 		},
 		triggerChange: function() {
-			console.log(this, "change", this.el.value);
 			this.trigger("change", this.el.value);
 		},
 		render: function() {
@@ -140,7 +138,6 @@ $(document).ready(function() {
 				var optElem = document.createElement("option");
 				optElem.setAttribute("value", optValue);
 				if (optValue == this.value) {
-					console.log("found")
 					optElem.setAttribute("selected", true);
 				}
 				optElem.innerHTML = name;
@@ -190,7 +187,11 @@ $(document).ready(function() {
 	function createViewForAttribute(attrModel) {
 		var type = attrModel.get("type");
 		if (type.maxOccurences === 0) {
-			return createViewForSingularAttribute(attrModel, getPrimitiveValue(attrModel.get("value")));
+			var rval = createViewForSingularAttribute(attrModel, getPrimitiveValue(attrModel.get("value")));
+			rval.on("change", function(value) {
+				attrModel.set("value", [value]);
+			});
+			return rval;
 		} else if (type.maxOccurences === "unbound") {
 			if (attrModel.hasOptions()) {
 				return new CheckboxListView({model: attrModel,
@@ -218,9 +219,15 @@ $(document).ready(function() {
 				$frame.find("td:eq(1)").append(createViewForAttribute(attr).render());
 				$tbody.append($frame);
 			});
+			var model = this.model;
 			$el.dialog({
 				modal: true,
-				width: "80%"
+				width: "80%",
+				buttons: {
+					"Save" : function() {
+						model.saveConfiguration();
+					}
+				}
 			});
 		}
 	});
