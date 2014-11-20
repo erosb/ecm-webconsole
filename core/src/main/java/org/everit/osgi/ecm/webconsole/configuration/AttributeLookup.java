@@ -28,6 +28,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.metatype.AttributeDefinition;
+import org.osgi.service.metatype.MetaTypeInformation;
 import org.osgi.service.metatype.MetaTypeService;
 import org.osgi.service.metatype.ObjectClassDefinition;
 
@@ -77,11 +78,13 @@ public class AttributeLookup {
     public Collection<DisplayedAttribute> lookupForService(final String servicePid, final String location) {
         try {
             Optional<Configuration> config = Optional.ofNullable(configAdmin.getConfiguration(servicePid, location));
-            AttributeDefinition[] attrDefs = Arrays.stream(bundleCtx.getBundles())
+            AttributeDefinition[] attrDefs = Arrays
+                    .stream(bundleCtx.getBundles())
                     .map(metaTypeService::getMetaTypeInformation)
-                    .filter((metatypeInfo) ->
-                            metatypeInfo != null && metatypeInfo.getPids() != null
-                                    && Arrays.asList(metatypeInfo.getPids()).contains(servicePid))
+                    .filter((metatypeInfo) -> Optional.ofNullable(metatypeInfo)
+                            .map(MetaTypeInformation::getPids)
+                            .map(Arrays::asList)
+                            .filter((list) -> list.contains(servicePid)).isPresent())
                     .findFirst()
                     .orElseThrow(IllegalStateException::new)
                     .getObjectClassDefinition(servicePid, null).getAttributeDefinitions(ObjectClassDefinition.ALL);

@@ -232,6 +232,26 @@ $(document).ready(function() {
 		}
 	});
 	
+	var ManagedServiceFactoryRowView = Backbone.View.extend({
+		tagName: "tr",
+		className: "ui-state-default",
+		events: {
+			"click td.managedservice-name" : "listConfigs",
+			"click .ui-icon-pencil" : "addNewConfig"
+		},
+		listConfigs: function() {
+			
+		},
+		addNewConfig: function() {
+			
+		},
+		render: function() {
+			var dom = _.template($("#tmpl-managed-service-factory-row").text())({service: this.model});
+			this.$el.append(dom);
+			return this.$el;
+		}
+	});
+	
 	var ManagedServiceRowView = ecmconfig.ManagedServiceRowView = Backbone.View.extend({
 		tagName: "tr",
 		className: "ui-state-default",
@@ -281,7 +301,12 @@ $(document).ready(function() {
 			this.$el.empty().html($("#tmpl-managed-service-list").text());
 			var $tbody = this.$el.find("tbody");
 			this.model.forEach(function(service) {
-				var rowView = new ManagedServiceRowView({model: service});
+				var rowView;
+				if (service.isFactory()) {
+					rowView = new ManagedServiceFactoryRowView({model: service});
+				} else {
+					rowView = new ManagedServiceRowView({model: service});
+				}
 				$tbody.append(rowView.render());
 			}, this);
 			this.$el.tablesorter();

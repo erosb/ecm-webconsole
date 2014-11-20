@@ -16,15 +16,19 @@
  */
 package org.everit.osgi.ecm.webconsole.configuration;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.metatype.MetaTypeInformation;
 import org.osgi.service.metatype.MetaTypeService;
@@ -87,17 +91,31 @@ public class ConfigurableLookup {
             }
             for (String pid : metatypeInfo.getPids()) {
                 ObjectClassDefinition objClassDef = metatypeInfo.getObjectClassDefinition(pid, null);
-                Configurable configurable = getConfigurableByPid(pid);
-                configurable.setObjectClassName(objClassDef.getName());
-                configurable.setDescription(objClassDef.getDescription());
-                configurable.setBundleName(bundle.getHeaders().get("Bundle-Name"));
+                getConfigurableByPid(pid)
+                        .setObjectClassName(objClassDef.getName())
+                        .setDescription(objClassDef.getDescription())
+                        .setBundleName(bundle.getHeaders().get("Bundle-Name"));
             }
             for (String factoryPid : metatypeInfo.getFactoryPids()) {
+                // configAdmin.listConfigurations("(service.factoryPid=" + factoryPid + ")");
                 ObjectClassDefinition objClassDef = metatypeInfo.getObjectClassDefinition(factoryPid, null);
-                Configurable configurable = getConfigurableByFactoryPid(factoryPid);
-                configurable.setObjectClassName(objClassDef.getName());
-                configurable.setDescription(objClassDef.getDescription());
-                configurable.setBundleName(bundle.getHeaders().get("Bundle-Name"));
+                getConfigurableByFactoryPid(factoryPid)
+                        .setObjectClassName(objClassDef.getName())
+                        .setDescription(objClassDef.getDescription())
+                        .setBundleName(bundle.getHeaders().get("Bundle-Name"));
+                try {
+                    Configuration[] arr = configAdmin.listConfigurations("(service.factoryPid=" + factoryPid + ")");
+                    for (Configuration conf : Optional.ofNullable(arr).orElse(new Configuration[0])) {
+                        String pid = (String) conf.getProperties().get("service.pid");
+                        getConfigurableByPid(pid)
+                                .setObjectClassName(pid)
+                                .setDescription(objClassDef.getName());
+                    }
+                    // int cnt = arr == null ? 0 : arr.length;
+                    // System.out.println("found " + cnt + " configs by factory pid " + factoryPid);
+                } catch (IOException | InvalidSyntaxException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
         return collectResults();

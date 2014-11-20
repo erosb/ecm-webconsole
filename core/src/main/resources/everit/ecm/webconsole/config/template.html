@@ -23,8 +23,6 @@
 </script>
 <script type="text/javascript" src="${rootPath}/underscore-min.js"></script>
 <script type="text/javascript" src="${rootPath}/backbone.js"></script>
-<!-- <script type="text/javascript" src="${rootPath}/backbone.queryparams.min.js"></script>
-<script type="text/javascript" src="${rootPath}/backbone.queryparams-1.1-shim.js"></script> -->
 <script type="text/javascript" src="${rootPath}/app/models.js"></script>
 <script type="text/javascript" src="${rootPath}/app/views.js"></script>
 <script type="text/javascript" src="${rootPath}/config.js"></script>
@@ -91,6 +89,22 @@ td.managedservice-name {
 		</table>
 		<p class="ui-corner-all config-info">Service PID: <%= service.get("pid") %></p>
 	</div>
+</script>
+
+<script type="text/template" id="tmpl-managed-service-factory-row">
+		<td class="managedservice-name">
+			<i><%= service.get("name") %></i>
+		</td>
+		<td>
+			<i><%= service.get("bundleName") %><i>
+		</td>
+		<td>
+			<ul class="icons">
+				<li class="dynhover ui-state-default ui-corner-all">
+					<span class="ui-icon ui-icon-plus" label="New Config"></span>
+				</li>
+			</ul>
+		</td>
 </script>
 
 <script type="text/template" id="tmpl-managed-service-row">

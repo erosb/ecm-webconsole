@@ -64,6 +64,9 @@ $(document).ready(function() {
 				success: onSuccess
 			});
 		},
+		isFactory: function() {
+			return this.get("factoryPid") && !this.get("pid");
+		},
 		saveConfiguration: function() {
 			console.log("saving ", this.toJSON());
 		},
@@ -90,7 +93,10 @@ $(document).ready(function() {
 	});
 	
 	var ManagedServiceList = ecmconfig.ManagedServiceList = Backbone.Collection.extend({
-		model: ManagedServiceModel
+		model: ManagedServiceModel,
+		comparator: function(srv1, srv2) {
+			console.log("comparing", srv1, srv2)
+		}
 	});
 
 	var ApplicationModel = ecmconfig.ApplicationModel = Backbone.Model.extend({
