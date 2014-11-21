@@ -73,13 +73,23 @@ $(document).ready(function() {
 		saveConfiguration: function() {
 			console.log("saving ", this.toJSON());
 		},
+		getProp: function(propName, defaultValue) {
+			var value = this.get(propName);
+			return value === null ? defaultValue : value;
+		},
 		loadConfiguration: function(onSuccess) {
-			var self = this;
+			var self = this, factoryPid, location;
 			var configAdminPid = this.get("appModel").get("selectedConfigAdmin").get("pid");
-			$.ajax(ecmconfig.rootPath + "/configuration.json?pid="
-					+ this.get("pid")
-					+ "&location=" + this.get("location")
-					+ "&configAdminPid=" + configAdminPid, {
+			var url = ecmconfig.rootPath + "/configuration.json?pid="
+				+ this.get("pid");
+			if ((factoryPid = this.get("factoryPid")) !== null) {
+				url += "&factoryPid=" + factoryPid; 
+			}
+			if ((location = this.get("location")) !== null) {
+				url += "&location=" + location;
+			}
+			url += "&configAdminPid=" + configAdminPid;
+			$.ajax(url, {
 				type: "GET",
 				dataType: "json",
 				success: function(data) {
@@ -98,11 +108,15 @@ $(document).ready(function() {
 	var ManagedServiceList = ecmconfig.ManagedServiceList = Backbone.Collection.extend({
 		model: ManagedServiceModel,
 		topLevelEntries: function() {
-			return this.filter(function(e) {return !e.hasFactory()});
+			return this.filter(function(e) {
+				return !e.hasFactory()
+			});
 		},
 		getInstancesOf: function(factoryService) {
 			var factoryPid = factoryService.get("factoryPid");
-			return this.filter(function(e) {return e.get("factoryPid") == factoryPid && e.get("pid") !== null});
+			return this.filter(function(e) {
+				return e.get("factoryPid") == factoryPid && e.get("pid") !== null
+			});
 		}
 	});
 

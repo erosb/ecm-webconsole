@@ -300,18 +300,14 @@ $(document).ready(function() {
 		render: function() {
 			this.$el.empty().html($("#tmpl-managed-service-list").text());
 			var $tbody = this.$el.find("tbody");
-			this.model.topLevelEntries();
 			this.model.topLevelEntries().forEach(function(service) {
-				var rowView;
 				if (service.isFactory()) {
-					rowView = new ManagedServiceFactoryRowView({model: service});
-					$tbody.append(rowView.render());
+					$tbody.append(new ManagedServiceFactoryRowView({model: service}).render());
 					this.model.getInstancesOf(service).forEach(function(inst) {
 						$tbody.append(new ManagedServiceRowView({model: inst}).render());
 					});
 				} else {
-					rowView = new ManagedServiceRowView({model: service});
-					$tbody.append(rowView.render());
+					$tbody.append(new ManagedServiceRowView({model: service}).render());
 				}
 			}, this);
 			this.$el.tablesorter();

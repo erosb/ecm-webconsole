@@ -73,10 +73,11 @@ public class ConfigManager {
         return bundleCtx.getService(ref);
     }
 
-    public Collection<DisplayedAttribute> getConfigForm(final String servicePid, final String serviceLocation,
+    public Collection<DisplayedAttribute> getConfigForm(final String servicePid, final Optional<String> factoryPid,
+            final String serviceLocation,
             final String configAdminPid) {
         return new AttributeLookup(getConfigAdmin(configAdminPid), bundleCtx, metaTypeSrvTracker.getService())
-        .lookupForService(servicePid, serviceLocation);
+        .lookupForService(servicePid, factoryPid, serviceLocation);
     }
 
     public ObjectClassDefinition getObjectClassDefinition(final ServiceReference<ManagedService> serviceRef) {

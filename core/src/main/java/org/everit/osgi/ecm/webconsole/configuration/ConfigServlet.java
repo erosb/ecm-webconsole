@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -110,12 +111,14 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     private void getConfigForm(final HttpServletResponse resp,
             final String pid,
+            final String factoryPid,
             final String location,
             final String configAdminPid) {
         try {
             JSONWriter writer = new JSONWriter(resp.getWriter());
             writer.array();
-            configManager.getConfigForm(pid, location, configAdminPid).forEach((attr) -> attr.toJSON(writer));
+            configManager.getConfigForm(pid, Optional.ofNullable(factoryPid), location, configAdminPid).forEach(
+                    (attr) -> attr.toJSON(writer));
             writer.endArray();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -232,9 +235,10 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
                 listManagedServices(resp);
             } else if (pathInfo.endsWith("/configuration.json")) {
                 String pid = req.getParameter("pid");
+                String factoryPid = req.getParameter("factoryPid");
                 String location = req.getParameter("location");
                 String configAdminPid = req.getParameter("configAdminPid");
-                getConfigForm(resp, pid, location, configAdminPid);
+                getConfigForm(resp, pid, factoryPid, location, configAdminPid);
             }
         }
         // metaTypeSrvTracker.getService().getMetaTypeInformation(bundle)
