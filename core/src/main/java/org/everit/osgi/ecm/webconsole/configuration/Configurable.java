@@ -30,7 +30,7 @@ public class Configurable implements Comparable<Configurable> {
 
     private String factoryPid;
 
-    private String objectClassName;
+    private String name;
 
     private String description;
 
@@ -42,10 +42,10 @@ public class Configurable implements Comparable<Configurable> {
     }
 
     private String getDisplayedName() {
-        if (objectClassName == null) {
+        if (name == null) {
             return pid;
         } else {
-            return objectClassName;
+            return name;
         }
     }
 
@@ -69,8 +69,8 @@ public class Configurable implements Comparable<Configurable> {
         return this;
     }
 
-    public Configurable setObjectClassName(final String objectClassName) {
-        this.objectClassName = objectClassName;
+    public Configurable setName(final String name) {
+        this.name = name;
         return this;
     }
 

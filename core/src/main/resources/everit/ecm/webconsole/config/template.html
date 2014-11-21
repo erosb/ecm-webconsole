@@ -46,6 +46,11 @@ td.managedservice-name {
 	color: gray;
 	font-size: 90%;
 }
+
+.subpid {
+    margin-left: 1em;
+    float: left;
+}
 </style>
 
 <script type="text/template" id="tmpl-config-admin-list">
@@ -108,7 +113,12 @@ td.managedservice-name {
 </script>
 
 <script type="text/template" id="tmpl-managed-service-row">
-		<td class="managedservice-name"><%= service.get("name") %></td>
+		<td class="managedservice-name">
+			<% if (service.get("factoryPid") != null) { %>
+			<div class="ui-icon ui-icon-triangle-1-e subpid"></div>
+			<% } %>
+			<%= service.get("name") %>
+		</td>
 		<td><%= service.get("bundleName") %></td>
 		<td>
 			<ul class="icons">

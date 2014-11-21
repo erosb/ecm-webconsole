@@ -285,7 +285,7 @@ $(document).ready(function() {
 			});
 		},
 		render: function() {
-			var dom = _.template($("#tmpl-managed-service-row").text())({service: this.model});
+			var dom = loadTemplate("tmpl-managed-service-row")({service: this.model});
 			this.$el.append(dom);
 			return this.$el;
 		}
@@ -300,14 +300,19 @@ $(document).ready(function() {
 		render: function() {
 			this.$el.empty().html($("#tmpl-managed-service-list").text());
 			var $tbody = this.$el.find("tbody");
-			this.model.forEach(function(service) {
+			this.model.topLevelEntries();
+			this.model.topLevelEntries().forEach(function(service) {
 				var rowView;
 				if (service.isFactory()) {
 					rowView = new ManagedServiceFactoryRowView({model: service});
+					$tbody.append(rowView.render());
+					this.model.getInstancesOf(service).forEach(function(inst) {
+						$tbody.append(new ManagedServiceRowView({model: inst}).render());
+					});
 				} else {
 					rowView = new ManagedServiceRowView({model: service});
+					$tbody.append(rowView.render());
 				}
-				$tbody.append(rowView.render());
 			}, this);
 			this.$el.tablesorter();
 			return this.$el;

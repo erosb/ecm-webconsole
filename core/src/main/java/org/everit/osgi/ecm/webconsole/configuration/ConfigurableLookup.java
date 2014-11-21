@@ -63,6 +63,42 @@ public class ConfigurableLookup {
         return rval;
     }
 
+    private void createConfigurablesByFactoryPids(final Bundle bundle, final MetaTypeInformation metatypeInfo) {
+        for (String factoryPid : metatypeInfo.getFactoryPids()) {
+            ObjectClassDefinition objClassDef = metatypeInfo.getObjectClassDefinition(factoryPid, null);
+            getConfigurableByFactoryPid(factoryPid)
+                    .setName(objClassDef.getName())
+                    .setDescription(objClassDef.getDescription())
+                    .setBundleName(bundle.getHeaders().get("Bundle-Name"));
+            createConfigurablesOfFactory(factoryPid, objClassDef);
+        }
+    }
+
+    private void createConfigurablesByPids(final Bundle bundle, final MetaTypeInformation metatypeInfo) {
+        for (String pid : metatypeInfo.getPids()) {
+            ObjectClassDefinition objClassDef = metatypeInfo.getObjectClassDefinition(pid, null);
+            getConfigurableByPid(pid)
+                    .setName(objClassDef.getName())
+                    .setDescription(objClassDef.getDescription())
+                    .setBundleName(bundle.getHeaders().get("Bundle-Name"));
+        }
+    }
+
+    private void createConfigurablesOfFactory(final String factoryPid, final ObjectClassDefinition objClassDef) {
+        try {
+            Configuration[] arr = configAdmin.listConfigurations("(service.factoryPid=" + factoryPid + ")");
+            for (Configuration conf : Optional.ofNullable(arr).orElse(new Configuration[0])) {
+                String pid = (String) conf.getProperties().get("service.pid");
+                getConfigurableByPid(pid)
+                        .setFactoryPid(factoryPid)
+                        .setName(pid)
+                        .setDescription(objClassDef.getName());
+            }
+        } catch (IOException | InvalidSyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private Configurable getConfigurableByFactoryPid(final String factoryPid) {
         Configurable rval = configurablesByPid.get(factoryPid);
         if (rval == null) {
@@ -89,34 +125,8 @@ public class ConfigurableLookup {
             if (metatypeInfo == null) {
                 continue;
             }
-            for (String pid : metatypeInfo.getPids()) {
-                ObjectClassDefinition objClassDef = metatypeInfo.getObjectClassDefinition(pid, null);
-                getConfigurableByPid(pid)
-                        .setObjectClassName(objClassDef.getName())
-                        .setDescription(objClassDef.getDescription())
-                        .setBundleName(bundle.getHeaders().get("Bundle-Name"));
-            }
-            for (String factoryPid : metatypeInfo.getFactoryPids()) {
-                // configAdmin.listConfigurations("(service.factoryPid=" + factoryPid + ")");
-                ObjectClassDefinition objClassDef = metatypeInfo.getObjectClassDefinition(factoryPid, null);
-                getConfigurableByFactoryPid(factoryPid)
-                        .setObjectClassName(objClassDef.getName())
-                        .setDescription(objClassDef.getDescription())
-                        .setBundleName(bundle.getHeaders().get("Bundle-Name"));
-                try {
-                    Configuration[] arr = configAdmin.listConfigurations("(service.factoryPid=" + factoryPid + ")");
-                    for (Configuration conf : Optional.ofNullable(arr).orElse(new Configuration[0])) {
-                        String pid = (String) conf.getProperties().get("service.pid");
-                        getConfigurableByPid(pid)
-                                .setObjectClassName(pid)
-                                .setDescription(objClassDef.getName());
-                    }
-                    // int cnt = arr == null ? 0 : arr.length;
-                    // System.out.println("found " + cnt + " configs by factory pid " + factoryPid);
-                } catch (IOException | InvalidSyntaxException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+            createConfigurablesByPids(bundle, metatypeInfo);
+            createConfigurablesByFactoryPids(bundle, metatypeInfo);
         }
         return collectResults();
     }
