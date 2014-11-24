@@ -21,9 +21,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.UnsupportedCharsetException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -34,7 +39,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.felix.webconsole.AbstractWebConsolePlugin;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.json.JSONWriter;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -64,6 +72,14 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             final ConfigManager configManager) {
         this.bundleCtx = Objects.requireNonNull(bundleCtx, "bundleCtx cannot be null");
         this.configManager = Objects.requireNonNull(configManager, "configManager cannot be null");
+    }
+
+    private Charset charsetByRequest(final HttpServletRequest req) {
+        try {
+            return Charset.forName(req.getCharacterEncoding());
+        } catch (IllegalCharsetNameException | UnsupportedCharsetException e) {
+            return Charset.defaultCharset();
+        }
     }
 
     private Consumer<ServiceReference<ManagedService>> createManagedServiceJSONSerializer(
@@ -102,6 +118,36 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             configManager.deleteConfiguration(servicePid, location, configAdminPid);
             printSuccess(resp);
         }
+    }
+
+    @Override
+    protected void doPut(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
+    IOException {
+        String requestBody = requestBody(req);
+        System.out.println("received " + req.getCharacterEncoding() + ": '" + requestBody + "'");
+        String pid = req.getParameter("pid");
+        String factoryPid = req.getParameter("factoryPid");
+        String configAdminPid = req.getParameter("configAdminPid");
+        configManager.updateConfiguration(configAdminPid, pid, factoryPid,
+                extractRawAttributesFromJSON(new JSONObject(requestBody)));
+        resp.setContentType("application/json");
+        printSuccess(resp);
+    }
+
+    private Map<String, List<String>> extractRawAttributesFromJSON(final JSONObject json) {
+        Map<String, List<String>> rawAttributes = new HashMap<>();
+        for (Object rawKey : json.keySet()) {
+            String key = (String) rawKey;
+            JSONArray value = (JSONArray) json.get(key);
+            int stringCount = value.length();
+            List<String> values = new ArrayList<String>(stringCount);
+            for (int i = 0; i < stringCount; ++i) {
+                values.add(value.getString(i));
+            }
+            rawAttributes.put(key, values);
+            // System.out.println(rawKey + ": " + rawKey.getClass() + "\tvalue: " + value + ": " + value.getClass());
+        }
+        return rawAttributes;
     }
 
     @Override
@@ -241,7 +287,15 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
                 getConfigForm(resp, pid, factoryPid, location, configAdminPid);
             }
         }
-        // metaTypeSrvTracker.getService().getMetaTypeInformation(bundle)
+    }
+
+    private String requestBody(final HttpServletRequest req) throws IOException {
+        StringBuilder sb = new StringBuilder(req.getContentLength());
+        List<String> lines = IOUtils.readLines(req.getInputStream(), charsetByRequest(req));
+        for (String line : lines) {
+            sb.append(line);
+        }
+        return sb.toString();
     }
 
     private String resolveVariables(String rval, final Map<String, String> templateVars) {

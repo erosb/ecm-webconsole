@@ -236,14 +236,11 @@ $(document).ready(function() {
 		tagName: "tr",
 		className: "ui-state-default",
 		events: {
-			"click td.managedservice-name" : "listConfigs",
+			"click td.managedservice-name" : "addNewConfig",
 			"click .ui-icon-pencil" : "addNewConfig"
 		},
-		listConfigs: function() {
-			
-		},
 		addNewConfig: function() {
-			
+			console.log("todo: adding new config to factory");
 		},
 		render: function() {
 			var dom = _.template($("#tmpl-managed-service-factory-row").text())({service: this.model});

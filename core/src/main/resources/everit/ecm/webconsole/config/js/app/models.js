@@ -70,8 +70,33 @@ $(document).ready(function() {
 		isFactory: function() {
 			return this.get("factoryPid") && !this.get("pid");
 		},
+		attributeValuesToJSON: function() {
+			var rval = {};
+			this.get("attributes").forEach(function(attrModel) {
+				rval[attrModel.get("name")] = attrModel.get("value");
+			});
+			return JSON.stringify(rval);
+		},
 		saveConfiguration: function() {
-			console.log("saving ", this.toJSON());
+			console.log("saving ", this.attributeValuesToJSON());
+			var configAdminPid = this.getConfigAdminPid();
+			var url = ecmconfig.rootPath + "/configuration.json?configAdminPid=" + configAdminPid;
+			if (this.isFactory()) {
+				url += "&factoryPid=" + this.get("factoryPid");
+			} else {
+				url += "&pid=" + this.get("pid");
+			}
+			$.ajax(url, {
+				type: "PUT",
+				dataType: "json",
+				data: this.attributeValuesToJSON(),
+				success: function(data) {
+					console.log("received", data);
+				}
+			});
+		},
+		getConfigAdminPid: function() {
+			return this.get("appModel").get("selectedConfigAdmin").get("pid");
 		},
 		getProp: function(propName, defaultValue) {
 			var value = this.get(propName);
@@ -80,8 +105,7 @@ $(document).ready(function() {
 		loadConfiguration: function(onSuccess) {
 			var self = this, factoryPid, location;
 			var configAdminPid = this.get("appModel").get("selectedConfigAdmin").get("pid");
-			var url = ecmconfig.rootPath + "/configuration.json?pid="
-				+ this.get("pid");
+			var url = ecmconfig.rootPath + "/configuration.json?pid=" + this.get("pid");
 			if ((factoryPid = this.get("factoryPid")) !== null) {
 				url += "&factoryPid=" + factoryPid; 
 			}

@@ -55,10 +55,10 @@ public class AttributeLookup {
         DisplayedAttribute rval = new DisplayedAttribute();
         String attributeId = attrDef.getID();
         rval.setName(attrDef.getName())
-        .setId(attributeId)
-        .setDescription(attrDef.getDescription())
-        .setType(attrDef.getType())
-        .setMaxOccurences(attrDef.getCardinality());
+                .setId(attributeId)
+                .setDescription(attrDef.getDescription())
+                .setType(attrDef.getType())
+                .setMaxOccurences(attrDef.getCardinality());
         String[] optionValues = Optional.ofNullable(attrDef.getOptionValues()).orElseGet(emptyStringArr);
         String[] optionLabels = Optional.ofNullable(attrDef.getOptionLabels()).orElseGet(emptyStringArr);
         if (optionValues.length != optionLabels.length) {
@@ -76,7 +76,7 @@ public class AttributeLookup {
         return config.map((cfg) -> cfg.getProperties() == null ? null : cfg.getProperties().get(attributeId));
     }
 
-    public Collection<DisplayedAttribute> lookupForService(final String servicePid, final Optional<String> factoryPid,
+    public Collection<DisplayedAttribute> lookupAttributes(final String servicePid, final Optional<String> factoryPid,
             final String location) {
         Function<MetaTypeInformation, String[]> metatypeInfoToPidArr;
         String metatypeServiceFilteringPid;
@@ -96,10 +96,10 @@ public class AttributeLookup {
                             .map(metatypeInfoToPidArr)
                             .map(Arrays::asList)
                             .filter((list) -> list.contains(metatypeServiceFilteringPid)).isPresent())
-                            .findFirst()
-                            .orElseThrow(() -> new IllegalArgumentException("ObjectClassDefinition not found"))
-                            .getObjectClassDefinition(metatypeServiceFilteringPid, null)
-                            .getAttributeDefinitions(ObjectClassDefinition.ALL);
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("ObjectClassDefinition not found"))
+                    .getObjectClassDefinition(metatypeServiceFilteringPid, null)
+                    .getAttributeDefinitions(ObjectClassDefinition.ALL);
             return Arrays.stream(attrDefs)
                     .map((attrDef) -> createDisplayedAttribute(attrDef, config))
                     .sorted()

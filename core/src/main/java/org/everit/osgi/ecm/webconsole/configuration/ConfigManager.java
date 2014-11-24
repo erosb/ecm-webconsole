@@ -19,6 +19,8 @@ package org.everit.osgi.ecm.webconsole.configuration;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -26,6 +28,7 @@ import java.util.stream.Stream;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.cm.ManagedService;
 import org.osgi.service.metatype.MetaTypeService;
@@ -77,7 +80,7 @@ public class ConfigManager {
             final String serviceLocation,
             final String configAdminPid) {
         return new AttributeLookup(getConfigAdmin(configAdminPid), bundleCtx, metaTypeSrvTracker.getService())
-        .lookupForService(servicePid, factoryPid, serviceLocation);
+        .lookupAttributes(servicePid, factoryPid, serviceLocation);
     }
 
     public ObjectClassDefinition getObjectClassDefinition(final ServiceReference<ManagedService> serviceRef) {
@@ -99,6 +102,17 @@ public class ConfigManager {
     public Collection<Configurable> lookupConfigurations() {
         return new ConfigurableLookup(cfgAdminTracker.getService(), bundleCtx, metaTypeSrvTracker.getService())
         .lookupConfigurables();
+    }
+
+    public void updateConfiguration(final String configAdminPid, final String pid, final String factoryPid,
+            final Map<String, List<String>> rawAttributes) {
+        ConfigurationAdmin configAdmin = getConfigAdmin(configAdminPid);
+        try {
+            Configuration config = configAdmin.getConfiguration(pid);
+            // config.update(properties);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
