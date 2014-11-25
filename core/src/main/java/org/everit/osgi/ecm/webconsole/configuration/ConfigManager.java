@@ -19,10 +19,14 @@ package org.everit.osgi.ecm.webconsole.configuration;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Vector;
 import java.util.stream.Stream;
 
 import org.osgi.framework.BundleContext;
@@ -31,6 +35,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.cm.ManagedService;
+import org.osgi.service.metatype.AttributeDefinition;
 import org.osgi.service.metatype.MetaTypeService;
 import org.osgi.service.metatype.ObjectClassDefinition;
 import org.osgi.util.tracker.ServiceTracker;
@@ -56,6 +61,67 @@ public class ConfigManager {
                 Optional.ofNullable(cfgAdminTracker.getServiceReferences()).orElse(new ServiceReference[0]));
     }
 
+    private Object convertAttributeValue(final List<String> attrValue, final AttributeDefinition attrDef) {
+        int cardinality = attrDef.getCardinality();
+        validateValueSizeByAttributeCardinality(attrValue, cardinality);
+        if (cardinality == 0) {
+            if (attrValue.isEmpty()) {
+                return null;
+            }
+            return convertSingleValue(attrValue.get(0), attrDef.getType());
+        } else if (cardinality < 0) {
+            Vector<String> vector = new Vector<String>(attrValue.size());
+            for (String rawValue : attrValue) {
+                vector.add(convertSingleValue(rawValue, attrDef.getType()));
+            }
+            return vector;
+        } else { /* if (cardinality > 0) */
+            String[] arr = new String[attrValue.size()];
+            for (int i = 0; i < attrValue.size(); ++i) {
+                String rawValue = attrValue.get(i);
+                arr[i] = convertSingleValue(rawValue, attrDef.getType());
+            }
+            return arr;
+        }
+    }
+
+    private String convertSingleValue(final String rawValue, final int type) {
+        return rawValue;
+        // if (type == AttributeDefinition.STRING || type == AttributeDefinition.PASSWORD) {
+        // return rawValue;
+        // } else if (type == AttributeDefinition.SHORT) {
+        // return Short.valueOf(rawValue);
+        // } else if (type == AttributeDefinition.LONG) {
+        // return Long.valueOf(rawValue);
+        // } else if (type == AttributeDefinition.INTEGER) {
+        // return Integer.valueOf(rawValue);
+        // } else if (type == AttributeDefinition.CHARACTER) {
+        // if (rawValue.length() > 1) {
+        // throw new InvalidAttributeValueException("");
+        // }
+        // return rawValue.charAt(0);
+        // } else if (type == AttributeDefinition.BYTE) {
+        // return Byte.valueOf(rawValue);
+        // } else if (type == AttributeDefinition.DOUBLE) {
+        // return Double.valueOf(rawValue);
+        // } else if (type == AttributeDefinition.FLOAT) {
+        // return Float.valueOf(rawValue);
+        // } else if (type == AttributeDefinition.BOOLEAN) {
+        // return Boolean.valueOf(rawValue);
+        // }
+        //
+        // throw new IllegalArgumentException("unsupported attribute type: " + type);
+    }
+
+    private Map<String, AttributeDefinition> createAttributeMap(final ObjectClassDefinition objClassDef) {
+        AttributeDefinition[] attrDefs = objClassDef.getAttributeDefinitions(ObjectClassDefinition.ALL);
+        Map<String, AttributeDefinition> rval = new HashMap<>(attrDefs.length);
+        for (AttributeDefinition attrDef : attrDefs) {
+            rval.put(attrDef.getID(), attrDef);
+        }
+        return rval;
+    }
+
     public void deleteConfiguration(final String servicePid, final String location, final String configAdminPid) {
         try {
             ConfigurationAdmin configAdmin = getConfigAdmin(configAdminPid);
@@ -76,15 +142,15 @@ public class ConfigManager {
         return bundleCtx.getService(ref);
     }
 
-    public Collection<DisplayedAttribute> getConfigForm(final String servicePid, final Optional<String> factoryPid,
+    public Collection<DisplayedAttribute> getConfigForm(final String servicePid, final String factoryPid,
             final String serviceLocation,
             final String configAdminPid) {
-        return new AttributeLookup(getConfigAdmin(configAdminPid), bundleCtx, metaTypeSrvTracker.getService())
+        return new AttributeLookup(getConfigAdmin(configAdminPid), bundleCtx, metaTypeService())
         .lookupAttributes(servicePid, factoryPid, serviceLocation);
     }
 
     public ObjectClassDefinition getObjectClassDefinition(final ServiceReference<ManagedService> serviceRef) {
-        MetaTypeService metaTypeSrv = metaTypeSrvTracker.getService();
+        MetaTypeService metaTypeSrv = metaTypeService();
         ObjectClassDefinition objClassDef = metaTypeSrv.getMetaTypeInformation(serviceRef.getBundle())
                 .getObjectClassDefinition((String) serviceRef.getProperty("service.pid"), null);
         return objClassDef;
@@ -100,19 +166,58 @@ public class ConfigManager {
     }
 
     public Collection<Configurable> lookupConfigurations() {
-        return new ConfigurableLookup(cfgAdminTracker.getService(), bundleCtx, metaTypeSrvTracker.getService())
+        return new ConfigurableLookup(cfgAdminTracker.getService(), bundleCtx, metaTypeService())
         .lookupConfigurables();
+    }
+
+    private Dictionary<String, Object> mapToProperties(final ObjectClassDefinition objClassDef,
+            final Map<String, List<String>> rawAttributes) {
+        Dictionary<String, Object> rval = new Hashtable<String, Object>(rawAttributes.size());
+        Map<String, AttributeDefinition> attrDefsByID = createAttributeMap(objClassDef);
+        for (String attributeId : rawAttributes.keySet()) {
+            List<String> attrValue = rawAttributes.get(attributeId);
+            AttributeDefinition attrDef = attrDefsByID.get(attributeId);
+            Object propValue = convertAttributeValue(attrValue, attrDef);
+            if (propValue != null) {
+                rval.put(attributeId, propValue);
+            }
+        }
+        return rval;
+    }
+
+    private MetaTypeService metaTypeService() {
+        return metaTypeSrvTracker.getService();
     }
 
     public void updateConfiguration(final String configAdminPid, final String pid, final String factoryPid,
             final Map<String, List<String>> rawAttributes) {
         ConfigurationAdmin configAdmin = getConfigAdmin(configAdminPid);
+        ObjectClassDefinition objClassDef = new ObjectClassDefinitionLookup(configAdmin, metaTypeService(), bundleCtx)
+                .lookup(pid, factoryPid);
         try {
             Configuration config = configAdmin.getConfiguration(pid);
-            // config.update(properties);
+            Dictionary<String, ?> properties = mapToProperties(objClassDef, rawAttributes);
+            config.update(properties);
+            System.out.println("updated");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    private void validateValueSizeByAttributeCardinality(final List<String> attrValue, final int cardinality) {
+        if (cardinality == Integer.MIN_VALUE || cardinality == Integer.MAX_VALUE) {
+            return;
+        }
+        int absCard = Math.abs(cardinality);
+        if (absCard == 0) {
+            if (attrValue.size() > 1) {
+                throw new InvalidAttributeValueException("expecting at most 1 value, received " + attrValue.size());
+            }
+        } else {
+            if (attrValue.size() > absCard) {
+                throw new InvalidAttributeValueException("expecting at most " + absCard + " values, received "
+                        + attrValue.size());
+            }
+        }
+    }
 }

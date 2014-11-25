@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -29,7 +28,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.metatype.AttributeDefinition;
-import org.osgi.service.metatype.MetaTypeInformation;
 import org.osgi.service.metatype.MetaTypeService;
 import org.osgi.service.metatype.ObjectClassDefinition;
 
@@ -55,10 +53,10 @@ public class AttributeLookup {
         DisplayedAttribute rval = new DisplayedAttribute();
         String attributeId = attrDef.getID();
         rval.setName(attrDef.getName())
-                .setId(attributeId)
-                .setDescription(attrDef.getDescription())
-                .setType(attrDef.getType())
-                .setMaxOccurences(attrDef.getCardinality());
+        .setId(attributeId)
+        .setDescription(attrDef.getDescription())
+        .setType(attrDef.getType())
+        .setMaxOccurences(attrDef.getCardinality());
         String[] optionValues = Optional.ofNullable(attrDef.getOptionValues()).orElseGet(emptyStringArr);
         String[] optionLabels = Optional.ofNullable(attrDef.getOptionLabels()).orElseGet(emptyStringArr);
         if (optionValues.length != optionLabels.length) {
@@ -76,29 +74,11 @@ public class AttributeLookup {
         return config.map((cfg) -> cfg.getProperties() == null ? null : cfg.getProperties().get(attributeId));
     }
 
-    public Collection<DisplayedAttribute> lookupAttributes(final String servicePid, final Optional<String> factoryPid,
+    public Collection<DisplayedAttribute> lookupAttributes(final String servicePid, final String factoryPid,
             final String location) {
-        Function<MetaTypeInformation, String[]> metatypeInfoToPidArr;
-        String metatypeServiceFilteringPid;
-        if (factoryPid.isPresent()) {
-            metatypeInfoToPidArr = MetaTypeInformation::getFactoryPids;
-            metatypeServiceFilteringPid = factoryPid.get();
-        } else {
-            metatypeInfoToPidArr = MetaTypeInformation::getPids;
-            metatypeServiceFilteringPid = servicePid;
-        }
         try {
             Optional<Configuration> config = Optional.ofNullable(configAdmin.getConfiguration(servicePid, location));
-            AttributeDefinition[] attrDefs = Arrays
-                    .stream(bundleCtx.getBundles())
-                    .map(metaTypeService::getMetaTypeInformation)
-                    .filter((metatypeInfo) -> Optional.ofNullable(metatypeInfo)
-                            .map(metatypeInfoToPidArr)
-                            .map(Arrays::asList)
-                            .filter((list) -> list.contains(metatypeServiceFilteringPid)).isPresent())
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("ObjectClassDefinition not found"))
-                    .getObjectClassDefinition(metatypeServiceFilteringPid, null)
+            AttributeDefinition[] attrDefs = objectClassDefinitionLookup().lookup(servicePid, factoryPid)
                     .getAttributeDefinitions(ObjectClassDefinition.ALL);
             return Arrays.stream(attrDefs)
                     .map((attrDef) -> createDisplayedAttribute(attrDef, config))
@@ -107,5 +87,9 @@ public class AttributeLookup {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private ObjectClassDefinitionLookup objectClassDefinitionLookup() {
+        return new ObjectClassDefinitionLookup(configAdmin, metaTypeService, bundleCtx);
     }
 }

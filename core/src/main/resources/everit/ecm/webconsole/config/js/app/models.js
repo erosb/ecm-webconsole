@@ -28,6 +28,7 @@ $(document).ready(function() {
 	});
 	
 	var AttributeModel = ecmconfig.AttributeModel = Backbone.Model.extend({
+		id: null,
 		name: null,
 		description: null,
 		value: null,
@@ -73,7 +74,7 @@ $(document).ready(function() {
 		attributeValuesToJSON: function() {
 			var rval = {};
 			this.get("attributes").forEach(function(attrModel) {
-				rval[attrModel.get("name")] = attrModel.get("value");
+				rval[attrModel.get("id")] = attrModel.get("value");
 			});
 			return JSON.stringify(rval);
 		},

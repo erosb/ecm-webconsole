@@ -15,7 +15,7 @@
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
 $(document).ready(function() {
-(function(threadviewer) {
+(function(ecmconfig) {
 	
 	var managedServiceList = new ecmconfig.ManagedServiceList();
 	

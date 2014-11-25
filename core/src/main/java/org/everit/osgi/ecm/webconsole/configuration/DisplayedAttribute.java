@@ -125,6 +125,8 @@ public class DisplayedAttribute implements Comparable<DisplayedAttribute> {
 
     public void toJSON(final JSONWriter writer) {
         writer.object();
+        writer.key("id");
+        writer.value(id);
         writer.key("name");
         writer.value(name);
         writer.key("description");
