@@ -61,7 +61,7 @@ public class ConfigActivator implements BundleActivator {
         props.put("felix.webconsole.label", ConfigServlet.CONFIG_LABEL);
         initServiceTrackers(context);
         ConfigManager configManager = new ConfigManager(cfgAdminTracker, metaTypeSrvTracker, context);
-        ConfigServlet servlet = new ConfigServlet(context, configManager);
+        ConfigServlet servlet = new ConfigServlet(configManager);
         registration = context.registerService(Servlet.class, servlet, props);
     }
 

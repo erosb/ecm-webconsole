@@ -56,6 +56,7 @@ public class ConfigManager {
         this.metaTypeSrvTracker = Objects.requireNonNull(metaTypeSrvTracker, "metaTypeSrvTracker cannot be null");
     }
 
+    @SuppressWarnings("unchecked")
     public Stream<ServiceReference<ConfigurationAdmin>> configAdminStream() {
         return Arrays.stream(
                 Optional.ofNullable(cfgAdminTracker.getServiceReferences()).orElse(new ServiceReference[0]));
@@ -128,6 +129,18 @@ public class ConfigManager {
         return rval;
     }
 
+    public void createConfiguration(final String configAdminPid, final String factoryPid,
+            final String location, final Map<String, List<String>> attributes) {
+        ConfigurationAdmin configAdmin = getConfigAdmin(configAdminPid);
+        try {
+            ObjectClassDefinition objClassDef = objectClassDefinitionLookup().lookup(null, factoryPid);
+            Configuration newConfig = configAdmin.createFactoryConfiguration(factoryPid, location);
+            newConfig.update(mapToProperties(objClassDef, attributes));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void deleteConfiguration(final String servicePid, final String location, final String configAdminPid) {
         try {
             ConfigurationAdmin configAdmin = getConfigAdmin(configAdminPid);
@@ -149,7 +162,7 @@ public class ConfigManager {
             final String serviceLocation,
             final String configAdminPid) {
         return new AttributeLookup(getConfigAdmin(configAdminPid), bundleCtx, metaTypeService())
-                .lookupAttributes(servicePid, factoryPid, serviceLocation);
+        .lookupAttributes(servicePid, factoryPid, serviceLocation);
     }
 
     public ObjectClassDefinition getObjectClassDefinition(final ServiceReference<ManagedService> serviceRef) {
@@ -170,7 +183,7 @@ public class ConfigManager {
 
     public Collection<Configurable> lookupConfigurations() {
         return new ConfigurableLookup(cfgAdminTracker.getService(), bundleCtx, metaTypeService())
-                .lookupConfigurables();
+        .lookupConfigurables();
     }
 
     private Dictionary<String, Object> mapToProperties(final ObjectClassDefinition objClassDef,
@@ -192,11 +205,14 @@ public class ConfigManager {
         return metaTypeSrvTracker.getService();
     }
 
+    private ObjectClassDefinitionLookup objectClassDefinitionLookup() {
+        return new ObjectClassDefinitionLookup(metaTypeSrvTracker.getService(), bundleCtx);
+    }
+
     public void updateConfiguration(final String configAdminPid, final String pid, final String factoryPid,
             final Map<String, List<String>> rawAttributes) {
         ConfigurationAdmin configAdmin = getConfigAdmin(configAdminPid);
-        ObjectClassDefinition objClassDef = new ObjectClassDefinitionLookup(configAdmin, metaTypeService(), bundleCtx)
-        .lookup(pid, factoryPid);
+        ObjectClassDefinition objClassDef = objectClassDefinitionLookup().lookup(pid, factoryPid);
         try {
             Configuration config = configAdmin.getConfiguration(pid);
             Dictionary<String, ?> properties = mapToProperties(objClassDef, rawAttributes);

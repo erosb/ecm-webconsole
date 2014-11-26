@@ -43,7 +43,6 @@ import org.apache.felix.webconsole.AbstractWebConsolePlugin;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONWriter;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.ManagedService;
 import org.osgi.service.metatype.ObjectClassDefinition;
@@ -63,13 +62,9 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             "underscore-min.js"
             ));
 
-    private final BundleContext bundleCtx;
-
     private final ConfigManager configManager;
 
-    public ConfigServlet(final BundleContext bundleCtx,
-            final ConfigManager configManager) {
-        this.bundleCtx = Objects.requireNonNull(bundleCtx, "bundleCtx cannot be null");
+    public ConfigServlet(final ConfigManager configManager) {
         this.configManager = Objects.requireNonNull(configManager, "configManager cannot be null");
     }
 
@@ -100,9 +95,9 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             writer.value(serviceRef.getProperty("service.pid"));
             writer.endObject();
             // System.out.println("managedservice prop keys: " + Arrays.asList(serviceRef.getPropertyKeys()));
-            for (String key : serviceRef.getPropertyKeys()) {
-                // System.out.println("\t\t" + key + ": " + serviceRef.getProperty(key));
-            }
+            // for (String key : serviceRef.getPropertyKeys()) {
+            // System.out.println("\t\t" + key + ": " + serviceRef.getProperty(key));
+            // }
         };
     }
 
@@ -127,9 +122,13 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
         String pid = req.getParameter("pid");
         String factoryPid = req.getParameter("factoryPid");
         String configAdminPid = req.getParameter("configAdminPid");
-        configManager.updateConfiguration(configAdminPid, pid, factoryPid,
-                extractRawAttributesFromJSON(new JSONObject(requestBody)));
-        resp.setContentType("application/json");
+        String location = req.getParameter("location");
+        Map<String, List<String>> attributes = extractRawAttributesFromJSON(new JSONObject(requestBody));
+        if (pid == null) {
+            configManager.createConfiguration(configAdminPid, factoryPid, location, attributes);
+        } else {
+            configManager.updateConfiguration(configAdminPid, pid, factoryPid, attributes);
+        }
         printSuccess(resp);
     }
 
@@ -255,6 +254,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
     }
 
     private void printSuccess(final HttpServletResponse resp) {
+        resp.setContentType("application/json");
         try {
             JSONWriter writer = new JSONWriter(resp.getWriter());
             writer.object();

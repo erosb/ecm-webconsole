@@ -53,10 +53,10 @@ public class AttributeLookup {
         DisplayedAttribute rval = new DisplayedAttribute();
         String attributeId = attrDef.getID();
         rval.setName(attrDef.getName())
-        .setId(attributeId)
-        .setDescription(attrDef.getDescription())
-        .setType(attrDef.getType())
-        .setMaxOccurences(attrDef.getCardinality());
+                .setId(attributeId)
+                .setDescription(attrDef.getDescription())
+                .setType(attrDef.getType())
+                .setMaxOccurences(attrDef.getCardinality());
         String[] optionValues = Optional.ofNullable(attrDef.getOptionValues()).orElseGet(emptyStringArr);
         String[] optionLabels = Optional.ofNullable(attrDef.getOptionLabels()).orElseGet(emptyStringArr);
         if (optionValues.length != optionLabels.length) {
@@ -70,6 +70,12 @@ public class AttributeLookup {
         return rval;
     }
 
+    private Optional<Configuration> getCurrentConfiguration(final String servicePid, final String location)
+            throws IOException {
+        return servicePid == null ? Optional.empty() : Optional.ofNullable(configAdmin.getConfiguration(
+                servicePid, location));
+    }
+
     private Optional<Object> getValueFromConfig(final Optional<Configuration> config, final String attributeId) {
         return config.map((cfg) -> cfg.getProperties() == null ? null : cfg.getProperties().get(attributeId));
     }
@@ -77,7 +83,7 @@ public class AttributeLookup {
     public Collection<DisplayedAttribute> lookupAttributes(final String servicePid, final String factoryPid,
             final String location) {
         try {
-            Optional<Configuration> config = Optional.ofNullable(configAdmin.getConfiguration(servicePid, location));
+            Optional<Configuration> config = getCurrentConfiguration(servicePid, location);
             AttributeDefinition[] attrDefs = objectClassDefinitionLookup().lookup(servicePid, factoryPid)
                     .getAttributeDefinitions(ObjectClassDefinition.ALL);
             return Arrays.stream(attrDefs)
@@ -90,6 +96,6 @@ public class AttributeLookup {
     }
 
     private ObjectClassDefinitionLookup objectClassDefinitionLookup() {
-        return new ObjectClassDefinitionLookup(configAdmin, metaTypeService, bundleCtx);
+        return new ObjectClassDefinitionLookup(metaTypeService, bundleCtx);
     }
 }

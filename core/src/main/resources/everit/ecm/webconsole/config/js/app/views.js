@@ -242,7 +242,11 @@ $(document).ready(function() {
 			"click .ui-icon-pencil" : "addNewConfig"
 		},
 		addNewConfig: function() {
-			console.log("todo: adding new config to factory");
+			console.log("adding new config to factory");
+			var model = this.model;
+			model.loadConfiguration(function (attrList) {
+				new AttributeListView({model: model}).render();
+			});
 		},
 		render: function() {
 			var dom = _.template($("#tmpl-managed-service-factory-row").text())({service: this.model});

@@ -104,16 +104,17 @@ $(document).ready(function() {
 			return value === null ? defaultValue : value;
 		},
 		loadConfiguration: function(onSuccess) {
-			var self = this, factoryPid, location;
-			var configAdminPid = this.get("appModel").get("selectedConfigAdmin").get("pid");
-			var url = ecmconfig.rootPath + "/configuration.json?pid=" + this.get("pid");
+			var self = this, pid, factoryPid, location;
+			var url = ecmconfig.rootPath + "/configuration.json?configAdminPid=" + this.getConfigAdminPid();
+			if ((pid = this.get("pid")) !== null) {
+				url +="&pid=" + pid;
+			}
 			if ((factoryPid = this.get("factoryPid")) !== null) {
 				url += "&factoryPid=" + factoryPid; 
 			}
 			if ((location = this.get("location")) !== null) {
 				url += "&location=" + location;
 			}
-			url += "&configAdminPid=" + configAdminPid;
 			$.ajax(url, {
 				type: "GET",
 				dataType: "json",

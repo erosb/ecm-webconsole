@@ -22,22 +22,17 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import org.osgi.framework.BundleContext;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.metatype.MetaTypeInformation;
 import org.osgi.service.metatype.MetaTypeService;
 import org.osgi.service.metatype.ObjectClassDefinition;
 
 public class ObjectClassDefinitionLookup {
 
-    private final ConfigurationAdmin configAdmin;
-
     private final MetaTypeService metaTypeService;
 
     private final BundleContext bundleCtx;
 
-    public ObjectClassDefinitionLookup(final ConfigurationAdmin configAdmin, final MetaTypeService metaTypeService,
-            final BundleContext bundleCtx) {
-        this.configAdmin = Objects.requireNonNull(configAdmin, "configAdmin cannot be null");
+    public ObjectClassDefinitionLookup(final MetaTypeService metaTypeService, final BundleContext bundleCtx) {
         this.metaTypeService = Objects.requireNonNull(metaTypeService, "metaTypeService cannot be null");
         this.bundleCtx = Objects.requireNonNull(bundleCtx, "bundleCtx cannot be null");
     }
@@ -58,9 +53,9 @@ public class ObjectClassDefinitionLookup {
                         .map(metatypeInfoToPidArr)
                         .map(Arrays::asList)
                         .filter((list) -> list.contains(metatypeServiceFilteringPid)).isPresent())
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("ObjectClassDefinition not found"))
-                .getObjectClassDefinition(metatypeServiceFilteringPid, null);
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalArgumentException("ObjectClassDefinition not found"))
+                        .getObjectClassDefinition(metatypeServiceFilteringPid, null);
     }
 
 }
