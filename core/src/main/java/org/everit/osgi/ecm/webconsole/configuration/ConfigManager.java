@@ -86,6 +86,12 @@ public class ConfigManager {
     }
 
     private String convertSingleValue(final String rawValue, final int type) {
+        // if (type == AttributeDefinition.BOOLEAN) {
+        // if (!"true".equals(rawValue)) {
+        // return null;
+        // }
+        // return "true";
+        // }
         return rawValue;
         // if (type == AttributeDefinition.STRING || type == AttributeDefinition.PASSWORD) {
         // return rawValue;
@@ -126,9 +132,6 @@ public class ConfigManager {
         try {
             ConfigurationAdmin configAdmin = getConfigAdmin(configAdminPid);
             configAdmin.getConfiguration(servicePid, location).delete();
-            System.out.println(String.format("deleting configuration: servicePid = %s, configAdminPid = %s",
-                    servicePid,
-                    configAdminPid));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -146,7 +149,7 @@ public class ConfigManager {
             final String serviceLocation,
             final String configAdminPid) {
         return new AttributeLookup(getConfigAdmin(configAdminPid), bundleCtx, metaTypeService())
-        .lookupAttributes(servicePid, factoryPid, serviceLocation);
+                .lookupAttributes(servicePid, factoryPid, serviceLocation);
     }
 
     public ObjectClassDefinition getObjectClassDefinition(final ServiceReference<ManagedService> serviceRef) {
@@ -167,7 +170,7 @@ public class ConfigManager {
 
     public Collection<Configurable> lookupConfigurations() {
         return new ConfigurableLookup(cfgAdminTracker.getService(), bundleCtx, metaTypeService())
-        .lookupConfigurables();
+                .lookupConfigurables();
     }
 
     private Dictionary<String, Object> mapToProperties(final ObjectClassDefinition objClassDef,
@@ -193,12 +196,11 @@ public class ConfigManager {
             final Map<String, List<String>> rawAttributes) {
         ConfigurationAdmin configAdmin = getConfigAdmin(configAdminPid);
         ObjectClassDefinition objClassDef = new ObjectClassDefinitionLookup(configAdmin, metaTypeService(), bundleCtx)
-                .lookup(pid, factoryPid);
+        .lookup(pid, factoryPid);
         try {
             Configuration config = configAdmin.getConfiguration(pid);
             Dictionary<String, ?> properties = mapToProperties(objClassDef, rawAttributes);
             config.update(properties);
-            System.out.println("updated");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

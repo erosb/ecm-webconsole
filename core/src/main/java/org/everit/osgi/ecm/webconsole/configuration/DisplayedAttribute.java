@@ -155,7 +155,11 @@ public class DisplayedAttribute implements Comparable<DisplayedAttribute> {
     private void valueToJSON(final JSONWriter writer) {
         writer.array();
         for (String value : Optional.ofNullable(this.value).orElse(new String[0])) {
-            writer.value(value);
+            if (type.equals("boolean")) {
+                writer.value(value.equals("true"));
+            } else {
+                writer.value(value);
+            }
         }
         writer.endArray();
     }

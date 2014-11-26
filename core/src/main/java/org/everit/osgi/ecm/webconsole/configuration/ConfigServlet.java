@@ -99,16 +99,16 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             writer.key("pid");
             writer.value(serviceRef.getProperty("service.pid"));
             writer.endObject();
-            System.out.println("managedservice prop keys: " + Arrays.asList(serviceRef.getPropertyKeys()));
+            // System.out.println("managedservice prop keys: " + Arrays.asList(serviceRef.getPropertyKeys()));
             for (String key : serviceRef.getPropertyKeys()) {
-                System.out.println("\t\t" + key + ": " + serviceRef.getProperty(key));
+                // System.out.println("\t\t" + key + ": " + serviceRef.getProperty(key));
             }
         };
     }
 
     @Override
     protected void doDelete(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-            IOException {
+    IOException {
         String pathInfo = req.getPathInfo();
         if (pathInfo.endsWith("/configuration.json")) {
             String servicePid = req.getParameter("pid");
@@ -121,9 +121,9 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void doPut(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-            IOException {
+    IOException {
         String requestBody = requestBody(req);
-        System.out.println("received " + req.getCharacterEncoding() + ": '" + requestBody + "'");
+        // System.out.println("received " + req.getCharacterEncoding() + ": '" + requestBody + "'");
         String pid = req.getParameter("pid");
         String factoryPid = req.getParameter("factoryPid");
         String configAdminPid = req.getParameter("configAdminPid");
@@ -141,7 +141,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             int stringCount = value.length();
             List<String> values = new ArrayList<String>(stringCount);
             for (int i = 0; i < stringCount; ++i) {
-                values.add(value.getString(i));
+                values.add(value.get(i).toString());
             }
             rawAttributes.put(key, values);
             // System.out.println(rawKey + ": " + rawKey.getClass() + "\tvalue: " + value + ": " + value.getClass());
@@ -268,7 +268,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void renderContent(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-            IOException {
+    IOException {
         String pathInfo = req.getPathInfo();
         if (isMainPageRequest(pathInfo)) {
             loadMainPage(resp, req.getAttribute("felix.webconsole.pluginRoot").toString());

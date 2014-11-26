@@ -90,12 +90,14 @@ $(document).ready(function() {
 		attributes: {
 			type: "checkbox"
 		},
+		events: {
+			"change": "triggerChange"
+		},
+		triggerChange: function() {
+			this.trigger("change", !!this.$el.prop("checked"));
+		},
 		render: function() {
 			this.$el.prop("checked", this.value);
-			var self = this;
-			this.$el.on("change", function() {
-				self.trigger("change", self.$el.prop("checked"));
-			});
 			return this.$el;
 		}
 	});
