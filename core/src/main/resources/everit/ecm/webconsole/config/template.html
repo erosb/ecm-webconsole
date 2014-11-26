@@ -38,7 +38,7 @@ p.config-info {
 	margin-top: 15px;
 }
 
-td.managedservice-name {
+tr.managedservice-row {
 	cursor: pointer;
 }
 
@@ -56,14 +56,14 @@ td.managedservice-name {
 <script type="text/template" id="tmpl-config-admin-list">
 	<select name="sel-configadmin" class="ui-widget ui-widget-content ui-state-default">
 	<% configAdmins.forEach(function(configAdmin) { %>
-		<option value="<%= configAdmin.get("pid") %>"><%= configAdmin.get("description") %></option>
+		<option value="<%= configAdmin.get("pid") %>"><%- configAdmin.get("description") %></option>
 	<% }); %>
 	</select>
 </script>
 
 <script type="text/template" id="tmpl-confirm-delete-configuration">
 	<div title="Confirm configuration deletion">
-		<p>Are you sure you want to delete configuration of managed service <b><%= service.get("name") %></b>?</p>
+		<p>Are you sure you want to delete configuration of managed service <b><%- service.get("name") %></b>?</p>
 	</div>
 </script>
 
@@ -80,28 +80,28 @@ td.managedservice-name {
 </script>
 
 <script type="text/template" id="tmpl-singular-text-attribute">
-	<td><%= model.get("name") %></td>
+	<td><%- model.get("name") %></td>
 	<td><input type="text" class="ui-state-default ui-corner-all" value="<%- renderedValue %>" /></td>
 </script>
 
 <script type="text/template" id="tmpl-attribute-list">
 	<div>
-		<p class="description"><%= service.get("description") %></p>
+		<p class="description"><%- service.get("description") %></p>
 		<table class="tablesorter nicetable noauto ui-widget">
 			<tbody>
 
 			</tbody>
 		</table>
-		<p class="ui-corner-all config-info">Service PID: <%= service.get("pid") %></p>
+		<p class="ui-corner-all config-info">Service PID: <%- service.get("pid") %></p>
 	</div>
 </script>
 
 <script type="text/template" id="tmpl-managed-service-factory-row">
-		<td class="managedservice-name">
-			<i><%= service.get("name") %></i>
+		<td>
+			<i><%- service.get("name") %></i>
 		</td>
 		<td>
-			<i><%= service.get("bundleName") %><i>
+			<i><%- service.get("bundleName") %><i>
 		</td>
 		<td>
 			<ul class="icons">
@@ -113,13 +113,13 @@ td.managedservice-name {
 </script>
 
 <script type="text/template" id="tmpl-managed-service-row">
-		<td class="managedservice-name">
-			<% if (service.get("factoryPid") != null) { %>
+		<td>
+			<% if (service.hasFactory()) { %>
 			<div class="ui-icon ui-icon-triangle-1-e subpid"></div>
 			<% } %>
-			<%= service.get("name") %>
+			<%- service.get("name") %>
 		</td>
-		<td><%= service.get("bundleName") %></td>
+		<td><%- service.get("bundleName") %></td>
 		<td>
 			<ul class="icons">
 				<li class="dynhover ui-state-default ui-corner-all">

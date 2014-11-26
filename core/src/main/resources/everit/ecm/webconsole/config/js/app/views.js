@@ -238,10 +238,9 @@ $(document).ready(function() {
 	
 	var ManagedServiceFactoryRowView = Backbone.View.extend({
 		tagName: "tr",
-		className: "ui-state-default",
+		className: "ui-state-default managedservice-row",
 		events: {
-			"click td.managedservice-name" : "addNewConfig",
-			"click .ui-icon-pencil" : "addNewConfig"
+			"click td" : "addNewConfig",
 		},
 		addNewConfig: function() {
 			var model = this.model;
@@ -258,12 +257,13 @@ $(document).ready(function() {
 	
 	var ManagedServiceRowView = ecmconfig.ManagedServiceRowView = Backbone.View.extend({
 		tagName: "tr",
-		className: "ui-state-default",
+		className: "ui-state-default managedservice-row",
 		events: {
 			"click .ui-icon-trash" : "deleteConfig",
-			"click td.managedservice-name" : "displayConfig"
+			"click td" : "displayConfig"
 		},
-		deleteConfig: function() {
+		deleteConfig: function(e) {
+			e.stopPropagation();
 			var model = this.model;
 			var $dlg = $(loadTemplate("tmpl-confirm-delete-configuration")({
 				service: this.model
@@ -299,7 +299,7 @@ $(document).ready(function() {
 		tagName: "table",
 		className: "tablesorter nicetable noauto ui-widget",
 		initialize: function(options) {
-			this.listenTo(this.model, "reset push add remove", this.render);
+			this.listenTo(this.model, "reset add remove", this.render);
 		},
 		render: function() {
 			this.$el.empty().html($("#tmpl-managed-service-list").text());
