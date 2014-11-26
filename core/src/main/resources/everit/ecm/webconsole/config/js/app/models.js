@@ -55,6 +55,7 @@ $(document).ready(function() {
 		factoryPid: null,
 		attributes: new AttributeList(),
 		deleteConfig: function(onSuccess) {
+			var self = this;
 			var configAdminPid = this.get("appModel").get("selectedConfigAdmin").get("pid");
 			$.ajax(ecmconfig.rootPath + "/configuration.json?pid="
 					+ this.get("pid")
@@ -62,7 +63,10 @@ $(document).ready(function() {
 					+ "&configAdminPid=" + configAdminPid, {
 				type: "DELETE",
 				dataType: "json",
-				success: onSuccess
+				success: function() {
+					self.hasFactory() && self.get("appModel").get("managedServiceList").remove(self);
+					onSuccess();
+				}
 			});
 		},
 		hasFactory: function() {
@@ -78,10 +82,9 @@ $(document).ready(function() {
 			});
 			return JSON.stringify(rval);
 		},
-		saveConfiguration: function() {
+		saveConfiguration: function(onSuccess) {
 			console.log("saving ", this.attributeValuesToJSON());
-			var configAdminPid = this.getConfigAdminPid();
-			var url = ecmconfig.rootPath + "/configuration.json?configAdminPid=" + configAdminPid;
+			var url = ecmconfig.rootPath + "/configuration.json?configAdminPid=" + this.getConfigAdminPid();
 			if (this.isFactory()) {
 				url += "&factoryPid=" + this.get("factoryPid");
 			} else {
@@ -94,12 +97,10 @@ $(document).ready(function() {
 				data: this.attributeValuesToJSON(),
 				success: function(data) {
 					console.log("received", data);
-					data.pid && self.addNewEntry(data);
+					data.pid && self.get("appModel").addNewEntry(data);
+					onSuccess();
 				}
 			});
-		},
-		addNewEntry: function(rawData) {
-			this.get("appModel").addNewEntry(rawData);
 		},
 		getConfigAdminPid: function() {
 			return this.get("appModel").get("selectedConfigAdmin").get("pid");

@@ -227,7 +227,9 @@ $(document).ready(function() {
 				width: "80%",
 				buttons: {
 					"Save" : function() {
-						model.saveConfiguration();
+						model.saveConfiguration(function() {
+							$el.dialog("close");
+						});
 					}
 				}
 			});
@@ -297,7 +299,7 @@ $(document).ready(function() {
 		tagName: "table",
 		className: "tablesorter nicetable noauto ui-widget",
 		initialize: function(options) {
-			this.listenTo(this.model, "reset push add", this.render);
+			this.listenTo(this.model, "reset push add remove", this.render);
 		},
 		render: function() {
 			this.$el.empty().html($("#tmpl-managed-service-list").text());
