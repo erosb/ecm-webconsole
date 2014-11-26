@@ -242,7 +242,6 @@ $(document).ready(function() {
 			"click .ui-icon-pencil" : "addNewConfig"
 		},
 		addNewConfig: function() {
-			console.log("adding new config to factory");
 			var model = this.model;
 			model.loadConfiguration(function (attrList) {
 				new AttributeListView({model: model}).render();
@@ -298,7 +297,7 @@ $(document).ready(function() {
 		tagName: "table",
 		className: "tablesorter nicetable noauto ui-widget",
 		initialize: function(options) {
-			this.listenTo(this.model, "reset", this.render);
+			this.listenTo(this.model, "reset push add", this.render);
 		},
 		render: function() {
 			this.$el.empty().html($("#tmpl-managed-service-list").text());

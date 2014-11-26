@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -43,9 +42,6 @@ import org.apache.felix.webconsole.AbstractWebConsolePlugin;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONWriter;
-import org.osgi.framework.ServiceReference;
-import org.osgi.service.cm.ManagedService;
-import org.osgi.service.metatype.ObjectClassDefinition;
 
 public class ConfigServlet extends AbstractWebConsolePlugin {
     private static final long serialVersionUID = 1957046444200622859L;
@@ -76,31 +72,6 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
         }
     }
 
-    private Consumer<ServiceReference<ManagedService>> createManagedServiceJSONSerializer(
-            final JSONWriter writer) {
-        return (serviceRef) -> {
-            writer.object();
-            writer.key("bundleSymName");
-            writer.value(serviceRef.getBundle().getSymbolicName());
-            writer.key("bundleName");
-            writer.value(serviceRef.getBundle().getHeaders().get("Bundle-Name"));
-            writer.key("location");
-            writer.value(serviceRef.getBundle().getLocation());
-            ObjectClassDefinition objClassDef = configManager.getObjectClassDefinition(serviceRef);
-            writer.key("name");
-            writer.value(objClassDef.getName());
-            writer.key("description");
-            writer.value(objClassDef.getDescription());
-            writer.key("pid");
-            writer.value(serviceRef.getProperty("service.pid"));
-            writer.endObject();
-            // System.out.println("managedservice prop keys: " + Arrays.asList(serviceRef.getPropertyKeys()));
-            // for (String key : serviceRef.getPropertyKeys()) {
-            // System.out.println("\t\t" + key + ": " + serviceRef.getProperty(key));
-            // }
-        };
-    }
-
     @Override
     protected void doDelete(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
     IOException {
@@ -125,11 +96,15 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
         String location = req.getParameter("location");
         Map<String, List<String>> attributes = extractRawAttributesFromJSON(new JSONObject(requestBody));
         if (pid == null) {
-            configManager.createConfiguration(configAdminPid, factoryPid, location, attributes);
+            resp.setContentType("application/json");
+            JSONWriter writer = new JSONWriter(resp.getWriter());
+            configManager.createConfiguration(configAdminPid, factoryPid, location, attributes)
+            .toJSON(writer);
+
         } else {
             configManager.updateConfiguration(configAdminPid, pid, factoryPid, attributes);
+            printSuccess(resp);
         }
-        printSuccess(resp);
     }
 
     private Map<String, List<String>> extractRawAttributesFromJSON(final JSONObject json) {

@@ -67,9 +67,9 @@ public class ConfigurableLookup {
         for (String factoryPid : metatypeInfo.getFactoryPids()) {
             ObjectClassDefinition objClassDef = metatypeInfo.getObjectClassDefinition(factoryPid, null);
             getConfigurableByFactoryPid(factoryPid)
-                    .setName(objClassDef.getName())
-                    .setDescription(objClassDef.getDescription())
-                    .setBundleName(bundle.getHeaders().get("Bundle-Name"));
+            .setName(objClassDef.getName())
+            .setDescription(objClassDef.getDescription())
+            .setBundleName(bundle.getHeaders().get("Bundle-Name"));
             createConfigurablesOfFactory(factoryPid, objClassDef);
         }
     }
@@ -78,9 +78,9 @@ public class ConfigurableLookup {
         for (String pid : metatypeInfo.getPids()) {
             ObjectClassDefinition objClassDef = metatypeInfo.getObjectClassDefinition(pid, null);
             getConfigurableByPid(pid)
-                    .setName(objClassDef.getName())
-                    .setDescription(objClassDef.getDescription())
-                    .setBundleName(bundle.getHeaders().get("Bundle-Name"));
+            .setName(objClassDef.getName())
+            .setDescription(objClassDef.getDescription())
+            .setBundleName(bundle.getHeaders().get("Bundle-Name"));
         }
     }
 
@@ -90,9 +90,9 @@ public class ConfigurableLookup {
             for (Configuration conf : Optional.ofNullable(arr).orElse(new Configuration[0])) {
                 String pid = (String) conf.getProperties().get("service.pid");
                 getConfigurableByPid(pid)
-                        .setFactoryPid(factoryPid)
-                        .setName(pid)
-                        .setDescription(objClassDef.getName());
+                .setFactoryPid(factoryPid)
+                .setName(pid)
+                .setDescription(objClassDef.getName());
             }
         } catch (IOException | InvalidSyntaxException e) {
             throw new RuntimeException(e);

@@ -129,13 +129,19 @@ public class ConfigManager {
         return rval;
     }
 
-    public void createConfiguration(final String configAdminPid, final String factoryPid,
+    public Configurable createConfiguration(final String configAdminPid, final String factoryPid,
             final String location, final Map<String, List<String>> attributes) {
         ConfigurationAdmin configAdmin = getConfigAdmin(configAdminPid);
         try {
             ObjectClassDefinition objClassDef = objectClassDefinitionLookup().lookup(null, factoryPid);
             Configuration newConfig = configAdmin.createFactoryConfiguration(factoryPid, location);
             newConfig.update(mapToProperties(objClassDef, attributes));
+            String pid = newConfig.getPid();
+            return new Configurable()
+            .setPid(pid)
+            .setFactoryPid(factoryPid)
+            .setName(pid)
+            .setDescription(objClassDef.getName());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -162,7 +168,7 @@ public class ConfigManager {
             final String serviceLocation,
             final String configAdminPid) {
         return new AttributeLookup(getConfigAdmin(configAdminPid), bundleCtx, metaTypeService())
-        .lookupAttributes(servicePid, factoryPid, serviceLocation);
+                .lookupAttributes(servicePid, factoryPid, serviceLocation);
     }
 
     public ObjectClassDefinition getObjectClassDefinition(final ServiceReference<ManagedService> serviceRef) {
@@ -183,7 +189,7 @@ public class ConfigManager {
 
     public Collection<Configurable> lookupConfigurations() {
         return new ConfigurableLookup(cfgAdminTracker.getService(), bundleCtx, metaTypeService())
-        .lookupConfigurables();
+                .lookupConfigurables();
     }
 
     private Dictionary<String, Object> mapToProperties(final ObjectClassDefinition objClassDef,

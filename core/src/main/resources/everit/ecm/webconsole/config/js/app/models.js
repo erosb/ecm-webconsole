@@ -87,14 +87,19 @@ $(document).ready(function() {
 			} else {
 				url += "&pid=" + this.get("pid");
 			}
+			var self = this;
 			$.ajax(url, {
 				type: "PUT",
 				dataType: "json",
 				data: this.attributeValuesToJSON(),
 				success: function(data) {
 					console.log("received", data);
+					data.pid && self.addNewEntry(data);
 				}
 			});
+		},
+		addNewEntry: function(rawData) {
+			this.get("appModel").addNewEntry(rawData);
 		},
 		getConfigAdminPid: function() {
 			return this.get("appModel").get("selectedConfigAdmin").get("pid");
@@ -182,14 +187,20 @@ $(document).ready(function() {
 				self.get("configAdminList").reset(newList);
 			});
 		},
+		addNewEntry: function(rawService) {
+			this.get("managedServiceList").push(this.createNewEntry(rawService));
+		},
+		createNewEntry: function(rawService) {
+			var managedService = new ManagedServiceModel(rawService);
+			managedService.set("appModel", this);
+			return managedService;
+		},
 		refreshManagedServiceList : function() {
 			var self = this;
 			$.getJSON(ecmconfig.rootPath + "/managedservices.json", function(data) {
 				var newList = [];
 				data.forEach(function(rawService) {
-					var managedService = new ManagedServiceModel(rawService);
-					managedService.set("appModel", self);
-					newList.push(managedService);
+					newList.push(self.createNewEntry(rawService));
 				});
 				self.get("managedServiceList").reset(newList);
 			});
