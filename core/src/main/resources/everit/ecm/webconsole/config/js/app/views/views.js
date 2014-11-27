@@ -41,13 +41,13 @@ $(document).ready(function() {
 			var $tbody = $el.find("tbody")
 			this.model.get("attributes").forEach(function(attr) {
 				var $frame = $(loadTemplate("tmpl-attribute-frame")({model: attr}));
-				$frame.find("td:eq(1)").append(ecmconfig.createViewForAttribute(attr).render());
+				$frame.find("td:eq(1)").prepend(ecmconfig.createViewForAttribute(attr).render()).css("width", "99%");
 				$tbody.append($frame);
 			});
 			var self = this;
 			$el.dialog({
 				modal: true,
-				width: "80%",
+				width: "90%",
 				buttons: {
 					"Save" : function(e) {
 						self.saveConfiguration();

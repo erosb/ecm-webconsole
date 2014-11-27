@@ -73,17 +73,16 @@ tr.managedservice-row {
 	<tr>
 		<td>
 			<%- model.get("name") %>
-			<div class="description"><%- model.get("description") %></div>
 		</td>
 		<td>
-			
+			<div class="description"><%- model.get("description") %></div>			
 		</td>
 	</tr>
 </script>
 
 <script type="text/template" id="tmpl-singular-text-attribute">
 	<td><%- model.get("name") %></td>
-	<td><input type="text" class="ui-state-default ui-corner-all" value="<%- renderedValue %>" /></td>
+	<td><input type="text" class="ui-state-default ui-corner-all" value="<%- renderedValue %>" style="width: 99%"/></td>
 </script>
 
 <script type="text/template" id="tmpl-attribute-list">
