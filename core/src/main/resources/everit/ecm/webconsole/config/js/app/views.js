@@ -221,17 +221,25 @@ $(document).ready(function() {
 				$frame.find("td:eq(1)").append(createViewForAttribute(attr).render());
 				$tbody.append($frame);
 			});
-			var model = this.model;
+			var self = this;
 			$el.dialog({
 				modal: true,
 				width: "80%",
 				buttons: {
-					"Save" : function() {
-						model.saveConfiguration(function() {
-							$el.dialog("close");
-						});
+					"Save" : function(e) {
+						e.stopPropagation();
+						e.originalEvent.stopPropagation();
+						e.originalEvent.cancelBubble = true;
+						console.log("event: ", e);
+						self.saveConfiguration();
 					}
 				}
+			});
+		},
+		saveConfiguration: function() {
+			var self = this;
+			this.model.saveConfiguration(function() {
+				self.$el.dialog("close");
 			});
 		}
 	});
@@ -240,9 +248,9 @@ $(document).ready(function() {
 		tagName: "tr",
 		className: "ui-state-default managedservice-row",
 		events: {
-			"click td" : "addNewConfig",
+			"click td" : "displayConfig",
 		},
-		addNewConfig: function() {
+		displayConfig: function() {
 			var model = this.model;
 			model.loadConfiguration(function (attrList) {
 				new AttributeListView({model: model}).render();
@@ -300,18 +308,53 @@ $(document).ready(function() {
 		className: "tablesorter nicetable noauto ui-widget",
 		initialize: function(options) {
 			this.listenTo(this.model, "reset add remove", this.render);
+			this.focusedRowIdx = 0;
+			this.activeRowClass = "ui-state-active";
+		},
+		keys: {
+			"up": "moveFocusUp",
+			"down": "moveFocusDown",
+			"enter": "displayConfig"
+		},
+		moveFocusUp: function() {
+			if (this.focusedRowIdx === 0) {
+				return;
+			}
+			this.rowViews[this.focusedRowIdx].$el.removeClass(this.activeRowClass);
+			--this.focusedRowIdx;
+			this.rowViews[this.focusedRowIdx].$el.addClass(this.activeRowClass);
+			console.log("focus moved up")
+		},
+		moveFocusDown: function() {
+			if (this.focusedRowIdx >= this.rowViews.length - 1) {
+				return;
+			}
+			this.rowViews[this.focusedRowIdx].$el.removeClass(this.activeRowClass);
+			++this.focusedRowIdx;
+			this.rowViews[this.focusedRowIdx].$el.addClass(this.activeRowClass);
+			console.log("focus moved down")
+		},
+		displayConfig: function() {
+			this.rowViews[this.focusedRowIdx].displayConfig();
 		},
 		render: function() {
 			this.$el.empty().html($("#tmpl-managed-service-list").text());
 			var $tbody = this.$el.find("tbody");
+			var rowViews = this.rowViews = [];
 			this.model.topLevelEntries().forEach(function(service) {
 				if (service.isFactory()) {
-					$tbody.append(new ManagedServiceFactoryRowView({model: service}).render());
+					var rowView = new ManagedServiceFactoryRowView({model: service});
+					rowViews.push(rowView);
+					$tbody.append(rowView.render());
 					this.model.getInstancesOf(service).forEach(function(inst) {
-						$tbody.append(new ManagedServiceRowView({model: inst}).render());
+						var rowView = new ManagedServiceRowView({model: inst});
+						rowViews.push(rowView);
+						$tbody.append(rowView.render());
 					});
 				} else {
-					$tbody.append(new ManagedServiceRowView({model: service}).render());
+					var rowView = new ManagedServiceRowView({model: service});
+					rowViews.push(rowView);
+					$tbody.append(rowView.render());
 				}
 			}, this);
 			this.$el.tablesorter();

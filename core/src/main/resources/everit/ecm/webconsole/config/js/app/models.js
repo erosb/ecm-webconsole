@@ -147,7 +147,7 @@ $(document).ready(function() {
 		getInstancesOf: function(factoryService) {
 			var factoryPid = factoryService.get("factoryPid");
 			return this.filter(function(e) {
-				return e.get("factoryPid") == factoryPid && e.get("pid") !== null
+				return e.get("factoryPid") == factoryPid && e.get("pid") !== null;
 			});
 		}
 	});
