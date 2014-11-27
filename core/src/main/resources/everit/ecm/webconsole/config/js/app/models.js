@@ -83,7 +83,7 @@ $(document).ready(function() {
 			return JSON.stringify(rval);
 		},
 		saveConfiguration: function(onSuccess) {
-			console.log("saving ", this.attributeValuesToJSON());
+			// console.log("saving ", this.attributeValuesToJSON());
 			var url = ecmconfig.rootPath + "/configuration.json?configAdminPid=" + this.getConfigAdminPid();
 			if (this.isFactory()) {
 				url += "&factoryPid=" + this.get("factoryPid");

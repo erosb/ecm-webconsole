@@ -54,7 +54,8 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             "lib/backbone.keys.js",
             "app/app.js",
             "app/models.js",
-            "app/views.js",
+            "app/views/views.js",
+            "app/views/attributeviews.js",
             "backbone.queryparams.min.js",
             "backbone.queryparams-1.1-shim.js"
             ));
@@ -75,7 +76,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void doDelete(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-            IOException {
+    IOException {
         String pathInfo = req.getPathInfo();
         if (pathInfo.endsWith("/configuration.json")) {
             String servicePid = req.getParameter("pid");
@@ -88,7 +89,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void doPut(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-            IOException {
+    IOException {
         String requestBody = requestBody(req);
         // System.out.println("received " + req.getCharacterEncoding() + ": '" + requestBody + "'");
         String pid = req.getParameter("pid");
@@ -100,7 +101,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             resp.setContentType("application/json");
             JSONWriter writer = new JSONWriter(resp.getWriter());
             configManager.createConfiguration(configAdminPid, factoryPid, location, attributes)
-                    .toJSON(writer);
+            .toJSON(writer);
 
         } else {
             configManager.updateConfiguration(configAdminPid, pid, factoryPid, attributes);
@@ -244,7 +245,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void renderContent(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-            IOException {
+    IOException {
         String pathInfo = req.getPathInfo();
         if (isMainPageRequest(pathInfo)) {
             loadMainPage(resp, req.getAttribute("felix.webconsole.pluginRoot").toString());
