@@ -19,8 +19,8 @@ $(document).ready(function() {
 
 	var ConfigRouter = Backbone.Router.extend({
 		routes: {
-			":configAdminPid" : "showConfigAdmin",
-			":configAdminPid/:servicePid" : "showService"
+			":configAdminPid/:servicePid" : "showService",
+			"*configAdminPid" : "showConfigAdmin"
 		}
 	});
 	
@@ -33,22 +33,21 @@ $(document).ready(function() {
 	});
 	appModel.updateConfigAdminList(ecmconfig.configAdmins);
 	
-	(new ecmconfig.ConfigAdminListView({
+	new ecmconfig.ConfigAdminListView({
 		el: document.getElementById("cnt-header"),
 		model: appModel
-	})).render();
+	}).render();
 	
-	var managedServiceListView = new ecmconfig.ManagedServiceListView({
+	$("#cnt-main").append(new ecmconfig.ManagedServiceListView({
 		model: managedServiceList
-	});
-	$("#cnt-main").append(managedServiceListView.render());
+	}).render());
 	
 	Backbone.history.start({
 		pushState: true,
 		root: ecmconfig.rootPath
 	});
 	
-	appModel.refreshManagedServiceList();
+	//appModel.refreshManagedServiceList();
 	
 })(window.ecmconfig);
 });

@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
@@ -92,7 +93,6 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
     protected void doPut(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
             IOException {
         String requestBody = requestBody(req);
-        // System.out.println("received " + req.getCharacterEncoding() + ": '" + requestBody + "'");
         String pid = req.getParameter("pid");
         String factoryPid = req.getParameter("factoryPid");
         String configAdminPid = req.getParameter("configAdminPid");
@@ -179,29 +179,31 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     private String listConfigAdminServices() {
         StringWriter strWriter = new StringWriter();
-        JSONWriter writer = new JSONWriter(strWriter);
-        writer.array();
-        configManager.configAdminStream().forEach((confAdmin) -> {
-            writer.object();
-            writer.key("pid");
-            writer.value(confAdmin.getProperty("service.pid"));
-            writer.key("description");
-            writer.value(confAdmin.getProperty("service.description"));
-            writer.key("bundleId");
-            writer.value(confAdmin.getBundle().getBundleId());
-            writer.endObject();
-        });
-        writer.endArray();
+        listConfigAdminServices(strWriter);
         return strWriter.toString();
     }
 
-    private void listManagedServices(final HttpServletResponse resp) {
+    private void listConfigAdminServices(final Writer writer) {
+        JSONWriter jsonWriter = new JSONWriter(writer);
+        jsonWriter.array();
+        configManager.configAdminStream().forEach((confAdmin) -> {
+            jsonWriter.object();
+            jsonWriter.key("pid");
+            jsonWriter.value(confAdmin.getProperty("service.pid"));
+            jsonWriter.key("description");
+            jsonWriter.value(confAdmin.getProperty("service.description"));
+            jsonWriter.key("bundleId");
+            jsonWriter.value(confAdmin.getBundle().getBundleId());
+            jsonWriter.endObject();
+        });
+        jsonWriter.endArray();
+    }
+
+    private void listManagedServices(final String configAdminPid, final HttpServletResponse resp) {
         try {
             JSONWriter writer = new JSONWriter(resp.getWriter());
             writer.array();
-            configManager.lookupConfigurations().forEach((configurable) -> configurable.toJSON(writer));
-            // configManager.listManagedServices().forEach(
-            // (serviceRef) -> createManagedServiceJSONSerializer(writer).accept(serviceRef));
+            configManager.lookupConfigurations(configAdminPid).forEach((configurable) -> configurable.toJSON(writer));
             writer.endArray();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -252,9 +254,10 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
         } else {
             resp.setHeader("Content-Type", "application/json");
             if (pathInfo.endsWith("/configadmin.json")) {
-                // listConfigAdminServices(resp);
+                listConfigAdminServices(resp.getWriter());
             } else if (pathInfo.endsWith("/managedservices.json")) {
-                listManagedServices(resp);
+                String configAdminPid = req.getParameter("configAdminPid");
+                listManagedServices(configAdminPid, resp);
             } else if (pathInfo.endsWith("/configuration.json")) {
                 String pid = req.getParameter("pid");
                 String factoryPid = req.getParameter("factoryPid");

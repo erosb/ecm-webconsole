@@ -50,15 +50,11 @@ $(document).ready(function() {
 				width: "90%",
 				buttons: {
 					"Save" : function(e) {
-						self.saveConfiguration();
+						self.model.saveConfiguration().then(function() {
+							self.$el.dialog("close");
+						});
 					}
 				}
-			});
-		},
-		saveConfiguration: function() {
-			var self = this;
-			this.model.saveConfiguration(function() {
-				self.$el.dialog("close");
 			});
 		}
 	});
@@ -99,7 +95,7 @@ $(document).ready(function() {
 				modal: true,
 				buttons: {
 					"Yes" : function() {
-						model.deleteConfig(function() {
+						model.deleteConfig().then(function() {
 							$dlg.dialog("close");
 						});
 					},
@@ -130,6 +126,9 @@ $(document).ready(function() {
 			this.focusedRowIdx = 0;
 			this.activeRowClass = "ui-state-active";
 		},
+		attributes: {
+			"tabindex": 0
+		},
 		keys: {
 			"up": "moveFocusUp",
 			"down": "moveFocusDown",
@@ -156,7 +155,9 @@ $(document).ready(function() {
 			this.rowViews[++this.focusedRowIdx].$el.addClass(this.activeRowClass);
 		},
 		isKeyEventToBeHandled: function(e) {
-			return e.target == this.rowViews[this.focusedRowIdx] || e.target == document.body;
+			return (e.target == this.rowViews[this.focusedRowIdx]
+				|| e.target == document.body
+				|| e.target == this.el);
 		},
 		displayConfig: function(e) {
 			if (this.isKeyEventToBeHandled(e)) {

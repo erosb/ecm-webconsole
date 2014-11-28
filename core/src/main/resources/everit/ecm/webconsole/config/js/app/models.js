@@ -54,19 +54,17 @@ $(document).ready(function() {
 		pid: null,
 		factoryPid: null,
 		attributes: new AttributeList(),
-		deleteConfig: function(onSuccess) {
+		deleteConfig: function() {
 			var self = this;
 			var configAdminPid = this.get("appModel").get("selectedConfigAdmin").get("pid");
-			$.ajax(ecmconfig.rootPath + "/configuration.json?pid="
+			return $.ajax(ecmconfig.rootPath + "/configuration.json?pid="
 					+ this.get("pid")
 					+ "&location=" + this.get("location")
 					+ "&configAdminPid=" + configAdminPid, {
 				type: "DELETE",
-				dataType: "json",
-				success: function() {
-					self.hasFactory() && self.get("appModel").get("managedServiceList").remove(self);
-					onSuccess();
-				}
+				dataType: "json"
+			}).then(function() {
+				self.hasFactory() && self.get("appModel").get("managedServiceList").remove(self);
 			});
 		},
 		hasFactory: function() {
@@ -83,7 +81,6 @@ $(document).ready(function() {
 			return JSON.stringify(rval);
 		},
 		saveConfiguration: function(onSuccess) {
-			// console.log("saving ", this.attributeValuesToJSON());
 			var url = ecmconfig.rootPath + "/configuration.json?configAdminPid=" + this.getConfigAdminPid();
 			if (this.isFactory()) {
 				url += "&factoryPid=" + this.get("factoryPid");
@@ -91,15 +88,13 @@ $(document).ready(function() {
 				url += "&pid=" + this.get("pid");
 			}
 			var self = this;
-			$.ajax(url, {
+			return $.ajax(url, {
 				type: "PUT",
 				dataType: "json",
-				data: this.attributeValuesToJSON(),
-				success: function(data) {
-					console.log("received", data);
-					data.pid && self.get("appModel").addNewEntry(data);
-					onSuccess();
-				}
+				data: this.attributeValuesToJSON()
+			}).then(function(data) {
+				console.log("received", data);
+				data.pid && self.get("appModel").addNewEntry(data);
 			});
 		},
 		getConfigAdminPid: function() {
@@ -121,20 +116,19 @@ $(document).ready(function() {
 			if ((location = this.get("location")) !== null) {
 				url += "&location=" + location;
 			}
-			$.ajax(url, {
+			return $.ajax(url, {
 				type: "GET",
-				dataType: "json",
-				success: function(data) {
-					var newAttributes = [];
-					data.forEach(function(rawAttr) {
-						newAttributes.push(new AttributeModel(rawAttr));
-					});
-					var attrList = self.get("attributes");
-					attrList.reset(newAttributes);
-					ecmconfig.router.navigate(self.get("appModel").get("selectedConfigAdmin").get("pid")
-							+ "/" + self.get("pid"));
-					onSuccess(attrList);
-				}
+				dataType: "json"
+			}).then(function(data) {
+				var newAttributes = [];
+				data.forEach(function(rawAttr) {
+					newAttributes.push(new AttributeModel(rawAttr));
+				});
+				var attrList = self.get("attributes");
+				attrList.reset(newAttributes);
+				ecmconfig.router.navigate(self.get("appModel").get("selectedConfigAdmin").get("pid")
+						+ "/" + self.get("pid"));
+				onSuccess(attrList);
 			});
 		}
 	});
@@ -156,8 +150,11 @@ $(document).ready(function() {
 
 	var ApplicationModel = ecmconfig.ApplicationModel = Backbone.Model.extend({
 		initialize: function(options) {
-			ecmconfig.router.on("route:showService", function(e) {
-				console.log("TODO showing service", e);
+			ecmconfig.router.on("route:showService", function(configAdminPid, servicePid) {
+				console.log("TODO showing service", arguments);
+			});
+			ecmconfig.router.on("route:showConfigAdmin", function(configAdminPid) {
+				console.log("TODO showing configadmin", arguments);
 			});
 			var configAdminList = new ConfigAdminList();
 			configAdminList.on("reset", this.configAdminListChanged, this);
@@ -166,31 +163,24 @@ $(document).ready(function() {
 		},
 		configAdminListChanged: function() {
 			var configAdminList = this.get("configAdminList");
-			var configAdminPid = this.get("selectedConfigAdminPid");
+			var selectedConfigAdmin = this.get("selectedConfigAdmin");
+			var configAdminPid = this.get("selectedConfigAdmin") == null ? null : selectedConfigAdmin.get("pid");
 			if (configAdminPid == null
 					&& configAdminList.length > 0) {
 				this.set("selectedConfigAdmin", configAdminList.at(0));
-			} else if (configAdminPid != null) {
-				var selectedConfigAdmin = configAdminList.findWhere({pid: configAdminPid});
-				this.set("selectedConfigAdmin", selectedConfigAdmin);
 			}
 		},
 		selectedConfigAdminChanged: function() {
 			ecmconfig.router.navigate(this.get("selectedConfigAdmin").get("pid"));
+			this.refreshManagedServiceList();
 		},
 		managedServiceList: null,
 		configAdminList: new ConfigAdminList(),
 		selectedConfigAdmin: null,
 		refreshConfigAdminList: function(onReady) {
 			var self = this;
-			$.getJSON(ecmconfig.rootPath + "/configadmin.json", function(data) {
-				var newList = [];
-				data.forEach(function(rawConfigAdmin){
-					var configAdmin = new ConfigAdminModel(rawConfigAdmin);
-					configAdmin.set("appModel", self);
-					newList.push(configAdmin);
-				});
-				self.get("configAdminList").reset(newList);
+			$.getJSON(ecmconfig.rootPath + "/configadmin.json").then(function(data) {
+				self.updateConfigAdminList(data);
 			});
 		},
 		updateConfigAdminList: function(rawConfigAdmins) {
@@ -211,9 +201,12 @@ $(document).ready(function() {
 			return managedService;
 		},
 		refreshManagedServiceList : function() {
-			var self = this;
-			$.getJSON(ecmconfig.rootPath + "/managedservices.json", function(data) {
-				//self.updateConfigAdminList(data);
+			var self = this, url = ecmconfig.rootPath + "/managedservices.json";
+			var selectedConfigAdmin = this.get("selectedConfigAdmin");
+			if (selectedConfigAdmin !== null) {
+				url += "?configAdminPid=" + selectedConfigAdmin.get("pid"); 
+			}
+			$.getJSON(url).then(function(data) {
 				var newList = [];
 				data.forEach(function(rawService) {
 					newList.push(self.createNewEntry(rawService));
