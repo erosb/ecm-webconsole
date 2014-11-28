@@ -131,6 +131,8 @@ $(document).ready(function() {
 					});
 					var attrList = self.get("attributes");
 					attrList.reset(newAttributes);
+					ecmconfig.router.navigate(self.get("appModel").get("selectedConfigAdmin").get("pid")
+							+ "/" + self.get("pid"));
 					onSuccess(attrList);
 				}
 			});
@@ -154,6 +156,9 @@ $(document).ready(function() {
 
 	var ApplicationModel = ecmconfig.ApplicationModel = Backbone.Model.extend({
 		initialize: function(options) {
+			ecmconfig.router.on("route:showService", function(e) {
+				console.log("TODO showing service", e);
+			});
 			var configAdminList = new ConfigAdminList();
 			configAdminList.on("reset", this.configAdminListChanged, this);
 			this.set("configAdminList", configAdminList);
@@ -188,6 +193,15 @@ $(document).ready(function() {
 				self.get("configAdminList").reset(newList);
 			});
 		},
+		updateConfigAdminList: function(rawConfigAdmins) {
+			var newList = [];
+			rawConfigAdmins.forEach(function(rawConfigAdmin) {
+				var configAdmin = new ConfigAdminModel(rawConfigAdmin);
+				configAdmin.set("appModel", self);
+				newList.push(configAdmin);
+			});
+			this.get("configAdminList").reset(newList);
+		},
 		addNewEntry: function(rawService) {
 			this.get("managedServiceList").push(this.createNewEntry(rawService));
 		},
@@ -199,6 +213,7 @@ $(document).ready(function() {
 		refreshManagedServiceList : function() {
 			var self = this;
 			$.getJSON(ecmconfig.rootPath + "/managedservices.json", function(data) {
+				//self.updateConfigAdminList(data);
 				var newList = [];
 				data.forEach(function(rawService) {
 					newList.push(self.createNewEntry(rawService));

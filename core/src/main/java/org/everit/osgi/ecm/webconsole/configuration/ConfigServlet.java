@@ -20,6 +20,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
@@ -76,7 +77,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void doDelete(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-    IOException {
+            IOException {
         String pathInfo = req.getPathInfo();
         if (pathInfo.endsWith("/configuration.json")) {
             String servicePid = req.getParameter("pid");
@@ -89,7 +90,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void doPut(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-    IOException {
+            IOException {
         String requestBody = requestBody(req);
         // System.out.println("received " + req.getCharacterEncoding() + ": '" + requestBody + "'");
         String pid = req.getParameter("pid");
@@ -101,7 +102,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             resp.setContentType("application/json");
             JSONWriter writer = new JSONWriter(resp.getWriter());
             configManager.createConfiguration(configAdminPid, factoryPid, location, attributes)
-            .toJSON(writer);
+                    .toJSON(writer);
 
         } else {
             configManager.updateConfiguration(configAdminPid, pid, factoryPid, attributes);
@@ -176,24 +177,22 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
                         .endsWith("json"));
     }
 
-    private void listConfigAdminServices(final HttpServletResponse resp) {
-        try {
-            JSONWriter writer = new JSONWriter(resp.getWriter());
-            writer.array();
-            configManager.configAdminStream().forEach((confAdmin) -> {
-                writer.object();
-                writer.key("pid");
-                writer.value(confAdmin.getProperty("service.pid"));
-                writer.key("description");
-                writer.value(confAdmin.getProperty("service.description"));
-                writer.key("bundleId");
-                writer.value(confAdmin.getBundle().getBundleId());
-                writer.endObject();
-            });
-            writer.endArray();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    private String listConfigAdminServices() {
+        StringWriter strWriter = new StringWriter();
+        JSONWriter writer = new JSONWriter(strWriter);
+        writer.array();
+        configManager.configAdminStream().forEach((confAdmin) -> {
+            writer.object();
+            writer.key("pid");
+            writer.value(confAdmin.getProperty("service.pid"));
+            writer.key("description");
+            writer.value(confAdmin.getProperty("service.description"));
+            writer.key("bundleId");
+            writer.value(confAdmin.getBundle().getBundleId());
+            writer.endObject();
+        });
+        writer.endArray();
+        return strWriter.toString();
     }
 
     private void listManagedServices(final HttpServletResponse resp) {
@@ -212,6 +211,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
     private void loadMainPage(final HttpServletResponse resp, final String pluginRoot) throws IOException {
         Map<String, String> templateVars = new HashMap<String, String>(1);
         templateVars.put("rootPath", pluginRoot);
+        templateVars.put("configAdmins", listConfigAdminServices());
         resp.getWriter().println(loadTemplate("/everit/ecm/webconsole/config/template.html", templateVars));
     }
 
@@ -245,14 +245,14 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void renderContent(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-    IOException {
+            IOException {
         String pathInfo = req.getPathInfo();
         if (isMainPageRequest(pathInfo)) {
             loadMainPage(resp, req.getAttribute("felix.webconsole.pluginRoot").toString());
         } else {
             resp.setHeader("Content-Type", "application/json");
             if (pathInfo.endsWith("/configadmin.json")) {
-                listConfigAdminServices(resp);
+                // listConfigAdminServices(resp);
             } else if (pathInfo.endsWith("/managedservices.json")) {
                 listManagedServices(resp);
             } else if (pathInfo.endsWith("/configuration.json")) {

@@ -16,30 +16,32 @@
  */
 $(document).ready(function() {
 (function(ecmconfig) {
+
+	var ConfigRouter = Backbone.Router.extend({
+		routes: {
+			":configAdminPid" : "showConfigAdmin",
+			":configAdminPid/:servicePid" : "showService"
+		}
+	});
+	
+	ecmconfig.router = new ConfigRouter();
 	
 	var managedServiceList = new ecmconfig.ManagedServiceList();
 	
 	var appModel = new ecmconfig.ApplicationModel({
 		managedServiceList : managedServiceList
 	});
+	appModel.updateConfigAdminList(ecmconfig.configAdmins);
 	
-	var configAdminListView = new ecmconfig.ConfigAdminListView({
+	(new ecmconfig.ConfigAdminListView({
 		el: document.getElementById("cnt-header"),
 		model: appModel
-	});
+	})).render();
 	
 	var managedServiceListView = new ecmconfig.ManagedServiceListView({
 		model: managedServiceList
 	});
 	$("#cnt-main").append(managedServiceListView.render());
-	
-	appModel.refreshConfigAdminList();
-	
-	var ConfigRouter = Backbone.Router.extend({
-		":configAdminPid" : "showConfigAdmin" 
-	});
-	
-	ecmconfig.router = new ConfigRouter();
 	
 	Backbone.history.start({
 		pushState: true,
