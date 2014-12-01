@@ -39,7 +39,8 @@ $(document).ready(function() {
 	}).render();
 	
 	$("#cnt-main").append(new ecmconfig.ManagedServiceListView({
-		model: managedServiceList
+		model: managedServiceList,
+		appModel: appModel
 	}).render());
 	
 	Backbone.history.start({

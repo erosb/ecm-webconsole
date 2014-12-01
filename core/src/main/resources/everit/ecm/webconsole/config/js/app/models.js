@@ -93,16 +93,11 @@ $(document).ready(function() {
 				dataType: "json",
 				data: this.attributeValuesToJSON()
 			}).then(function(data) {
-				console.log("received", data);
 				data.pid && self.get("appModel").addNewEntry(data);
 			});
 		},
 		getConfigAdminPid: function() {
 			return this.get("appModel").get("selectedConfigAdmin").get("pid");
-		},
-		getProp: function(propName, defaultValue) {
-			var value = this.get(propName);
-			return value === null ? defaultValue : value;
 		},
 		loadConfiguration: function() {
 			var self = this, pid, factoryPid, location;
@@ -120,15 +115,9 @@ $(document).ready(function() {
 				type: "GET",
 				dataType: "json"
 			}).then(function(data) {
-				var newAttributes = [];
-				data.forEach(function(rawAttr) {
-					newAttributes.push(new AttributeModel(rawAttr));
-				});
-				var attrList = self.get("attributeList");
-				attrList.reset(newAttributes);
-				ecmconfig.router.navigate(self.get("appModel").get("selectedConfigAdmin").get("pid")
-						+ "/" + self.get("pid"));
-				return attrList;
+				self.get("attributeList").reset(data);
+				self.get("appModel").set("displayedService", self);
+				return self.get("attributeList");
 			});
 		}
 	});
@@ -152,8 +141,8 @@ $(document).ready(function() {
 		initialize: function(options) {
 			var self = this;
 			ecmconfig.router.on("route:showService", function(configAdminPid, servicePid) {
-				console.log("TODO showing service", arguments);
 				self.set("selectedConfigAdmin", self.get("configAdminList").findWhere({pid: configAdminPid}));
+				self.get("managedServiceList").findWhere({pid: servicePid}).loadConfiguration();
 			});
 			ecmconfig.router.on("route:showConfigAdmin", function(configAdminPid) {
 				var list = self.get("configAdminList");
@@ -164,6 +153,13 @@ $(document).ready(function() {
 			//configAdminList.on("reset", this.configAdminListChanged, this);
 			this.set("configAdminList", configAdminList);
 			this.on("change:selectedConfigAdmin", this.selectedConfigAdminChanged, this);
+			this.on("change:displayedService", function(appModel, displayedService) {
+				var url= self.get("selectedConfigAdmin").get("pid");
+				if (displayedService !== null) {
+					url += ("/" + self.get("displayedService").get("pid"));
+				}
+				ecmconfig.router.navigate(url);
+			});
 		},
 		configAdminListChanged: function() {
 			var configAdminList = this.get("configAdminList");
@@ -176,7 +172,6 @@ $(document).ready(function() {
 		},
 		selectedConfigAdminChanged: function() {
 			var selectedConfigAdmin = this.get("selectedConfigAdmin");
-			console.log("selected configadmin changed", selectedConfigAdmin)
 			if (selectedConfigAdmin === null || selectedConfigAdmin === undefined) {
 				ecmconfig.router.navigate("");
 			} else {
@@ -208,6 +203,7 @@ $(document).ready(function() {
 			});
 			this.get("configAdminList").reset(newList);
 		},
+		displayedService: null,
 		addNewEntry: function(rawService) {
 			this.get("managedServiceList").push(this.createNewEntry(rawService));
 		},

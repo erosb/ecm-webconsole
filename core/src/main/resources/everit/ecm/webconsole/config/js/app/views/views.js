@@ -54,6 +54,9 @@ $(document).ready(function() {
 							self.$el.dialog("close");
 						});
 					}
+				},
+				close: function() {
+					self.model.get("appModel").set("displayedService", null);
 				}
 			});
 		}
@@ -106,10 +109,7 @@ $(document).ready(function() {
 			});
 		},
 		displayConfig: function() {
-			var model = this.model;
-			model.loadConfiguration().then(function(attrList) {
-				new AttributeListView({model: model}).render();
-			});
+			this.model.loadConfiguration();
 		},
 		render: function() {
 			var dom = loadTemplate("tmpl-managed-service-row")({service: this.model});
@@ -123,6 +123,7 @@ $(document).ready(function() {
 		className: "tablesorter nicetable noauto ui-widget",
 		initialize: function(options) {
 			this.listenTo(this.model, "reset add remove", this.render);
+			this.listenTo(options.appModel, "change:displayedService", this.showConfigForm);
 			this.focusedRowIdx = 0;
 			this.activeRowClass = "ui-state-active";
 		},
@@ -158,6 +159,11 @@ $(document).ready(function() {
 			return (e.target == this.rowViews[this.focusedRowIdx]
 				|| e.target == document.body
 				|| e.target == this.el);
+		},
+		showConfigForm: function(appModel, displayedService) {
+			if (displayedService) {
+				new AttributeListView({model: displayedService}).render();
+			}
 		},
 		displayConfig: function(e) {
 			if (this.isKeyEventToBeHandled(e)) {
