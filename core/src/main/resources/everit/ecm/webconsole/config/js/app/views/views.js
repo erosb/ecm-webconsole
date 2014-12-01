@@ -196,16 +196,10 @@ $(document).ready(function() {
 		},
 		render: function() {
 			this.$el.empty();
-			var dom = _.template($("#tmpl-config-admin-list").text())({
+			var dom = loadTemplate("tmpl-config-admin-list")({
 				configAdmins: this.model.get("configAdminList")
 			});
 			this.$el.append(dom);
-			var selectedConfigAdmin = this.model.get("selectedConfigAdmin");
-//			if (selectedConfigAdmin != null) {
-//				selectedConfigAdmin.getConfigurations(function(config) {
-//					console.log("config: ", config);
-//				})
-//			}
 			return this.$el;
 		}
 	});

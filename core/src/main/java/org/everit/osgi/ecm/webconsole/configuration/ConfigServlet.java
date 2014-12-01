@@ -78,7 +78,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void doDelete(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-            IOException {
+    IOException {
         String pathInfo = req.getPathInfo();
         if (pathInfo.endsWith("/configuration.json")) {
             String servicePid = req.getParameter("pid");
@@ -91,7 +91,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void doPut(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-            IOException {
+    IOException {
         String requestBody = requestBody(req);
         String pid = req.getParameter("pid");
         String factoryPid = req.getParameter("factoryPid");
@@ -102,7 +102,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             resp.setContentType("application/json");
             JSONWriter writer = new JSONWriter(resp.getWriter());
             configManager.createConfiguration(configAdminPid, factoryPid, location, attributes)
-                    .toJSON(writer);
+            .toJSON(writer);
 
         } else {
             configManager.updateConfiguration(configAdminPid, pid, factoryPid, attributes);
@@ -121,7 +121,6 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
                 values.add(value.get(i).toString());
             }
             rawAttributes.put(key, values);
-            // System.out.println(rawKey + ": " + rawKey.getClass() + "\tvalue: " + value + ": " + value.getClass());
         }
         return rawAttributes;
     }
@@ -201,17 +200,40 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     private void listManagedServices(final String configAdminPid, final HttpServletResponse resp) {
         try {
-            JSONWriter writer = new JSONWriter(resp.getWriter());
-            writer.array();
-            configManager.lookupConfigurations(configAdminPid).forEach((configurable) -> configurable.toJSON(writer));
-            writer.endArray();
+            listManagedServices(configAdminPid, resp.getWriter());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void loadMainPage(final HttpServletResponse resp, final String pluginRoot) throws IOException {
+    private void listManagedServices(final String configAdminPid, final Writer writer) {
+        JSONWriter jsonWriter = new JSONWriter(writer);
+        jsonWriter.array();
+        configManager.lookupConfigurations(configAdminPid).forEach((configurable) -> configurable.toJSON(jsonWriter));
+        jsonWriter.endArray();
+    }
+
+    private void loadMainPage(String pathInfo, final HttpServletResponse resp, final String pluginRoot)
+            throws IOException {
+        String pathPrefix = "/" + CONFIG_LABEL;
+        if (pathInfo.indexOf(pathPrefix) != 0) {
+            throw new IllegalArgumentException("invalid path info " + pathInfo);
+        }
+        if (pathInfo.charAt(0) == '/') {
+            pathInfo = pathInfo.substring(1);
+        }
+        String[] segments = pathInfo.split("/");
+        System.out.println("main page path info: " + pathInfo + ", " + segments.length);
         Map<String, String> templateVars = new HashMap<String, String>(1);
+        if (segments.length > 1) {
+            String configAdminPid = segments[1];
+            StringWriter writer = new StringWriter();
+            listManagedServices(configAdminPid, writer);
+            String managedServices = "{\"" + configAdminPid + "\": " + writer.toString() + "}";
+            templateVars.put("managedServices", managedServices);
+        } else {
+            templateVars.put("managedServices", "null");
+        }
         templateVars.put("rootPath", pluginRoot);
         templateVars.put("configAdmins", listConfigAdminServices());
         resp.getWriter().println(loadTemplate("/everit/ecm/webconsole/config/template.html", templateVars));
@@ -247,10 +269,10 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void renderContent(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-            IOException {
+    IOException {
         String pathInfo = req.getPathInfo();
         if (isMainPageRequest(pathInfo)) {
-            loadMainPage(resp, req.getAttribute("felix.webconsole.pluginRoot").toString());
+            loadMainPage(pathInfo, resp, req.getAttribute("felix.webconsole.pluginRoot").toString());
         } else {
             resp.setHeader("Content-Type", "application/json");
             if (pathInfo.endsWith("/configadmin.json")) {

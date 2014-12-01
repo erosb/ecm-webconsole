@@ -23,7 +23,6 @@ $(document).ready(function() {
 			"*configAdminPid" : "showConfigAdmin"
 		}
 	});
-	
 	ecmconfig.router = new ConfigRouter();
 	
 	var managedServiceList = new ecmconfig.ManagedServiceList();
@@ -31,6 +30,7 @@ $(document).ready(function() {
 	var appModel = new ecmconfig.ApplicationModel({
 		managedServiceList : managedServiceList
 	});
+	
 	appModel.updateConfigAdminList(ecmconfig.configAdmins);
 	
 	new ecmconfig.ConfigAdminListView({
@@ -47,7 +47,6 @@ $(document).ready(function() {
 		root: ecmconfig.rootPath
 	});
 	
-	//appModel.refreshManagedServiceList();
 	
 })(window.ecmconfig);
 });

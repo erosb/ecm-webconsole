@@ -153,11 +153,14 @@ $(document).ready(function() {
 			ecmconfig.router.on("route:showService", function(configAdminPid, servicePid) {
 				console.log("TODO showing service", arguments);
 			});
+			var self = this;
 			ecmconfig.router.on("route:showConfigAdmin", function(configAdminPid) {
-				console.log("TODO showing configadmin", arguments);
+				var list = self.get("configAdminList");
+				var configAdmin = configAdminPid === null ? list.at(0) : list.findWhere({pid: configAdminPid});
+				self.set("selectedConfigAdmin", configAdmin);
 			});
 			var configAdminList = new ConfigAdminList();
-			configAdminList.on("reset", this.configAdminListChanged, this);
+			//configAdminList.on("reset", this.configAdminListChanged, this);
 			this.set("configAdminList", configAdminList);
 			this.on("change:selectedConfigAdmin", this.selectedConfigAdminChanged, this);
 		},
@@ -171,8 +174,20 @@ $(document).ready(function() {
 			}
 		},
 		selectedConfigAdminChanged: function() {
-			ecmconfig.router.navigate(this.get("selectedConfigAdmin").get("pid"));
-			this.refreshManagedServiceList();
+			var selectedConfigAdmin = this.get("selectedConfigAdmin");
+			console.log("selected configadmin changed", selectedConfigAdmin)
+			if (selectedConfigAdmin === null || selectedConfigAdmin === undefined) {
+				ecmconfig.router.navigate("");
+			} else {
+				var configAdminPid = this.get("selectedConfigAdmin").get("pid");
+				ecmconfig.router.navigate(configAdminPid);
+				if (ecmconfig.managedServices !== null
+						&& ecmconfig.managedServices[configAdminPid] !== undefined) {
+					this.updateManagedServiceList(ecmconfig.managedServices[configAdminPid]);
+				} else {
+					this.refreshManagedServiceList();
+				}
+			}
 		},
 		managedServiceList: null,
 		configAdminList: new ConfigAdminList(),
@@ -200,6 +215,13 @@ $(document).ready(function() {
 			managedService.set("appModel", this);
 			return managedService;
 		},
+		updateManagedServiceList: function(data) {
+			var newList = [];
+			data.forEach(function(rawService) {
+				newList.push(this.createNewEntry(rawService));
+			}, this);
+			this.get("managedServiceList").reset(newList);
+		},
 		refreshManagedServiceList : function() {
 			var self = this, url = ecmconfig.rootPath + "/managedservices.json";
 			var selectedConfigAdmin = this.get("selectedConfigAdmin");
@@ -207,11 +229,7 @@ $(document).ready(function() {
 				url += "?configAdminPid=" + selectedConfigAdmin.get("pid"); 
 			}
 			$.getJSON(url).then(function(data) {
-				var newList = [];
-				data.forEach(function(rawService) {
-					newList.push(self.createNewEntry(rawService));
-				});
-				self.get("managedServiceList").reset(newList);
+				self.updateManagedServiceList(data);
 			});
 		}
 	});
