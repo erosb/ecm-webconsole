@@ -45,7 +45,7 @@ $(document).ready(function() {
 	
 	var ManagedServiceModel = ecmconfig.ManagedServiceModel = Backbone.Model.extend({
 		initialize: function() {
-			this.set("attributes", new AttributeList());
+			this.set("attributeList", new AttributeList());
 		},
 		name: null,
 		bundleName: null,
@@ -53,7 +53,7 @@ $(document).ready(function() {
 		location: null,
 		pid: null,
 		factoryPid: null,
-		attributes: new AttributeList(),
+		attributeList: new AttributeList(),
 		deleteConfig: function() {
 			var self = this;
 			var configAdminPid = this.get("appModel").get("selectedConfigAdmin").get("pid");
@@ -75,7 +75,7 @@ $(document).ready(function() {
 		},
 		attributeValuesToJSON: function() {
 			var rval = {};
-			this.get("attributes").forEach(function(attrModel) {
+			this.get("attributeList").forEach(function(attrModel) {
 				rval[attrModel.get("id")] = attrModel.get("value");
 			});
 			return JSON.stringify(rval);
@@ -124,7 +124,7 @@ $(document).ready(function() {
 				data.forEach(function(rawAttr) {
 					newAttributes.push(new AttributeModel(rawAttr));
 				});
-				var attrList = self.get("attributes");
+				var attrList = self.get("attributeList");
 				attrList.reset(newAttributes);
 				ecmconfig.router.navigate(self.get("appModel").get("selectedConfigAdmin").get("pid")
 						+ "/" + self.get("pid"));

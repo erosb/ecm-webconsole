@@ -39,7 +39,7 @@ $(document).ready(function() {
 			$el.attr("title", "Configuration of " + this.model.get("name"));
 			$el.empty().html(loadTemplate("tmpl-attribute-list")({service: this.model}));
 			var $tbody = $el.find("tbody")
-			this.model.get("attributes").forEach(function(attr) {
+			this.model.get("attributeList").forEach(function(attr) {
 				var $frame = $(loadTemplate("tmpl-attribute-frame")({model: attr}));
 				$frame.find("td:eq(1)").prepend(ecmconfig.createViewForAttribute(attr).render()).css("width", "99%");
 				$tbody.append($frame);
@@ -108,7 +108,6 @@ $(document).ready(function() {
 		displayConfig: function() {
 			var model = this.model;
 			model.loadConfiguration().then(function(attrList) {
-				console.log(".then received ", attrList)
 				new AttributeListView({model: model}).render();
 			});
 		},
