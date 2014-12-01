@@ -104,7 +104,7 @@ $(document).ready(function() {
 			var value = this.get(propName);
 			return value === null ? defaultValue : value;
 		},
-		loadConfiguration: function(onSuccess) {
+		loadConfiguration: function() {
 			var self = this, pid, factoryPid, location;
 			var url = ecmconfig.rootPath + "/configuration.json?configAdminPid=" + this.getConfigAdminPid();
 			if ((pid = this.get("pid")) !== null) {
@@ -128,7 +128,7 @@ $(document).ready(function() {
 				attrList.reset(newAttributes);
 				ecmconfig.router.navigate(self.get("appModel").get("selectedConfigAdmin").get("pid")
 						+ "/" + self.get("pid"));
-				onSuccess(attrList);
+				return attrList;
 			});
 		}
 	});
@@ -150,10 +150,11 @@ $(document).ready(function() {
 
 	var ApplicationModel = ecmconfig.ApplicationModel = Backbone.Model.extend({
 		initialize: function(options) {
+			var self = this;
 			ecmconfig.router.on("route:showService", function(configAdminPid, servicePid) {
 				console.log("TODO showing service", arguments);
+				self.set("selectedConfigAdmin", self.get("configAdminList").findWhere({pid: configAdminPid}));
 			});
-			var self = this;
 			ecmconfig.router.on("route:showConfigAdmin", function(configAdminPid) {
 				var list = self.get("configAdminList");
 				var configAdmin = configAdminPid === null ? list.at(0) : list.findWhere({pid: configAdminPid});

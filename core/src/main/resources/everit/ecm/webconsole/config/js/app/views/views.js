@@ -72,7 +72,7 @@ $(document).ready(function() {
 			});
 		},
 		render: function() {
-			var dom = _.template($("#tmpl-managed-service-factory-row").text())({service: this.model});
+			var dom = loadTemplate("tmpl-managed-service-factory-row")({service: this.model});
 			this.$el.append(dom);
 			return this.$el;
 		}
@@ -107,7 +107,8 @@ $(document).ready(function() {
 		},
 		displayConfig: function() {
 			var model = this.model;
-			model.loadConfiguration(function (attrList) {
+			model.loadConfiguration().then(function(attrList) {
+				console.log(".then received ", attrList)
 				new AttributeListView({model: model}).render();
 			});
 		},
