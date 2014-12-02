@@ -25,23 +25,23 @@ import org.apache.felix.scr.annotations.Service;
 
 @Component(name = "org.everit.osgi.ecm.webconsole.tests", metatype = true, policy = ConfigurationPolicy.REQUIRE)
 @Properties({
-    @Property(name = "stringProp", label = "string property", description = "description of string property",
-            value = "default value"),
-            @Property(name = "intProp", label = "int property", description = "int property", intValue = 42),
-            @Property(name = "flag", label = "flag", description = "boolean flag", boolValue = true),
-            @Property(name = "passwordProp", label = "password property", passwordValue = "secret"),
-            @Property(name = "someStrings", label = "some strings", value = { "asd", "bsd" }),
-            @Property(name = "enumeration", label = "enumeration", options = {
-                    @PropertyOption(name = "name1", value = "value1"),
-                    @PropertyOption(name = "name2", value = "value2"),
-                    @PropertyOption(name = "name3", value = "value3")
-            }, value = { "value3" }),
-            @Property(name = "checkbox list", label = "checkboxlist", options = {
-                    @PropertyOption(name = "optionname1", value = "optionvalue1"),
-                    @PropertyOption(name = "optionname2", value = "optionvalue2"),
-                    @PropertyOption(name = "optionname3", value = "optionvalue3"),
-                    @PropertyOption(name = "optionname4", value = "optionvalue4")
-            }, boolValue = { false, true, false, true })
+        @Property(name = "stringProp", label = "string property", description = "description of string property",
+                value = "default value"),
+        @Property(name = "intProp", label = "int property", description = "int property", intValue = 42),
+        @Property(name = "flag", label = "flag", description = "boolean flag", boolValue = true),
+        @Property(name = "passwordProp", label = "password property", passwordValue = "secret"),
+        @Property(name = "someStrings", label = "some strings", value = { "asd", "bsd" }),
+        @Property(name = "enumeration", label = "enumeration", options = {
+                @PropertyOption(name = "name1", value = "value1"),
+                @PropertyOption(name = "name2", value = "value2"),
+                @PropertyOption(name = "name3", value = "value3")
+        }, value = { "value3" }),
+        @Property(name = "checkbox list", label = "checkboxlist", options = {
+                @PropertyOption(name = "optionname1", value = "optionvalue1"),
+                @PropertyOption(name = "optionname2", value = "optionvalue2"),
+                @PropertyOption(name = "optionname3", value = "optionvalue3"),
+                @PropertyOption(name = "optionname4", value = "optionvalue4")
+        }, value = { "optionvalue2", "optionvalue3" })
 })
 @Service(TestComponent.class)
 public class TestComponent {
