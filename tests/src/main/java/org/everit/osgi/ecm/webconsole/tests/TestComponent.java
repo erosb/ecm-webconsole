@@ -27,6 +27,8 @@ import org.apache.felix.scr.annotations.Service;
 @Properties({
         @Property(name = "stringProp", label = "string property", description = "description of string property",
                 value = "default value"),
+            @Property(name = "stringProp2", label = "string property (no default value)",
+            description = "description of string property2"),
         @Property(name = "intProp", label = "int property", description = "int property", intValue = 42),
         @Property(name = "flag", label = "flag", description = "boolean flag", boolValue = true),
         @Property(name = "passwordProp", label = "password property", passwordValue = "secret"),

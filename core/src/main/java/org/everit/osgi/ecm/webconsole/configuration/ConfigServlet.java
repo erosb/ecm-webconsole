@@ -78,7 +78,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void doDelete(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-    IOException {
+            IOException {
         String pathInfo = req.getPathInfo();
         if (pathInfo.endsWith("/configuration.json")) {
             String servicePid = req.getParameter("pid");
@@ -91,7 +91,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void doPut(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-    IOException {
+            IOException {
         String requestBody = requestBody(req);
         String pid = req.getParameter("pid");
         String factoryPid = req.getParameter("factoryPid");
@@ -102,7 +102,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             resp.setContentType("application/json");
             JSONWriter writer = new JSONWriter(resp.getWriter());
             configManager.createConfiguration(configAdminPid, factoryPid, location, attributes)
-            .toJSON(writer);
+                    .toJSON(writer);
 
         } else {
             configManager.updateConfiguration(configAdminPid, pid, factoryPid, attributes);
@@ -114,11 +114,16 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
         Map<String, List<String>> rawAttributes = new HashMap<>();
         for (Object rawKey : json.keySet()) {
             String key = (String) rawKey;
-            JSONArray value = (JSONArray) json.get(key);
-            int stringCount = value.length();
+            JSONArray valueArr = (JSONArray) json.get(key);
+            int stringCount = valueArr.length();
             List<String> values = new ArrayList<String>(stringCount);
             for (int i = 0; i < stringCount; ++i) {
-                values.add(value.get(i).toString());
+                Object value = valueArr.get(i);
+                if (value.equals(JSONObject.NULL)) {
+                    values.add(null);
+                } else {
+                    values.add(value.toString());
+                }
             }
             rawAttributes.put(key, values);
         }
@@ -223,7 +228,6 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             pathInfo = pathInfo.substring(1);
         }
         String[] segments = pathInfo.split("/");
-        System.out.println("main page path info: " + pathInfo + ", " + segments.length);
         Map<String, String> templateVars = new HashMap<String, String>(1);
         if (segments.length > 1) {
             String configAdminPid = segments[1];
@@ -269,7 +273,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void renderContent(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-    IOException {
+            IOException {
         String pathInfo = req.getPathInfo();
         if (isMainPageRequest(pathInfo)) {
             loadMainPage(pathInfo, resp, req.getAttribute("felix.webconsole.pluginRoot").toString());

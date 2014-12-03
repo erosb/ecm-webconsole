@@ -124,7 +124,6 @@ $(document).ready(function() {
 				this.isNullValue = undefined;
 				this.render();
 			}
-			console.log("input value chg: ", $input.val())
 			this.trigger("change", $input.val());
 		},
 		nullValueConfirmed: function() {
@@ -142,7 +141,7 @@ $(document).ready(function() {
 			this.$el.empty();
 			if (this.isNullValue === undefined) {
 				var dom = loadTemplate("tmpl-confirm-null-value")({});
-				this.$el.append(dom);
+				this.$el.append(dom).find("input[type=button][name=yes]").focus();
 			} else {
 				var $input = $(document.createElement("input"));
 				$input.attr("type", this.inputType).
