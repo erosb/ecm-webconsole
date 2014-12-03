@@ -29,6 +29,32 @@ $(document).ready(function() {
 		return valueArr[0];
 	}
 	
+	var ConfigurationDeletionView = Backbone.View.extend({
+		tagName: "div",
+		attributes: {
+			title: "Confirm configuration deletion"
+		},
+		render: function() {
+			var model  = this.model, self = this;
+				$dlg = $(loadTemplate("tmpl-confirm-delete-configuration")({
+				service: this.model
+			}));
+			$dlg.dialog({
+				modal: true,
+				buttons: {
+					"Yes" : function() {
+						model.deleteConfig().then(function() {
+							$dlg.dialog("close");
+						});
+					},
+					"Cancel" : function() {
+						$dlg.dialog("close");
+					}
+				}
+			});
+		}
+	});
+	
 	var AttributeListView = ecmconfig.AttributeListView = Backbone.View.extend({
 		tagName: "div",
 		attributes: {
@@ -53,6 +79,9 @@ $(document).ready(function() {
 						self.model.saveConfiguration().then(function() {
 							self.$el.dialog("close");
 						});
+					},
+					"Delete" : function() {
+						new ConfigurationDeletionView({model: self.model}).render();
 					}
 				},
 				close: function() {
@@ -90,23 +119,7 @@ $(document).ready(function() {
 		},
 		deleteConfig: function(e) {
 			e.stopPropagation();
-			var model = this.model;
-			var $dlg = $(loadTemplate("tmpl-confirm-delete-configuration")({
-				service: this.model
-			}));
-			$dlg.dialog({
-				modal: true,
-				buttons: {
-					"Yes" : function() {
-						model.deleteConfig().then(function() {
-							$dlg.dialog("close");
-						});
-					},
-					"Cancel" : function() {
-						$dlg.dialog("close");
-					}
-				}
-			});
+			new ConfigurationDeletionView({model: this.model}).render();
 		},
 		displayConfig: function() {
 			this.model.loadConfiguration();

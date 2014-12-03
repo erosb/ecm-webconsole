@@ -111,14 +111,18 @@ $(document).ready(function() {
 		attributes: {
 			style: "width: 99%"
 		},
-		tagName: "input",
-		className: "ui-state-default ui-corner-all",
+		tagName: "div",
 		render: function() {
 			var self = this;
-			this.$el.attr("value", this.value).attr("type", this.inputType);
-			this.$el.on("change", function() {
-				self.trigger("change", self.el.value);
-			})
+			this.$el.empty();
+			var $input = $(document.createElement("input"));
+			$input.attr("type", this.inputType).addClass("ui-state-default ui-corner-all");
+			$input.attr("value", this.value);
+			$input.on("change", function() {
+				console.log("input value chg: ", $input.val())
+				self.trigger("change", $input.val());
+			});
+			this.$el.append($input);
 			return this.$el;
 		}
 	});
