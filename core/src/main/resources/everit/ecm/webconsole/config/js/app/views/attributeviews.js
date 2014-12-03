@@ -107,22 +107,51 @@ $(document).ready(function() {
 		initialize: function(options) {
 			this.inputType = options.inputType;
 			this.value = options.value;
+			this.isNullValue = (this.value === null);
 		},
+		tagName: "div",
 		attributes: {
 			style: "width: 99%"
 		},
-		tagName: "div",
+		events : {
+			"keyup input[name=value]" : "valueChanged",
+			"click .cnt-confirm-null-value input[name=yes]": "nullValueConfirmed",
+			"click .cnt-confirm-null-value input[name=no]": "emptyStringConfirmed",
+		},
+		valueChanged: function() {
+			var $input = this.$el.find("input[name=value]"), newValue = $input.val();
+			if (newValue === "") {
+				this.isNullValue = undefined;
+				this.render();
+			}
+			console.log("input value chg: ", $input.val())
+			this.trigger("change", $input.val());
+		},
+		nullValueConfirmed: function() {
+			this.isNullValue = true;
+			this.trigger("change", this.value = null);
+			this.render();
+		},
+		emptyStringConfirmed: function() {
+			this.isNullValue = false;
+			this.trigger("change", this.value = "");
+			this.render();
+		},
 		render: function() {
 			var self = this;
 			this.$el.empty();
-			var $input = $(document.createElement("input"));
-			$input.attr("type", this.inputType).addClass("ui-state-default ui-corner-all");
-			$input.attr("value", this.value);
-			$input.on("change", function() {
-				console.log("input value chg: ", $input.val())
-				self.trigger("change", $input.val());
-			});
-			this.$el.append($input);
+			if (this.isNullValue === undefined) {
+				var dom = loadTemplate("tmpl-confirm-null-value")({});
+				this.$el.append(dom);
+			} else {
+				var $input = $(document.createElement("input"));
+				$input.attr("type", this.inputType).
+					addClass("ui-state-default ui-corner-all").css("width", "99%").
+					attr("value", this.value).
+					attr("name", "value");
+				$input.attr("placeholder", this.isNullValue === true ? "null" : "empty string");
+				this.$el.append($input);
+			}
 			return this.$el;
 		}
 	});

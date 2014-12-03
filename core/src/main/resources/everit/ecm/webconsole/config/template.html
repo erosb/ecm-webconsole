@@ -70,6 +70,14 @@ tr.ui-state-active td {
 	</select>
 </script>
 
+<script type="text/template" id="tmpl-confirm-null-value">
+	<span class="cnt-confirm-null-value">
+		set to null?
+		<input type="button" name="yes" value="Yes" />
+		<input type="button" name="no" value="No" />
+	</span>
+</script>
+
 <script type="text/template" id="tmpl-confirm-delete-configuration">
 	<div title="Confirm configuration deletion">
 		<p>Are you sure you want to delete configuration of managed service <b><%- service.get("name") %></b>?</p>
