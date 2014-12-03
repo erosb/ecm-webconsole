@@ -50,6 +50,9 @@ $(document).ready(function() {
 					"Cancel" : function() {
 						$dlg.dialog("close");
 					}
+				},
+				close: function() {
+					self.trigger("close");
 				}
 			});
 		}
@@ -86,6 +89,7 @@ $(document).ready(function() {
 				},
 				close: function() {
 					self.model.get("appModel").set("displayedService", null);
+					self.trigger("close");
 				}
 			});
 		}
@@ -103,6 +107,9 @@ $(document).ready(function() {
 				new AttributeListView({model: model}).render();
 			});
 		},
+		deleteConfig: function() {
+			// nothing to do here
+		},
 		render: function() {
 			var dom = loadTemplate("tmpl-managed-service-factory-row")({service: this.model});
 			this.$el.append(dom);
@@ -119,7 +126,9 @@ $(document).ready(function() {
 		},
 		deleteConfig: function(e) {
 			e.stopPropagation();
-			new ConfigurationDeletionView({model: this.model}).render();
+			var deletionView = new ConfigurationDeletionView({model: this.model});
+			deletionView.on("close", function() {this.trigger("deleted")}, this)
+			deletionView.render();
 		},
 		displayConfig: function() {
 			this.model.loadConfiguration();
@@ -146,7 +155,13 @@ $(document).ready(function() {
 		keys: {
 			"up": "moveFocusUp",
 			"down": "moveFocusDown",
-			"enter": "displayConfig"
+			"enter": "displayConfig",
+			"delete" : "deletePressed"
+		},
+		deletePressed: function(e) {
+			if (this.isKeyEventToBeHandled(e)) {
+				this.rowViews[this.focusedRowIdx].deleteConfig(e);
+			}
 		},
 		moveFocusUp: function(e) {
 			if (!this.isKeyEventToBeHandled(e)) {
@@ -170,12 +185,13 @@ $(document).ready(function() {
 		},
 		isKeyEventToBeHandled: function(e) {
 			return (e.target == this.rowViews[this.focusedRowIdx]
-				|| e.target == document.body
 				|| e.target == this.el);
 		},
 		showConfigForm: function(appModel, displayedService) {
 			if (displayedService) {
 				new AttributeListView({model: displayedService}).render();
+			} else {
+				this.$el.focus();
 			}
 		},
 		displayConfig: function(e) {
@@ -199,6 +215,7 @@ $(document).ready(function() {
 					});
 				} else {
 					var rowView = new ManagedServiceRowView({model: service});
+					rowView.on("deleted", function(){this.$el.focus()}, this)
 					rowViews.push(rowView);
 					$tbody.append(rowView.render());
 				}
