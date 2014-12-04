@@ -36,6 +36,8 @@ public class Configurable implements Comparable<Configurable> {
 
     private String bundleName;
 
+    private String boundBundleName;
+
     @Override
     public int compareTo(final Configurable o) {
         return getDisplayedName().compareTo(o.getDisplayedName());
@@ -47,6 +49,11 @@ public class Configurable implements Comparable<Configurable> {
         } else {
             return name;
         }
+    }
+
+    public Configurable setBoundBundleName(final String boundBundleName) {
+        this.boundBundleName = boundBundleName;
+        return this;
     }
 
     public Configurable setBundleName(final String bundleName) {
@@ -93,6 +100,8 @@ public class Configurable implements Comparable<Configurable> {
         writer.value(pid);
         writer.key("factoryPid");
         writer.value(factoryPid);
+        writer.key("boundBundleName");
+        writer.value(boundBundleName);
         writer.endObject();
     }
 

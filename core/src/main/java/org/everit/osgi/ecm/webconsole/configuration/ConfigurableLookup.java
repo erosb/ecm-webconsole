@@ -18,6 +18,7 @@ package org.everit.osgi.ecm.webconsole.configuration;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -90,6 +91,7 @@ public class ConfigurableLookup {
             for (Configuration conf : Optional.ofNullable(arr).orElse(new Configuration[0])) {
                 String pid = (String) conf.getProperties().get("service.pid");
                 getConfigurableByPid(pid)
+                .setLocation(conf.getBundleLocation())
                 .setFactoryPid(factoryPid)
                 .setName(pid)
                 .setDescription(objClassDef.getName());
@@ -97,6 +99,15 @@ public class ConfigurableLookup {
         } catch (IOException | InvalidSyntaxException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String getBoundBundleName(final Configuration config) {
+        if (null == config || config.getBundleLocation() == null) {
+            return null;
+        }
+        return Arrays.stream(bundleCtx.getBundles())
+                .filter((bundle) -> bundle.getLocation().equals(config.getBundleLocation()))
+                .findFirst().map(Bundle::getSymbolicName).orElse("");
     }
 
     private Configurable getConfigurableByFactoryPid(final String factoryPid) {
@@ -111,10 +122,19 @@ public class ConfigurableLookup {
 
     private Configurable getConfigurableByPid(final String pid) {
         Configurable rval = configurablesByPid.get(pid);
-        if (rval == null) {
-            rval = new Configurable();
-            rval.setPid(pid);
-            configurablesByPid.put(pid, rval);
+        try {
+            if (rval == null) {
+                Optional<Configuration> conf = Optional.ofNullable(configAdmin.getConfiguration(pid));
+                rval = new Configurable();
+                rval.setPid(pid);
+                conf.map(Configuration::getBundleLocation).ifPresent(rval::setLocation);
+                if (conf.isPresent()) {
+                    rval.setBoundBundleName(getBoundBundleName(conf.get()));
+                }
+                configurablesByPid.put(pid, rval);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         return rval;
     }
