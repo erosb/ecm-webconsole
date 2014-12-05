@@ -53,6 +53,7 @@ $(document).ready(function() {
 		location: null,
 		pid: null,
 		factoryPid: null,
+		visible: true,
 		attributeList: new AttributeList(),
 		deleteConfig: function() {
 			var self = this;
@@ -160,6 +161,16 @@ $(document).ready(function() {
 				}
 				ecmconfig.router.navigate(url);
 			});
+			this.on("change:serviceFilter", this.serviceFilterChanged, this);
+		},
+		serviceFilterChanged: function() {
+			var filter = this.get("serviceFilter");
+			var regex = new RegExp(".*" + filter.toLowerCase() + ".*", "i");
+			this.get("managedServiceList").forEach(function(service) {
+				service.set("visible", regex.test(service.get("name")));
+			});
+			console.log("triggering")
+			this.trigger("visibleServicesChanged");
 		},
 		configAdminListChanged: function() {
 			var configAdminList = this.get("configAdminList");
@@ -188,6 +199,10 @@ $(document).ready(function() {
 		managedServiceList: null,
 		configAdminList: new ConfigAdminList(),
 		selectedConfigAdmin: null,
+		serviceFilter: "",
+		getVisibleServices: function() {
+			return this.get("managedServiceList").where({visible: true});
+		},
 		refreshConfigAdminList: function(onReady) {
 			var self = this;
 			$.getJSON(ecmconfig.rootPath + "/configadmin.json").then(function(data) {

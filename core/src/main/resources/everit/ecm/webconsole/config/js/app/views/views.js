@@ -96,16 +96,18 @@ $(document).ready(function() {
 	});
 	
 	var ManagedServiceFactoryRowView = Backbone.View.extend({
+		initialize: function() {
+			this.model.on("change:visible", function() {
+				this.$el[this.model.get("visible") ? "show" : "hide"]();
+			}, this);
+		},
 		tagName: "tr",
 		className: "ui-state-default managedservice-row",
 		events: {
 			"click td" : "displayConfig",
 		},
 		displayConfig: function() {
-			var model = this.model;
-			model.loadConfiguration(function (attrList) {
-				new AttributeListView({model: model}).render();
-			});
+			this.model.loadConfiguration();
 		},
 		deleteConfig: function() {
 			// nothing to do here
@@ -117,7 +119,7 @@ $(document).ready(function() {
 		}
 	});
 	
-	var ManagedServiceRowView = ecmconfig.ManagedServiceRowView = Backbone.View.extend({
+	var ManagedServiceRowView = ecmconfig.ManagedServiceRowView = ManagedServiceFactoryRowView.extend({
 		tagName: "tr",
 		className: "ui-state-default managedservice-row",
 		events: {
@@ -130,9 +132,6 @@ $(document).ready(function() {
 			deletionView.on("close", function() {this.trigger("deleted")}, this)
 			deletionView.render();
 		},
-		displayConfig: function() {
-			this.model.loadConfiguration();
-		},
 		render: function() {
 			var dom = loadTemplate("tmpl-managed-service-row")({service: this.model});
 			this.$el.append(dom);
@@ -144,10 +143,12 @@ $(document).ready(function() {
 		tagName: "table",
 		className: "tablesorter nicetable noauto ui-widget",
 		initialize: function(options) {
+			this.appModel = options.appModel;
 			this.listenTo(this.model, "reset add remove", this.render);
 			this.listenTo(options.appModel, "change:displayedService", this.showConfigForm);
 			this.focusedRowIdx = 0;
 			this.activeRowClass = "ui-state-active";
+			this.listenTo(options.appModel, "visibleServicesChanged", this.alignFocusedRowIdx);
 		},
 		attributes: {
 			"tabindex": 0
@@ -159,33 +160,58 @@ $(document).ready(function() {
 			"delete" : "deletePressed"
 		},
 		deletePressed: function(e) {
+			var rowViews = this.getVisibleRowViews();
 			if (this.isKeyEventToBeHandled(e)) {
-				this.rowViews[this.focusedRowIdx].deleteConfig(e);
+				rowViews[this.focusedRowIdx].deleteConfig(e);
 			}
 		},
 		moveFocusUp: function(e) {
+			var rowViews = this.getVisibleRowViews();
 			if (!this.isKeyEventToBeHandled(e)) {
 				return;
 			}
 			if (this.focusedRowIdx === 0) {
 				return;
 			}
-			this.rowViews[this.focusedRowIdx].$el.removeClass(this.activeRowClass);
-			this.rowViews[--this.focusedRowIdx].$el.addClass(this.activeRowClass);
+			rowViews[this.focusedRowIdx].$el.removeClass(this.activeRowClass);
+			rowViews[--this.focusedRowIdx].$el.addClass(this.activeRowClass);
 		},
 		moveFocusDown: function(e) {
+			var rowViews = this.getVisibleRowViews();
 			if (!this.isKeyEventToBeHandled(e)) {
 				return;
 			}
-			if (this.focusedRowIdx >= this.rowViews.length - 1) {
+			if (this.focusedRowIdx >= rowViews.length - 1) {
 				return;
 			}
-			this.rowViews[this.focusedRowIdx].$el.removeClass(this.activeRowClass);
-			this.rowViews[++this.focusedRowIdx].$el.addClass(this.activeRowClass);
+			rowViews[this.focusedRowIdx].$el.removeClass(this.activeRowClass);
+			rowViews[++this.focusedRowIdx].$el.addClass(this.activeRowClass);
 		},
 		isKeyEventToBeHandled: function(e) {
 			return (e.target == this.rowViews[this.focusedRowIdx]
 				|| e.target == this.el);
+		},
+		alignFocusedRowIdx: function() {
+			var visibleServices = this.appModel.getVisibleServices();
+			var focusedService = this.rowViews[this.focusedRowIdx].model;
+			var indexInVisibles = visibleServices.indexOf(focusedService);
+			var isStillVisible = indexInVisibles != -1;
+			if (!isStillVisible) {
+				this.rowViews[this.focusedRowIdx].$el.removeClass(this.activeRowClass);
+				this.focusedRowIdx = 0;
+			} else {
+				this.focusedRowIdx = indexInVisibles; 
+			}
+		},
+		getVisibleRowViews: function() {
+			var rval = [];
+			for (var i = 0; i < this.rowViews.length; ++i) {
+				var rowView = this.rowViews[i];
+				if (rowView.$el.is(":visible")) {
+					rval.push(rowView);
+				}
+			}
+			return rval;
 		},
 		showConfigForm: function(appModel, displayedService) {
 			if (displayedService) {
@@ -195,8 +221,9 @@ $(document).ready(function() {
 			}
 		},
 		displayConfig: function(e) {
+			var rowViews = this.getVisibleRowViews();
 			if (this.isKeyEventToBeHandled(e)) {
-				this.rowViews[this.focusedRowIdx].displayConfig();
+				rowViews[this.focusedRowIdx].displayConfig();
 			}
 		},
 		render: function() {
@@ -239,6 +266,25 @@ $(document).ready(function() {
 			return this.$el;
 		}
 	});
+	
+	var ServiceFilterView = ecmconfig.ServiceFilterView = Backbone.View.extend({
+		tagName: "span",
+		className: "ui-widget ui-widget-content ui-state-default",
+		attributes: {
+			"tabindex": 0
+		},
+		events: {
+			"keypress input" : "updateModel"
+		},
+		updateModel: function() {
+			this.model.set("serviceFilter", this.$el.find("input").val());
+		},
+		render: function() {
+			var dom = loadTemplate("tmpl-servicefilter")({serviceFilter: this.model.get("serviceFilter")});
+			this.$el.empty().append(dom).find("input").focus();
+			return this.$el;
+		}
+	});
 
 })(window.ecmconfig);
-});
+}); 

@@ -36,6 +36,11 @@
 	padding: 7px 5px 7px 5px;
 }
 
+#cnt-configadmin-list {
+	display: inline-block;
+	float: right;
+}
+
 p.config-info {
 	padding: 8px 8px 8px 8px;
 	background-color: #ccc;
@@ -159,6 +164,13 @@ tr.ui-state-active td {
 		<tbody></tbody>
 </script>
 
+<script type="text/template" id="tmpl-servicefilter">
+	Filter: <input type="text" class="ui-widget ui-widget-content ui-state-default" value="<%- serviceFilter %>" />
+</script>
+
 <div id="cnt-main" style="width: 100%">
-	<div id="cnt-header" class="ui-widget-header ui-corner-top"></div>
+	<div id="cnt-header" class="ui-widget-header ui-corner-top">
+		<span id="cnt-servicefilter"></span>
+		<span id="cnt-configadmin-list"></span>
+	</div>
 </div>

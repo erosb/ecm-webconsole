@@ -34,9 +34,14 @@ $(document).ready(function() {
 	appModel.updateConfigAdminList(ecmconfig.configAdmins);
 	
 	new ecmconfig.ConfigAdminListView({
-		el: document.getElementById("cnt-header"),
+		el: document.getElementById("cnt-configadmin-list"),
 		model: appModel
 	}).render();
+	
+	new ecmconfig.ServiceFilterView({
+		el: document.getElementById("cnt-servicefilter"),
+		model: appModel
+	}).render()
 	
 	$("#cnt-main").append(new ecmconfig.ManagedServiceListView({
 		model: managedServiceList,

@@ -108,6 +108,8 @@ public class DisplayedAttribute implements Comparable<DisplayedAttribute> {
                 setValue((String) value);
             } else if (value instanceof String[]) {
                 setValue((String[]) value);
+            } else if (value instanceof Boolean) {
+                this.value = new String[] { value.toString() };
             }
         }
         return this;
