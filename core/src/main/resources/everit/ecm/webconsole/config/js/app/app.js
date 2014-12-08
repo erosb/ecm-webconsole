@@ -20,6 +20,7 @@ $(document).ready(function() {
 	var ConfigRouter = Backbone.Router.extend({
 		routes: {
 			":configAdminPid/:servicePid" : "showService",
+			":configAdminPid/new/:factoryPid" : "showFactory",
 			"*configAdminPid" : "showConfigAdmin"
 		}
 	});

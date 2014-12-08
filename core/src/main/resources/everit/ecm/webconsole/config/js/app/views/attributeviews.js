@@ -22,8 +22,9 @@ $(document).ready(function() {
 	}
 	
 	var UnboundPrimitiveAttributeView = Backbone.View.extend({
-		initialize: function() {
+		initialize: function(options) {
 			this.subviews = [];
+			this.maxOccurences = options.maxOccurences;
 			this.listenTo(this.model, "change:value", this.render);
 		},
 		tagName: "ul",
@@ -47,7 +48,9 @@ $(document).ready(function() {
 				this.subviews.push(entryView);
 				$("<li></li>").appendTo(this.$el).append(entryView.render());
 			}, this);
-			this.$el.append("<li><input type='button' value='new entry'/></li>");
+			if (this.maxOccurences === "unbound" || this.maxOccurences > this.subviews.length) {
+				this.$el.append("<li><input type='button' value='new entry'/></li>");
+			}
 			this.$el.sortable();
 			return this.$el;
 		}
@@ -222,13 +225,16 @@ $(document).ready(function() {
 				attrModel.set("value", [value]);
 			});
 			return rval;
-		} else if (type.maxOccurences === "unbound") {
+		} else /* if (type.maxOccurences === "unbound") */ {
 			if (attrModel.hasOptions()) {
 				return new CheckboxListView({model: attrModel,
 					values: attrModel.get("value")
 				});
 			} else {
-				return new UnboundPrimitiveAttributeView({model: attrModel});
+				return new UnboundPrimitiveAttributeView({
+					model: attrModel,
+					maxOccurences: type.maxOccurences
+				});
 			}
 		}
 		throw new Error("unsupported type: " + JSON.stringify(type));

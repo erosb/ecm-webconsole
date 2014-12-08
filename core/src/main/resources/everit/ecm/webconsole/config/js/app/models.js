@@ -146,6 +146,10 @@ $(document).ready(function() {
 				self.set("selectedConfigAdmin", self.get("configAdminList").findWhere({pid: configAdminPid}));
 				self.get("managedServiceList").findWhere({pid: servicePid}).loadConfiguration();
 			});
+			ecmconfig.router.on("route:showFactory", function(configAdminPid, factoryPid) {
+				self.set("selectedConfigAdmin", self.get("configAdminList").findWhere({pid: configAdminPid}));
+				self.get("managedServiceList").findWhere({factoryPid: factoryPid}).loadConfiguration();
+			});
 			ecmconfig.router.on("route:showConfigAdmin", function(configAdminPid) {
 				var list = self.get("configAdminList");
 				var configAdmin = configAdminPid === null ? list.at(0) : list.findWhere({pid: configAdminPid});
@@ -155,13 +159,7 @@ $(document).ready(function() {
 			//configAdminList.on("reset", this.configAdminListChanged, this);
 			this.set("configAdminList", configAdminList);
 			this.on("change:selectedConfigAdmin", this.selectedConfigAdminChanged, this);
-			this.on("change:displayedService", function(appModel, displayedService) {
-				var url= self.get("selectedConfigAdmin").get("pid");
-				if (displayedService !== null) {
-					url += ("/" + self.get("displayedService").get("pid"));
-				}
-				ecmconfig.router.navigate(url);
-			});
+			this.on("change:displayedService", this.displayedServiceChanged, this);
 			this.on("change:serviceFilter", this.serviceFilterChanged, this);
 		},
 		serviceFilterChanged: function() {
@@ -170,8 +168,18 @@ $(document).ready(function() {
 			this.get("managedServiceList").forEach(function(service) {
 				service.set("visible", regex.test(service.get("name")));
 			});
-			console.log("triggering")
 			this.trigger("visibleServicesChanged");
+		},
+		displayedServiceChanged: function(appModel, displayedService) {
+			var url= this.get("selectedConfigAdmin").get("pid");
+			if (displayedService !== null) {
+				if (displayedService.isFactory()) {
+					url += "/new/" + displayedService.get("factoryPid");
+				} else {
+					url += ("/" + this.get("displayedService").get("pid"));
+				}
+			}
+			ecmconfig.router.navigate(url);
 		},
 		configAdminListChanged: function() {
 			var configAdminList = this.get("configAdminList");
