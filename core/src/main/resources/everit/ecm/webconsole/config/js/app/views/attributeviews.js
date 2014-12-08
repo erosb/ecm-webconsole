@@ -21,7 +21,7 @@ $(document).ready(function() {
 		return _.template($("#" + templateId).text());
 	}
 	
-	var UnboundPrimitiveAttributeView = Backbone.View.extend({
+	var MultiplePrimitiveAttributeView = Backbone.View.extend({
 		initialize: function(options) {
 			this.subviews = [];
 			this.maxOccurences = options.maxOccurences;
@@ -231,7 +231,7 @@ $(document).ready(function() {
 					values: attrModel.get("value")
 				});
 			} else {
-				return new UnboundPrimitiveAttributeView({
+				return new MultiplePrimitiveAttributeView({
 					model: attrModel,
 					maxOccurences: type.maxOccurences
 				});

@@ -84,7 +84,11 @@ $(document).ready(function() {
 						});
 					},
 					"Delete" : function() {
-						new ConfigurationDeletionView({model: self.model}).render();
+						var delDlg = new ConfigurationDeletionView({model: self.model});
+						delDlg.render();
+						delDlg.on("close", function() {
+							$el.dialog("close");
+						})
 					}
 				},
 				close: function() {
