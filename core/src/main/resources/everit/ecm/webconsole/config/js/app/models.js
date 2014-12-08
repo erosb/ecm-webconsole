@@ -83,9 +83,10 @@ $(document).ready(function() {
 		},
 		saveConfiguration: function(onSuccess) {
 			var url = ecmconfig.rootPath + "/configuration.json?configAdminPid=" + this.getConfigAdminPid();
-			if (this.isFactory()) {
+			if (this.isFactory() || this.hasFactory()) {
 				url += "&factoryPid=" + this.get("factoryPid");
-			} else {
+			} 
+			if (!this.isFactory()) {
 				url += "&pid=" + this.get("pid");
 			}
 			var self = this;
