@@ -21,14 +21,6 @@ $(document).ready(function() {
 		return _.template($("#" + templateId).text());
 	}
 	
-	
-	ecmconfig.getPrimitiveValue = function getPrimitiveValue(valueArr) {
-		if (valueArr == undefined || valueArr.length === 0) {
-			return "";
-		}
-		return valueArr[0];
-	}
-	
 	var ConfigurationDeletionView = Backbone.View.extend({
 		tagName: "div",
 		attributes: {
@@ -152,7 +144,7 @@ $(document).ready(function() {
 			this.listenTo(options.appModel, "change:displayedService", this.showConfigForm);
 			this.focusedRowIdx = 0;
 			this.activeRowClass = "ui-state-active";
-			this.listenTo(options.appModel, "visibleServicesChanged", this.alignFocusedRowIdx);
+			this.listenTo(options.appModel, "change:visibleServices", this.alignFocusedRowIdx);
 		},
 		attributes: {
 			"tabindex": 0
@@ -164,16 +156,16 @@ $(document).ready(function() {
 			"delete" : "deletePressed"
 		},
 		deletePressed: function(e) {
-			var rowViews = this.getVisibleRowViews();
 			if (this.isKeyEventToBeHandled(e)) {
+				var rowViews = this.getVisibleRowViews();
 				rowViews[this.focusedRowIdx].deleteConfig(e);
 			}
 		},
 		moveFocusUp: function(e) {
-			var rowViews = this.getVisibleRowViews();
 			if (!this.isKeyEventToBeHandled(e)) {
 				return;
 			}
+			var rowViews = this.getVisibleRowViews();
 			if (this.focusedRowIdx === 0) {
 				return;
 			}
@@ -181,10 +173,10 @@ $(document).ready(function() {
 			rowViews[--this.focusedRowIdx].$el.addClass(this.activeRowClass);
 		},
 		moveFocusDown: function(e) {
-			var rowViews = this.getVisibleRowViews();
 			if (!this.isKeyEventToBeHandled(e)) {
 				return;
 			}
+			var rowViews = this.getVisibleRowViews();
 			if (this.focusedRowIdx >= rowViews.length - 1) {
 				return;
 			}

@@ -168,7 +168,7 @@ $(document).ready(function() {
 			this.get("managedServiceList").forEach(function(service) {
 				service.set("visible", regex.test(service.get("name")));
 			});
-			this.trigger("visibleServicesChanged");
+			this.trigger("change:visibleServices");
 		},
 		displayedServiceChanged: function(appModel, displayedService) {
 			var url= this.get("selectedConfigAdmin").get("pid");

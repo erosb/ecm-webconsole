@@ -21,6 +21,13 @@ $(document).ready(function() {
 		return _.template($("#" + templateId).text());
 	}
 	
+	function getPrimitiveValue(valueArr) {
+		if (valueArr == undefined || valueArr.length === 0) {
+			return "";
+		}
+		return valueArr[0];
+	}
+	
 	var MultiplePrimitiveAttributeView = Backbone.View.extend({
 		initialize: function(options) {
 			this.subviews = [];
@@ -220,7 +227,7 @@ $(document).ready(function() {
 	function createViewForAttribute(attrModel) {
 		var type = attrModel.get("type");
 		if (type.maxOccurences === 0) {
-			var rval = createViewForSingularAttribute(attrModel, ecmconfig.getPrimitiveValue(attrModel.get("value")));
+			var rval = createViewForSingularAttribute(attrModel, getPrimitiveValue(attrModel.get("value")));
 			rval.on("change", function(value) {
 				attrModel.set("value", [value]);
 			});
