@@ -65,6 +65,15 @@ tr.ui-state-active td {
 	//background: linear-gradient(lightblue, rgba(255, 255, 255, 0), lightblue);
 	background: linear-gradient(lightgray, rgba(255, 255, 255, 0), lightgray);
 }
+
+.ui-treeview-emptyicon {
+	background-position: 20px 20px
+}
+
+span.checkbox {
+	display: inline-block;
+	border: 1px solid lightgrey;
+}
 </style>
 
 <script type="text/template" id="tmpl-config-admin-list">
@@ -73,6 +82,13 @@ tr.ui-state-active td {
 		<option value="<%= configAdmin.get("pid") %>"><%- configAdmin.get("description") %></option>
 	<% }); %>
 	</select>
+</script>
+
+<script type="text/template" id="tmpl-threestate-checkbox">
+	<span>
+		<span class="ui-icon checkbox"></span>
+		<a href="javascript:;" class="btn-null">set to null</a>
+	</span>
 </script>
 
 <script type="text/template" id="tmpl-confirm-null-value">

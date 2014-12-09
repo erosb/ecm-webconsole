@@ -73,9 +73,11 @@ $(document).ready(function() {
 			var options = this.model.get("type").options;
 			for (var text in options) {
 				var value = options[text];
-				var $checkbox = $('<input type="checkbox" value="' + value + '"/>');
-				$checkbox.prop("checked", self.values.indexOf(value) > -1)
-					.on("change", (function(value) {
+				var $checkbox = new SingularCheckboxAttributeView({value: self.values.indexOf(value) > -1});
+				
+				//var $checkbox = $('<input type="checkbox" value="' + value + '"/>');
+				$checkbox./*prop("checked", self.values.indexOf(value) > -1).*/
+					on("change", (function(value) {
 						return function() {
 							var values = self.values;
 							var idx = values.indexOf(value);
@@ -86,7 +88,7 @@ $(document).ready(function() {
 							}
 						};
 				})(value));
-				this.$el.append($checkbox).append(text).append("<br>");
+				this.$el.append(text).append($checkbox.render()).append("<br>");
 			}
 			return this.$el;
 		}
@@ -96,18 +98,33 @@ $(document).ready(function() {
 		initialize: function(options) {
 			this.value = !!options.value;
 		},
-		tagName: "input",
-		attributes: {
-			type: "checkbox"
-		},
+		tagName: "span",
 		events: {
-			"change": "triggerChange"
+			"click .checkbox": "triggerChange",
+			"click .btn-null": "setToNull"
 		},
 		triggerChange: function() {
-			this.trigger("change", !!this.$el.prop("checked"));
+			this.value = !this.value;
+			this.render();
+			this.trigger("change", this.value);
+		},
+		setToNull: function() {
+			this.value = null;
+			this.render();
+			this.trigger("change", this.value);
 		},
 		render: function() {
-			this.$el.prop("checked", this.value);
+			this.$el.empty();
+			var $dom = $(loadTemplate("tmpl-threestate-checkbox")({}));
+			var $checkbox = $dom.find(".checkbox");
+			if (this.value === true) {
+				$checkbox.addClass("ui-icon-check");
+			} else if (this.value === false) {
+				$checkbox.addClass("ui-treeview-emptyicon");
+			} else {
+				$checkbox.addClass("ui-icon-minus ui-state-disabled");
+			}
+			this.$el.append($dom);
 			return this.$el;
 		}
 	});
