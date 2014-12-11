@@ -74,10 +74,7 @@ $(document).ready(function() {
 			for (var text in options) {
 				var value = options[text];
 				var $checkbox = new SingularCheckboxAttributeView({value: self.values.indexOf(value) > -1});
-				
-				//var $checkbox = $('<input type="checkbox" value="' + value + '"/>');
-				$checkbox./*prop("checked", self.values.indexOf(value) > -1).*/
-					on("change", (function(value) {
+				$checkbox.on("change", (function(value) {
 						return function() {
 							var values = self.values;
 							var idx = values.indexOf(value);
@@ -96,7 +93,7 @@ $(document).ready(function() {
 	
 	var SingularCheckboxAttributeView = Backbone.View.extend({
 		initialize: function(options) {
-			this.value = !!options.value;
+			this.value = options.value;
 		},
 		tagName: "span",
 		events: {
@@ -249,7 +246,7 @@ $(document).ready(function() {
 				attrModel.set("value", [value]);
 			});
 			return rval;
-		} else /* if (type.maxOccurences === "unbound") */ {
+		} else {
 			if (attrModel.hasOptions()) {
 				return new CheckboxListView({model: attrModel,
 					values: attrModel.get("value")

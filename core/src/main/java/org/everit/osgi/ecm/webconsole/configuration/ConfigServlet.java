@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -172,7 +173,8 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected boolean isHtmlRequest(final HttpServletRequest request) {
-        return request.getHeader("Accept").indexOf("application/json") == -1;
+        return Optional.ofNullable(request.getHeader("Accept"))
+                .map((header) -> header.indexOf("application/json") == -1).orElse(false);
     }
 
     private boolean isMainPageRequest(final String pathInfo) {

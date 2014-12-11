@@ -16,6 +16,7 @@
  */
 package org.everit.osgi.ecm.webconsole.configuration;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -63,6 +64,76 @@ public class DisplayedAttribute implements Comparable<DisplayedAttribute> {
     @Override
     public int compareTo(final DisplayedAttribute o) {
         return name.compareTo(o.name);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        DisplayedAttribute other = (DisplayedAttribute) obj;
+        if (description == null) {
+            if (other.description != null) {
+                return false;
+            }
+        } else if (!description.equals(other.description)) {
+            return false;
+        }
+        if (id == null) {
+            if (other.id != null) {
+                return false;
+            }
+        } else if (!id.equals(other.id)) {
+            return false;
+        }
+        if (Math.abs(maxOccurences) != Math.abs(other.maxOccurences)) {
+            return false;
+        }
+        if (name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!name.equals(other.name)) {
+            return false;
+        }
+        if (options == null) {
+            if (other.options != null) {
+                return false;
+            }
+        } else if (!options.equals(other.options)) {
+            return false;
+        }
+        if (type == null) {
+            if (other.type != null) {
+                return false;
+            }
+        } else if (!type.equals(other.type)) {
+            return false;
+        }
+        if (!Arrays.equals(value, other.value)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((description == null) ? 0 : description.hashCode());
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + maxOccurences;
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((options == null) ? 0 : options.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + Arrays.hashCode(value);
+        return result;
     }
 
     private void optionsToJSON(final JSONWriter writer) {
@@ -138,6 +209,13 @@ public class DisplayedAttribute implements Comparable<DisplayedAttribute> {
         writer.key("type");
         typeToJSON(writer);
         writer.endObject();
+    }
+
+    @Override
+    public String toString() {
+        return "DisplayedAttribute [id=" + id + ", type=" + type + ", name=" + name + ", description=" + description
+                + ", value=" + Arrays.toString(value) + ", maxOccurences=" + maxOccurences + ", options=" + options
+                + "]";
     }
 
     private void typeToJSON(final JSONWriter writer) {
