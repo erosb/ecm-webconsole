@@ -46,8 +46,8 @@ import org.osgi.service.metatype.AttributeDefinition;
 @Component(immediate = true)
 @Service(GetConfigurationTest.class)
 @Properties({
-        @Property(name = "eosgi.testEngine", value = "junit4"),
-        @Property(name = "eosgi.testId", value = "getConfigurationTest"),
+    @Property(name = "eosgi.testEngine", value = "junit4"),
+    @Property(name = "eosgi.testId", value = "getConfigurationTest"),
 })
 public class GetConfigurationTest {
 
@@ -88,6 +88,12 @@ public class GetConfigurationTest {
                 rval.addOption(optLabel, optValue);
             }
         }
+        JSONArray jsonValue = jsonAttr.getJSONArray("value");
+        String[] values = new String[jsonValue.length()];
+        for (int i = 0; i < jsonValue.length(); ++i) {
+            values[i] = jsonValue.get(i).toString();
+        }
+        rval.setValue(values);
         return rval;
     }
 
@@ -102,18 +108,27 @@ public class GetConfigurationTest {
     private List<DisplayedAttribute> createExpectedAttributes() {
         List<DisplayedAttribute> rval = new ArrayList<DisplayedAttribute>();
         rval.add(new DisplayedAttribute()
-        .setId("stringProp")
-        .setName("string property")
-        .setDescription("description of string property")
-        .setType(AttributeDefinition.STRING));
+                .setId("stringProp")
+                .setName("string property")
+                .setDescription("description of string property")
+                .setType(AttributeDefinition.STRING)
+                .setValue(new String[] { "default value" }));
         rval.add(new DisplayedAttribute()
-        .setId("enumeration")
-        .setName("enumeration")
-        .setDescription("Description for enumeration")
-        .addOption("name1", "value1")
-        .addOption("name2", "value2")
-        .addOption("name3", "value3")
-        .setType(AttributeDefinition.STRING));
+                .setId("enumeration")
+                .setName("enumeration")
+                .setDescription("Description for enumeration")
+                .addOption("name1", "value1")
+                .addOption("name2", "value2")
+                .addOption("name3", "value3")
+                .setType(AttributeDefinition.STRING)
+                .setValue(new String[] { /* "value3" */}));
+        rval.add(new DisplayedAttribute()
+                .setDescription("Description for someStrings")
+                .setId("someStrings")
+                .setName("some strings")
+                .setMaxOccurences(Integer.MAX_VALUE)
+                .setType(AttributeDefinition.STRING)
+                .setValue(new String[] { "asd", "bsd" }));
         return rval;
     }
 
