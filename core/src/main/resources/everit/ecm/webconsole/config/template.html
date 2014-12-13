@@ -87,7 +87,9 @@ span.checkbox {
 <script type="text/template" id="tmpl-threestate-checkbox">
 	<span>
 		<span class="ui-icon checkbox"></span>
-		<a href="javascript:;" class="btn-null">set to null</a>
+		<% if (nullable) { %>
+			<a href="javascript:;" class="btn-null">set to null</a>
+		<% } %>
 	</span>
 </script>
 

@@ -94,6 +94,7 @@ $(document).ready(function() {
 	var SingularCheckboxAttributeView = Backbone.View.extend({
 		initialize: function(options) {
 			this.value = options.value;
+			this.nullable = options.nullable;
 		},
 		tagName: "span",
 		events: {
@@ -112,7 +113,7 @@ $(document).ready(function() {
 		},
 		render: function() {
 			this.$el.empty();
-			var $dom = $(loadTemplate("tmpl-threestate-checkbox")({}));
+			var $dom = $(loadTemplate("tmpl-threestate-checkbox")({nullable: this.nullable}));
 			var $checkbox = $dom.find(".checkbox");
 			if (this.value === true) {
 				$checkbox.addClass("ui-icon-check");
@@ -208,7 +209,7 @@ $(document).ready(function() {
 		}
 	});
 	
-	function createViewForSingularAttribute(attrModel, value) {
+	function createViewForSingularAttribute(attrModel, value, nullable) {
 		var type = attrModel.get("type");
 		if (attrModel.hasOptions()) {
 			if (type.maxOccurences == 0) {
@@ -224,7 +225,8 @@ $(document).ready(function() {
 		}
 		if (type.baseType === "boolean") {
 			return new SingularCheckboxAttributeView({
-				value: value
+				value: value,
+				nullable: nullable
 			});
 		} else {
 			var inputType = type.baseType === "password" ? "password" : "text";
@@ -240,8 +242,10 @@ $(document).ready(function() {
 	 */
 	function createViewForAttribute(attrModel) {
 		var type = attrModel.get("type");
-		if (type.maxOccurences === 0) {
-			var rval = createViewForSingularAttribute(attrModel, getPrimitiveValue(attrModel.get("value")));
+		if (type.maxOccurences === 0 || type.maxOccurences === 1) {
+			var rval = createViewForSingularAttribute(attrModel,
+					getPrimitiveValue(attrModel.get("value")),
+					type.maxOccurences === 1);
 			rval.on("change", function(value) {
 				attrModel.set("value", [value]);
 			});

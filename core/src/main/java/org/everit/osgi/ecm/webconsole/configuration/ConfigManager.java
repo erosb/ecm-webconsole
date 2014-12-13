@@ -70,6 +70,17 @@ public class ConfigManager {
                 return null;
             }
             return convertSingleValue(attrValue.get(0), attrDef.getType());
+        } else if (cardinality == 1) {
+            if (attrValue.isEmpty() || attrValue.get(0) == null) {
+                return new String[] {};
+            }
+            return new String[] { attrValue.get(0) };
+        } else if (cardinality == -1) {
+            Vector<String> rval = new Vector<String>(1);
+            if (!(attrValue.isEmpty() || attrValue.get(0) == null)) {
+                rval.add(attrValue.get(0));
+            }
+            return rval;
         } else if (cardinality < 0) {
             Vector<String> vector = new Vector<String>(attrValue.size());
             for (String rawValue : attrValue) {
@@ -138,10 +149,10 @@ public class ConfigManager {
             newConfig.update(mapToProperties(objClassDef, attributes));
             String pid = newConfig.getPid();
             return new Configurable()
-                    .setPid(pid)
-                    .setFactoryPid(factoryPid)
-                    .setName(pid)
-                    .setDescription(objClassDef.getName());
+            .setPid(pid)
+            .setFactoryPid(factoryPid)
+            .setName(pid)
+            .setDescription(objClassDef.getName());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -168,7 +179,7 @@ public class ConfigManager {
             final String serviceLocation,
             final String configAdminPid) {
         return new AttributeLookup(getConfigAdmin(configAdminPid), bundleCtx, metaTypeService())
-        .lookupAttributes(servicePid, factoryPid, serviceLocation);
+                .lookupAttributes(servicePid, factoryPid, serviceLocation);
     }
 
     public ObjectClassDefinition getObjectClassDefinition(final ServiceReference<ManagedService> serviceRef) {
@@ -189,7 +200,7 @@ public class ConfigManager {
 
     public Collection<Configurable> lookupConfigurations() {
         return new ConfigurableLookup(cfgAdminTracker.getService(), bundleCtx, metaTypeService())
-        .lookupConfigurables();
+                .lookupConfigurables();
     }
 
     public Collection<Configurable> lookupConfigurations(final String configAdminPid) {
