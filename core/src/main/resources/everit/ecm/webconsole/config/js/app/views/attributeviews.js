@@ -85,7 +85,7 @@ $(document).ready(function() {
 							}
 						};
 				})(value));
-				this.$el.append(text).append($checkbox.render()).append("<br>");
+				this.$el.append($checkbox.render()).append(text).append("<br>");
 			}
 			return this.$el;
 		}
@@ -132,50 +132,36 @@ $(document).ready(function() {
 		initialize: function(options) {
 			this.inputType = options.inputType;
 			this.value = options.value;
-			this.isNullValue = (this.value === null);
+			this.nullable = options.nullable; 
 		},
 		tagName: "div",
 		attributes: {
 			style: "width: 99%"
 		},
 		events : {
-			"keyup input[name=value]" : "valueChanged",
-			"click .cnt-confirm-null-value input[name=yes]": "nullValueConfirmed",
-			"click .cnt-confirm-null-value input[name=no]": "emptyStringConfirmed",
+			"blur input[name=value]" : "valueChanged",
+			"click .btn-null": "setToNull",
 		},
 		valueChanged: function() {
-			var $input = this.$el.find("input[name=value]"), newValue = $input.val();
-			if (newValue === "") {
-				this.isNullValue = undefined;
+			var $input = this.$el.find("input[name=value]");
+			this.value = $input.val();
+			if (this.value === "") {
 				this.render();
 			}
-			this.trigger("change", $input.val());
+			this.trigger("change", this.value);
 		},
-		nullValueConfirmed: function() {
-			this.isNullValue = true;
+		setToNull: function() {
 			this.trigger("change", this.value = null);
-			this.render();
-		},
-		emptyStringConfirmed: function() {
-			this.isNullValue = false;
-			this.trigger("change", this.value = "");
 			this.render();
 		},
 		render: function() {
 			var self = this;
-			this.$el.empty();
-			if (this.isNullValue === undefined) {
-				var dom = loadTemplate("tmpl-confirm-null-value")({});
-				this.$el.append(dom).find("input[type=button][name=yes]").focus();
-			} else {
-				var $input = $(document.createElement("input"));
-				$input.attr("type", this.inputType).
-					addClass("ui-state-default ui-corner-all").css("width", "99%").
-					attr("value", this.value).
-					attr("name", "value");
-				$input.attr("placeholder", this.isNullValue === true ? "null" : "empty string");
-				this.$el.append($input);
-			}
+			this.$el.empty().append(loadTemplate("tmpl-singular-primitive")({
+				nullable: this.nullable,
+				value: this.value === null ? "" : this.value,
+				placeholder: this.value === null ? "null" : "empty string", 
+				type: this.inputType
+			}));
 			return this.$el;
 		}
 	});
@@ -232,7 +218,8 @@ $(document).ready(function() {
 			var inputType = type.baseType === "password" ? "password" : "text";
 			return new SingularPrimitiveAttributeView({
 				value: value,
-				inputType: inputType
+				inputType: inputType,
+				nullable: nullable
 			});
 		}
 	}

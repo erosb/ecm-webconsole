@@ -93,12 +93,19 @@ span.checkbox {
 	</span>
 </script>
 
-<script type="text/template" id="tmpl-confirm-null-value">
+<!--  <script type="text/template" id="tmpl-confirm-null-value">
 	<span class="cnt-confirm-null-value">
 		set to null?
 		<input type="button" name="yes" value="Yes" />
 		<input type="button" name="no" value="No" />
 	</span>
+</script>  -->
+
+<script type="text/template" id="tmpl-singular-primitive">
+	<input type="<%- type %>" name="value" value="<%- value %>" placeholder="<%- placeholder %>" class="ui-state-default ui-corner-all" style="width: 80%" />
+	<% if (nullable) { %>
+		<input type="button" value="set to null" class="btn-null ui-widget ui-priority-primary"/>
+	<% } %>
 </script>
 
 <script type="text/template" id="tmpl-confirm-delete-configuration">

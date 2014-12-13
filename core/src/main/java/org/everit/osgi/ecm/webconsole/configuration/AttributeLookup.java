@@ -53,10 +53,10 @@ public class AttributeLookup {
         DisplayedAttribute rval = new DisplayedAttribute();
         String attributeId = attrDef.getID();
         rval.setName(attrDef.getName())
-        .setId(attributeId)
-        .setDescription(attrDef.getDescription())
-        .setType(attrDef.getType())
-        .setMaxOccurences(attrDef.getCardinality());
+                .setId(attributeId)
+                .setDescription(attrDef.getDescription())
+                .setType(attrDef.getType())
+                .setMaxOccurences(attrDef.getCardinality());
         String[] optionValues = Optional.ofNullable(attrDef.getOptionValues()).orElseGet(emptyStringArr);
         String[] optionLabels = Optional.ofNullable(attrDef.getOptionLabels()).orElseGet(emptyStringArr);
         if (optionValues.length != optionLabels.length) {
@@ -66,8 +66,6 @@ public class AttributeLookup {
         for (int i = 0; i < optionValues.length; ++i) {
             rval.addOption(optionLabels[i], optionValues[i]);
         }
-        System.out.println("default of " + attributeId + ": "
-                + Arrays.asList(attrDef.getDefaultValue() == null ? new String[] {} : attrDef.getDefaultValue()));
         rval.setValue(getValueFromConfig(config, attributeId).orElse(attrDef.getDefaultValue()));
         return rval;
     }
