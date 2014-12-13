@@ -194,8 +194,8 @@ $(document).ready(function() {
 		},
 		render: function() {
 			this.$el.empty();
-			for (var optValue in this.options) {
-				var name = this.options[optValue];
+			for (var name in this.options) {
+				var optValue = this.options[name];
 				var optElem = document.createElement("option");
 				optElem.setAttribute("value", optValue);
 				if (optValue == this.value) {

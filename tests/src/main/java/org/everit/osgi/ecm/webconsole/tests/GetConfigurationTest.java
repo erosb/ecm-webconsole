@@ -46,8 +46,8 @@ import org.osgi.service.metatype.AttributeDefinition;
 @Component(immediate = true)
 @Service(GetConfigurationTest.class)
 @Properties({
-    @Property(name = "eosgi.testEngine", value = "junit4"),
-    @Property(name = "eosgi.testId", value = "getConfigurationTest"),
+        @Property(name = "eosgi.testEngine", value = "junit4"),
+        @Property(name = "eosgi.testId", value = "getConfigurationTest"),
 })
 public class GetConfigurationTest {
 
@@ -83,8 +83,8 @@ public class GetConfigurationTest {
         if (jsonType.has("options")) {
             JSONObject jsonOptions = jsonType.getJSONObject("options");
             for (Object rawOptValue : jsonOptions.keySet()) {
-                String optValue = (String) rawOptValue;
-                String optLabel = jsonOptions.getString(optValue);
+                String optLabel = (String) rawOptValue;
+                String optValue = jsonOptions.getString(optLabel);
                 rval.addOption(optLabel, optValue);
             }
         }
@@ -121,7 +121,7 @@ public class GetConfigurationTest {
                 .addOption("name2", "value2")
                 .addOption("name3", "value3")
                 .setType(AttributeDefinition.STRING)
-                .setValue(new String[] { /* "value3" */}));
+                .setValue(new String[] { "value3" }));
         rval.add(new DisplayedAttribute()
                 .setDescription("Description for someStrings")
                 .setId("someStrings")
