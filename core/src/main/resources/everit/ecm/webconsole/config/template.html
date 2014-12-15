@@ -88,23 +88,18 @@ span.checkbox {
 	<span>
 		<span class="ui-icon checkbox"></span>
 		<% if (nullable) { %>
-			<a href="javascript:;" class="btn-null">set to null</a>
+			<input type="button" value="set to null" class="btn-null ui-widget ui-priority-primary"/>
 		<% } %>
 	</span>
 </script>
 
-<!--  <script type="text/template" id="tmpl-confirm-null-value">
-	<span class="cnt-confirm-null-value">
-		set to null?
-		<input type="button" name="yes" value="Yes" />
-		<input type="button" name="no" value="No" />
-	</span>
-</script>  -->
-
 <script type="text/template" id="tmpl-singular-primitive">
 	<input type="<%- type %>" name="value" value="<%- value %>" placeholder="<%- placeholder %>" class="ui-state-default ui-corner-all" style="width: 80%" />
 	<% if (nullable) { %>
-		<input type="button" value="set to null" class="btn-null ui-widget ui-priority-primary"/>
+		<input type="button" value="set to null" class="btn-null ui-widget ui-priority-primary" />
+	<% } %>
+	<% if (deletable) { %>
+		<input type="button" value="delete" class="btn-delete ui-widget ui-priority-primary" />
 	<% } %>
 </script>
 

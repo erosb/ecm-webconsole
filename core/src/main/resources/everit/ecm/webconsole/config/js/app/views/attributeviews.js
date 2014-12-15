@@ -36,27 +36,35 @@ $(document).ready(function() {
 		},
 		tagName: "ul",
 		events : {
-			"click [type=button]" : "buttonClicked"
+			"click .btn-new-entry[type=button]" : "buttonClicked"
 		},
 		buttonClicked: function() {
 			var valueArr = this.model.get("value").slice(0);
 			valueArr.push("");
 			this.model.set("value", valueArr);
 		},
+		deleteEntry: function(index) {
+			this.model.get("value").splice(index, 1);
+			this.subviews.splice(index, 1);
+			this.render();
+		},
 		render: function() {
 			this.subviews = [];
 			this.$el.empty();
-			var values = this.model.get("value");
+			var values = this.model.get("value"), self = this;
 			values.forEach(function(value, index){
-				var entryView = createViewForSingularAttribute(this.model, value);
+				var entryView = createViewForSingularAttribute(this.model, value, true, true);
 				entryView.on("change", function(newValue) {
 					values[index] = newValue;
+				});
+				entryView.on("delete", function() {
+					self.deleteEntry(index);
 				});
 				this.subviews.push(entryView);
 				$("<li></li>").appendTo(this.$el).append(entryView.render());
 			}, this);
 			if (this.maxOccurences === "unbound" || this.maxOccurences > this.subviews.length) {
-				this.$el.append("<li><input type='button' value='new entry'/></li>");
+				this.$el.append("<li><input type='button' value='new entry' class='btn-new-entry'/></li>");
 			}
 			this.$el.sortable();
 			return this.$el;
@@ -133,6 +141,7 @@ $(document).ready(function() {
 			this.inputType = options.inputType;
 			this.value = options.value;
 			this.nullable = options.nullable; 
+			this.deletable = options.deletable;
 		},
 		tagName: "div",
 		attributes: {
@@ -141,6 +150,7 @@ $(document).ready(function() {
 		events : {
 			"blur input[name=value]" : "valueChanged",
 			"click .btn-null": "setToNull",
+			"click .btn-delete" : "triggerDelete"
 		},
 		valueChanged: function() {
 			var $input = this.$el.find("input[name=value]");
@@ -158,10 +168,14 @@ $(document).ready(function() {
 			this.trigger("change", this.value = null);
 			this.render();
 		},
+		triggerDelete: function() {
+			this.trigger("delete");
+		},
 		render: function() {
 			var self = this;
 			this.$el.empty().append(loadTemplate("tmpl-singular-primitive")({
 				nullable: this.nullable,
+				deletable: this.deletable,
 				value: this.value === null ? "" : this.value,
 				placeholder: this.value === null ? "null" : "empty string", 
 				type: this.inputType
@@ -199,7 +213,7 @@ $(document).ready(function() {
 		}
 	});
 	
-	function createViewForSingularAttribute(attrModel, value, nullable) {
+	function createViewForSingularAttribute(attrModel, value, nullable, deletable) {
 		var type = attrModel.get("type");
 		if (attrModel.hasOptions()) {
 			if (type.maxOccurences == 0) {
@@ -223,7 +237,8 @@ $(document).ready(function() {
 			return new SingularPrimitiveAttributeView({
 				value: value,
 				inputType: inputType,
-				nullable: nullable
+				nullable: nullable,
+				deletable: deletable
 			});
 		}
 	}
@@ -236,7 +251,8 @@ $(document).ready(function() {
 		if (type.maxOccurences === 0 || type.maxOccurences === 1) {
 			var rval = createViewForSingularAttribute(attrModel,
 					getPrimitiveValue(attrModel.get("value")),
-					type.maxOccurences === 1);
+					type.maxOccurences === 1,
+					false);
 			rval.on("change", function(value) {
 				attrModel.set("value", [value]);
 			});
