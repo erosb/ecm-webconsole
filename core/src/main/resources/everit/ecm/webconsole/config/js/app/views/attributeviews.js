@@ -23,7 +23,7 @@ $(document).ready(function() {
 	
 	function getPrimitiveValue(valueArr) {
 		if (valueArr == undefined || valueArr.length === 0) {
-			return "";
+			return null;
 		}
 		return valueArr[0];
 	}
@@ -144,7 +144,11 @@ $(document).ready(function() {
 		},
 		valueChanged: function() {
 			var $input = this.$el.find("input[name=value]");
-			this.value = $input.val();
+			var newValue = $input.val();
+			if (newValue === "" && this.value === null) {
+				return;
+			}
+			this.value = newValue;
 			if (this.value === "") {
 				this.render();
 			}
