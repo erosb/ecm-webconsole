@@ -24,7 +24,9 @@ import org.apache.felix.scr.annotations.ConfigurationPolicy;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.PropertyOption;
+import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
+import org.osgi.service.event.EventAdmin;
 
 @Component(name = "org.everit.osgi.ecm.webconsole.tests", metatype = true, policy = ConfigurationPolicy.REQUIRE)
 @Properties({
@@ -53,7 +55,8 @@ import org.apache.felix.scr.annotations.Service;
                 @PropertyOption(name = "optionvalue4", value = "optionname4")
         }, value = { "optionvalue2", "optionvalue3" }),
         @Property(name = "limitedlist", label = "Limited List", description = "list with at most 3 entries",
-                cardinality = 3)
+                cardinality = 3),
+        @Property(name = "eventAdmin.target")
 })
 @Service(TestComponent.class)
 public class TestComponent {
@@ -68,13 +71,24 @@ public class TestComponent {
 
     private String enumeration;
 
+    @Reference
+    private EventAdmin eventAdmin;
+
     @Activate
     public void activate(final Map<String, Object> params) {
         System.out.println("TestComponent activated");
     }
 
+    public void bindEventAdmin(final EventAdmin eventAdmin) {
+        this.eventAdmin = eventAdmin;
+    }
+
     public String getEnumeration() {
         return enumeration;
+    }
+
+    public EventAdmin getEventAdmin() {
+        return eventAdmin;
     }
 
     public int getIntProp() {

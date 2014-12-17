@@ -29,6 +29,8 @@ import java.util.Optional;
 import java.util.Vector;
 import java.util.stream.Stream;
 
+import org.apache.felix.scr.Component;
+import org.apache.felix.scr.ScrService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
@@ -187,6 +189,43 @@ public class ConfigManager {
         ObjectClassDefinition objClassDef = metaTypeSrv.getMetaTypeInformation(serviceRef.getBundle())
                 .getObjectClassDefinition((String) serviceRef.getProperty("service.pid"), null);
         return objClassDef;
+    }
+
+    public void getSuggestions(final String configAdminPid, final String pid, final String attributeId) {
+        ScrService scrService = bundleCtx.getService(bundleCtx.getServiceReference(ScrService.class));
+        Component component = Arrays.stream(scrService.getComponents())
+                .filter((comp) -> comp.getConfigurationPid().equals(pid))
+                .findFirst().orElse(null);
+        if (component == null) {
+            return;
+        }
+        String referenceClassName = Arrays.stream(component.getReferences())
+                .filter((ref) -> (ref.getName() + ".target").equals(attributeId))
+                .map((ref) -> ref.getServiceName())
+                .findFirst().orElse(null);
+        System.out.println("referenceClassName = " + referenceClassName);
+        try {
+            Arrays.stream(bundleCtx.getServiceReferences(referenceClassName, null))
+                    .forEach((ref) -> {
+                        Object service = bundleCtx.getService(ref);
+                        System.out.println("found: " + service.getClass() + " with properties: ");
+                        for (String key : ref.getPropertyKeys()) {
+                            System.out.println("\t" + key + ": " + ref.getProperty(key));
+                        }
+
+                    });
+        } catch (InvalidSyntaxException e) {
+            throw new RuntimeException(e);
+        }
+
+        System.out.println("reference[0]: name: " + component.getReferences()[0].getName() + " serviceName: "
+                + component.getReferences()[0].getServiceName());
+        // .forEach(
+        // (comp) -> {
+        // System.out.println("component " + comp.getClassName() + " (pid: "
+        // + comp.getConfigurationPid() + ") service name: "
+        // + comp.getReferences()[0].getServiceName());
+        // });
     }
 
     public Stream<ServiceReference<ManagedService>> listManagedServices() {
