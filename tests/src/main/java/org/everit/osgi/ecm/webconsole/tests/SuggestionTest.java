@@ -30,6 +30,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.everit.osgi.dev.testrunner.TestDuringDevelopment;
+import org.json.JSONArray;
+import org.json.JSONTokener;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +46,31 @@ public class SuggestionTest {
 
     private HttpClient client;
 
+    private JSONArray exec(final String requestURI) {
+        HttpGet request = new HttpGet(requestURI);
+        try {
+            HttpResponse resp = client.execute(request);
+            Assert.assertEquals(200, resp.getStatusLine().getStatusCode());
+            JSONArray rawArray = new JSONArray(new JSONTokener(resp.getEntity().getContent()));
+            System.out.println(rawArray);
+            return rawArray;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    @TestDuringDevelopment
+    public void firstTest() {
+        JSONArray rawArray = exec("http://localhost:8080/system/console/ecm-config/suggestion.json"
+                + "?configAdminPid=org.apache.felix.cm.ConfigurationAdmin"
+                + "&pid=org.everit.osgi.ecm.webconsole.tests"
+                + "&attributeId=eventAdmin.target");
+        Assert.assertEquals(1, rawArray.length());
+        Assert.assertEquals(rawArray.getJSONObject(0).getString("serviceClass"),
+                "org.apache.felix.eventadmin.impl.security.EventAdminSecurityDecorator");
+    }
+
     @Before
     public void setUp() {
         BasicCredentialsProvider credProv = new BasicCredentialsProvider();
@@ -53,17 +80,11 @@ public class SuggestionTest {
 
     @Test
     @TestDuringDevelopment
-    public void test() {
-        HttpGet request = new HttpGet("http://localhost:8080/system/console/ecm-config/suggestion.json"
+    public void testSuggestionsForDummyService() {
+        JSONArray array = exec("http://localhost:8080/system/console/ecm-config/suggestion.json"
                 + "?configAdminPid=org.apache.felix.cm.ConfigurationAdmin"
                 + "&pid=org.everit.osgi.ecm.webconsole.tests"
-                + "&attributeId=eventAdmin.target");
-        try {
-            HttpResponse resp = client.execute(request);
-            Assert.assertEquals(200, resp.getStatusLine().getStatusCode());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+                + "&attributeId=dummyService.target");
+        Assert.assertEquals("10 dummyService suggestions are returned", 10, array.length());
     }
-
 }

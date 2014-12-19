@@ -122,6 +122,10 @@ public class DisplayedAttribute implements Comparable<DisplayedAttribute> {
         return true;
     }
 
+    public String getId() {
+        return id;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -168,8 +172,17 @@ public class DisplayedAttribute implements Comparable<DisplayedAttribute> {
         return this;
     }
 
+    public DisplayedAttribute setToService() {
+        return setType("service");
+    }
+
     public DisplayedAttribute setType(final int type) {
         Objects.requireNonNull(this.type = codeToTypeName.get(type), "type not found by code " + type);
+        return this;
+    }
+
+    public DisplayedAttribute setType(final String type) {
+        this.type = Objects.requireNonNull(type, "type cannot be null");
         return this;
     }
 

@@ -49,7 +49,7 @@
         <configuration>
           <instructions>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-            <Bundle-Activator>org.everit.osgi.ecm.webconsole.configuration.ConfigActivator</Bundle-Activator>
+            <Bundle-Activator>org.everit.osgi.ecm.webconsole.tests.TestConfigActivator</Bundle-Activator>
             <EOSGi-TestNum>2</EOSGi-TestNum>
           </instructions>
         </configuration>

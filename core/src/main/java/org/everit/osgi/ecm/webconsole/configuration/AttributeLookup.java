@@ -53,10 +53,13 @@ public class AttributeLookup {
         DisplayedAttribute rval = new DisplayedAttribute();
         String attributeId = attrDef.getID();
         rval.setName(attrDef.getName())
-                .setId(attributeId)
-                .setDescription(attrDef.getDescription())
-                .setType(attrDef.getType())
-                .setMaxOccurences(attrDef.getCardinality());
+        .setId(attributeId)
+        .setDescription(attrDef.getDescription())
+        .setType(attrDef.getType())
+        .setMaxOccurences(attrDef.getCardinality());
+        if (attrDef.getID().endsWith(".target")) {
+            rval.setToService();
+        }
         String[] optionValues = Optional.ofNullable(attrDef.getOptionValues()).orElseGet(emptyStringArr);
         String[] optionLabels = Optional.ofNullable(attrDef.getOptionLabels()).orElseGet(emptyStringArr);
         if (optionValues.length != optionLabels.length) {

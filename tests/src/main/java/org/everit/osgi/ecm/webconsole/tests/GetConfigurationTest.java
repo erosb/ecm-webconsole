@@ -68,6 +68,18 @@ public class GetConfigurationTest {
 
     private HttpClient client;
 
+    public void assertContainsAll(final List<DisplayedAttribute> actual, final List<DisplayedAttribute> expected) {
+        for (DisplayedAttribute exp : expected) {
+            if (!actual.contains(exp)) {
+                String exception = actual.stream().filter((act) -> act.getId().equals(exp.getId()))
+                        .findFirst()
+                        .map((act) -> act + "\nis not equal to\n" + exp)
+                        .orElseGet(() -> "failed to assert that " + actual + " contains " + exp);
+                throw new AssertionError(exception);
+            }
+        }
+    }
+
     private DisplayedAttribute buildAttributeFromJSON(final JSONObject jsonAttr) {
         DisplayedAttribute rval = new DisplayedAttribute();
         rval.setId(jsonAttr.getString("id"));
@@ -79,7 +91,12 @@ public class GetConfigurationTest {
         } else {
             rval.setMaxOccurences(jsonType.getInt("maxOccurences"));
         }
-        rval.setType(typeNameToCode.get(jsonType.get("baseType")));
+        Object jsonBaseType = jsonType.get("baseType");
+        if (jsonBaseType.equals("service")) {
+            rval.setToService();
+        } else {
+            rval.setType(typeNameToCode.get(jsonBaseType));
+        }
         if (jsonType.has("options")) {
             JSONObject jsonOptions = jsonType.getJSONObject("options");
             for (Object rawOptValue : jsonOptions.keySet()) {
@@ -129,6 +146,13 @@ public class GetConfigurationTest {
                 .setMaxOccurences(Integer.MAX_VALUE)
                 .setType(AttributeDefinition.STRING)
                 .setValue(new String[] { "asd", "bsd" }));
+        rval.add(new DisplayedAttribute()
+                .setDescription("this is a dummy service")
+                .setId("dummyService.target")
+                .setToService()
+                .setName("Property dummyService.target")
+                .setMaxOccurences(0)
+                .setValue(new String[] {}));
         return rval;
     }
 
@@ -150,7 +174,7 @@ public class GetConfigurationTest {
             JSONArray rawArray = new JSONArray(new JSONTokener(resp.getEntity().getContent()));
             List<DisplayedAttribute> actual = buildAttributeListFromJSON(rawArray);
             List<DisplayedAttribute> expected = createExpectedAttributes();
-            Assert.assertTrue(actual + " contains all: " + expected, actual.containsAll(expected));
+            assertContainsAll(actual, expected);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
