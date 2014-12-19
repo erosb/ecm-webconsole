@@ -260,6 +260,21 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
         }
     }
 
+    public void printServiceSuggestions(final HttpServletResponse resp, final String configAdminPid, final String pid,
+            final String attributeId) {
+        try {
+            List<ServiceSuggestion> suggestions = configManager.getSuggestions(configAdminPid, pid, attributeId);
+            JSONWriter writer = new JSONWriter(resp.getWriter());
+            writer.array();
+            for (ServiceSuggestion suggestion : suggestions) {
+                suggestion.toJSON(writer);
+            }
+            writer.endArray();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void printSuccess(final HttpServletResponse resp) {
         resp.setContentType("application/json");
         try {
@@ -280,7 +295,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
         if (isMainPageRequest(pathInfo)) {
             loadMainPage(pathInfo, resp, req.getAttribute("felix.webconsole.pluginRoot").toString());
         } else {
-            resp.setHeader("Content-Type", "application/json");
+            resp.setContentType("application/json");
             if (pathInfo.endsWith("/configadmin.json")) {
                 listConfigAdminServices(resp.getWriter());
             } else if (pathInfo.endsWith("/managedservices.json")) {
@@ -296,7 +311,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
                 String configAdminPid = req.getParameter("configAdminPid");
                 String pid = req.getParameter("pid");
                 String attributeId = req.getParameter("attributeId");
-                configManager.getSuggestions(configAdminPid, pid, attributeId);
+                printServiceSuggestions(resp, configAdminPid, pid, attributeId);
             }
         }
     }
