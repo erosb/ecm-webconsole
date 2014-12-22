@@ -26,6 +26,8 @@
 <script type="text/javascript" src="${rootPath}/lib/underscore-min.js"></script>
 <script type="text/javascript" src="${rootPath}/lib/backbone.js"></script>
 <script type="text/javascript" src="${rootPath}/lib/backbone.keys.js"></script>
+<script type="text/javascript" src="${rootPath}/lib/ractive.min.js"></script>
+<script type="text/javascript" src="${rootPath}/lib/ractive-adaptors-backbone.min.js"></script>
 <script type="text/javascript" src="${rootPath}/app/models.js"></script>
 <script type="text/javascript" src="${rootPath}/app/views/views.js"></script>
 <script type="text/javascript" src="${rootPath}/app/views/attributeviews.js"></script>
@@ -135,6 +137,38 @@ span.checkbox {
 		</table>
 		<p class="ui-corner-all config-info">Service PID: <%- service.get("pid") %></p>
 	</div>
+</script>
+
+<script type="text/ractive" id="tmpl-service-selector">
+<div id="cnt-filter">
+	Filter: <input type="text" class="ui-widget" value="{{filter}}"/>
+	<input type="button" value="Filter" on-click="doFilter" />
+</div>
+<div id="cnt-matching-services">
+	<select size="10" on-change="displayService" value="{{displayedServiceId}}">
+		{{#each services}}
+			<option value="{{id}}">{{serviceClass}}</option>
+		{{/each}}
+	</select>
+</div>
+<div id="cnt-service-properties">
+	<span>Properties of {{displayedService.name}}</span>
+	<table>
+		<thead>
+			<tr>
+				<th>Key</th><th>Value</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{#each displayedService.properties}}
+			<tr>
+				<td>{{key}}</td>
+				<td>{{value}}</td>
+			</tr>
+			{{/each}}
+		</tbody>
+	</table>
+</div>
 </script>
 
 <script type="text/template" id="tmpl-service-attribute">

@@ -55,12 +55,12 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             "lib/underscore-min.js",
             "lib/backbone.js",
             "lib/backbone.keys.js",
+            "lib/ractive.min.js",
+            "lib/ractive-adaptors-backbone.min.js",
             "app/app.js",
             "app/models.js",
             "app/views/views.js",
-            "app/views/attributeviews.js",
-            "backbone.queryparams.min.js",
-            "backbone.queryparams-1.1-shim.js"
+            "app/views/attributeviews.js"
             ));
 
     private final ConfigManager configManager;
@@ -79,7 +79,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void doDelete(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-    IOException {
+            IOException {
         String pathInfo = req.getPathInfo();
         if (pathInfo.endsWith("/configuration.json")) {
             String servicePid = req.getParameter("pid");
@@ -92,7 +92,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void doPut(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-    IOException {
+            IOException {
         String requestBody = requestBody(req);
         String pid = req.getParameter("pid");
         String factoryPid = req.getParameter("factoryPid");
@@ -103,7 +103,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             resp.setContentType("application/json");
             JSONWriter writer = new JSONWriter(resp.getWriter());
             configManager.createConfiguration(configAdminPid, factoryPid, location, attributes)
-            .toJSON(writer);
+                    .toJSON(writer);
 
         } else {
             configManager.updateConfiguration(configAdminPid, pid, factoryPid, attributes);
@@ -290,7 +290,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void renderContent(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-    IOException {
+            IOException {
         String pathInfo = req.getPathInfo();
         if (isMainPageRequest(pathInfo)) {
             loadMainPage(pathInfo, resp, req.getAttribute("felix.webconsole.pluginRoot").toString());

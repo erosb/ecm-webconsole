@@ -34,8 +34,26 @@ $(document).ready(function() {
 		value: null,
 		type: null,
 		hasOptions: function() {
-			var options = this.get("type").options; 
-			return options !== undefined;
+			return this.get("type").options !== undefined;
+		}
+	});
+	
+	var ServiceSuggestionModel = Backbone.Model.extend({
+		serviceClass: null,
+		properties: []
+	});
+	
+	var ServiceAttributeModel = ecmconfig.ServiceAttributeModel = ecmconfig.AttributeModel.extend({
+		loadServiceSuggestions: function() {
+			var service = this.get("parentService"), self = this;
+			return $.getJSON(ecmconfig.rootPath + "/suggestion.json"
+					+ "?configAdminPid=" + service.getConfigAdminPid()
+					+ "&pid=" + service.get("pid")
+					+ "&attributeId=" + this.get("id"))
+			.then(function(data){
+				console.log("returned ", data)
+				self.set("services", data);
+			});
 		}
 	});
 	
@@ -44,7 +62,7 @@ $(document).ready(function() {
 	});
 	
 	var ManagedServiceModel = ecmconfig.ManagedServiceModel = Backbone.Model.extend({
-		initialize: function() {
+		initialize: function(options) {
 			this.set("attributeList", new AttributeList());
 		},
 		name: null,
@@ -117,7 +135,17 @@ $(document).ready(function() {
 				type: "GET",
 				dataType: "json"
 			}).then(function(data) {
-				self.get("attributeList").reset(data);
+				var attributes = data.map(function(data) {
+					var rval;
+					if (data.type.baseType === "service") {
+						rval = new ServiceAttributeModel(data);
+					} else {
+						rval = new AttributeModel(data);
+					}
+					rval.set("parentService", self);
+					return rval;
+				});
+				self.get("attributeList").reset(attributes);
 				self.get("appModel").set("displayedService", self);
 				return self.get("attributeList");
 			});
@@ -219,11 +247,10 @@ $(document).ready(function() {
 			});
 		},
 		updateConfigAdminList: function(rawConfigAdmins) {
-			var newList = [];
-			rawConfigAdmins.forEach(function(rawConfigAdmin) {
+			var newList = rawConfigAdmins.map(function(rawConfigAdmin) {
 				var configAdmin = new ConfigAdminModel(rawConfigAdmin);
 				configAdmin.set("appModel", self);
-				newList.push(configAdmin);
+				return configAdmin;
 			});
 			this.get("configAdminList").reset(newList);
 		},
@@ -237,9 +264,8 @@ $(document).ready(function() {
 			return managedService;
 		},
 		updateManagedServiceList: function(data) {
-			var newList = [];
-			data.forEach(function(rawService) {
-				newList.push(this.createNewEntry(rawService));
+			var newList = data.map(function(rawService) {
+				return this.createNewEntry(rawService);
 			}, this);
 			this.get("managedServiceList").reset(newList);
 		},

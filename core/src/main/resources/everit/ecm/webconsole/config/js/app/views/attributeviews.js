@@ -215,20 +215,49 @@ $(document).ready(function() {
 	
 	var ServiceSelectorView = Backbone.View.extend({
 		initialize: function(options) {
-			this.type = options.type;
+			console.log(options)
+			this.attrModel = options.attrModel;
 			this.value = options.value;
 		},
 		render: function() {
+			var self = this;
+			console.log(this.attrModel.get("services"));
+			var app = new Ractive({
+				el: this.el,
+				template: "#tmpl-service-selector",
+				data: {
+					filter: this.value,
+					services: this.attrModel.get("services"),
+					displayedService: null
+				},
+			      oninit: function() {
+			          this.on("change", function(e) {
+			            var id = e["displayedServiceId"];
+			            if (id !== undefined) {
+			              var services = this.get("services");
+			              services.forEach(function(service) {
+			                if (service.id === id) {
+			                  this.set("displayedService", service);
+			                }
+			              }, this);
+			            }
+			          });
+			        }
+			});
 			this.$el.dialog({
-				title: "Service Selector"
+				title: "Service Selector",
+				buttons: {
+					"Close" : function() {
+						self.$el.dialog("close");
+					}
+				}
 			});
 		}
 	});
 	
 	var ServiceAttributeView = Backbone.View.extend({
 		initialize: function(options) {
-			this.type = options.type;
-			this.value = options.value;
+			this.attrModel = options.attrModel;
 			this.nullable = options.nullable; 
 			this.deletable = options.deletable;
 		},
@@ -236,10 +265,13 @@ $(document).ready(function() {
 			"click .btn-open-service-selector" : "openServiceSelector"
 		},
 		openServiceSelector: function() {
-			new ServiceSelectorView({
-				type: this.type,
-				value: this.value
-			}).render();
+			var self = this;
+			this.attrModel.loadServiceSuggestions().then(function(){
+				new ServiceSelectorView({
+					attrModel: self.attrModel,
+					value: self.value
+				}).render();
+			});
 		},
 		render: function() {
 			this.$el.empty().append(loadTemplate("tmpl-service-attribute")({
@@ -272,7 +304,7 @@ $(document).ready(function() {
 			});
 		} else if (type.baseType === "service") {
 			return new ServiceAttributeView({
-				type: type,
+				attrModel: attrModel,
 				value: value,
 				nullable: nullable,
 				deletable: deletable

@@ -26,6 +26,8 @@ public class ServiceSuggestion {
 
     private final String serviceClass;
 
+    private String serviceId;
+
     private final Map<String, Object> serviceProperties = new HashMap<>();
 
     public ServiceSuggestion(final String serviceClass) {
@@ -37,10 +39,17 @@ public class ServiceSuggestion {
         return this;
     }
 
+    public ServiceSuggestion serviceId(final String serviceId) {
+        this.serviceId = Objects.requireNonNull(serviceId, "serviceId cannot be null");
+        return this;
+    }
+
     public void toJSON(final JSONWriter writer) {
         writer.object();
         writer.key("serviceClass");
         writer.value(serviceClass);
+        writer.key("id");
+        writer.value(serviceId);
         writer.key("properties");
         writer.array();
         for (String key : serviceProperties.keySet()) {

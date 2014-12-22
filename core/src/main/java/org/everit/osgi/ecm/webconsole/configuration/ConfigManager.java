@@ -153,10 +153,10 @@ public class ConfigManager {
             newConfig.update(mapToProperties(objClassDef, attributes));
             String pid = newConfig.getPid();
             return new Configurable()
-            .setPid(pid)
-            .setFactoryPid(factoryPid)
-            .setName(pid)
-            .setDescription(objClassDef.getName());
+                    .setPid(pid)
+                    .setFactoryPid(factoryPid)
+                    .setName(pid)
+                    .setDescription(objClassDef.getName());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -183,7 +183,7 @@ public class ConfigManager {
             final String serviceLocation,
             final String configAdminPid) {
         return new AttributeLookup(getConfigAdmin(configAdminPid), bundleCtx, metaTypeService())
-                .lookupAttributes(servicePid, factoryPid, serviceLocation);
+        .lookupAttributes(servicePid, factoryPid, serviceLocation);
     }
 
     public ObjectClassDefinition getObjectClassDefinition(final ServiceReference<ManagedService> serviceRef) {
@@ -231,7 +231,7 @@ public class ConfigManager {
 
     public Collection<Configurable> lookupConfigurations() {
         return new ConfigurableLookup(cfgAdminTracker.getService(), bundleCtx, metaTypeService())
-                .lookupConfigurables();
+        .lookupConfigurables();
     }
 
     public Collection<Configurable> lookupConfigurations(final String configAdminPid) {
@@ -267,6 +267,7 @@ public class ConfigManager {
 
     private ServiceSuggestion serviceRefToSuggestion(final ServiceReference<?> ref) {
         ServiceSuggestion rval = new ServiceSuggestion(bundleCtx.getService(ref).getClass().getName());
+        rval.serviceId(ref.getProperty("service.id").toString());
         for (String key : ref.getPropertyKeys()) {
             rval.property(key, ref.getProperty(key));
         }
