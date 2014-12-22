@@ -213,6 +213,44 @@ $(document).ready(function() {
 		}
 	});
 	
+	var ServiceSelectorView = Backbone.View.extend({
+		initialize: function(options) {
+			this.type = options.type;
+			this.value = options.value;
+		},
+		render: function() {
+			this.$el.dialog({
+				title: "Service Selector"
+			});
+		}
+	});
+	
+	var ServiceAttributeView = Backbone.View.extend({
+		initialize: function(options) {
+			this.type = options.type;
+			this.value = options.value;
+			this.nullable = options.nullable; 
+			this.deletable = options.deletable;
+		},
+		events: {
+			"click .btn-open-service-selector" : "openServiceSelector"
+		},
+		openServiceSelector: function() {
+			new ServiceSelectorView({
+				type: this.type,
+				value: this.value
+			}).render();
+		},
+		render: function() {
+			this.$el.empty().append(loadTemplate("tmpl-service-attribute")({
+				value: this.value,
+				nullable: this.nullable,
+				deletable: this.deletable
+			}));
+			return this.$el;
+		}
+	});
+	
 	function createViewForSingularAttribute(attrModel, value, nullable, deletable) {
 		var type = attrModel.get("type");
 		if (attrModel.hasOptions()) {
@@ -231,6 +269,13 @@ $(document).ready(function() {
 			return new SingularCheckboxAttributeView({
 				value: value,
 				nullable: nullable
+			});
+		} else if (type.baseType === "service") {
+			return new ServiceAttributeView({
+				type: type,
+				value: value,
+				nullable: nullable,
+				deletable: deletable
 			});
 		} else {
 			var inputType = type.baseType === "password" ? "password" : "text";

@@ -137,6 +137,17 @@ span.checkbox {
 	</div>
 </script>
 
+<script type="text/template" id="tmpl-service-attribute">
+	<input type="text" readonly="readonly" value="<%- value %>" />
+	<input type="button" class="btn-open-service-selector ui-widget ui-priority-primary" value="search"/>
+	<% if (nullable) { %>
+		<input type="button" value="set to null" class="btn-null ui-widget ui-priority-primary" />
+	<% } %>
+	<% if (deletable) { %>
+		<input type="button" value="delete" class="btn-delete ui-widget ui-priority-primary" />
+	<% } %>
+</script>
+
 <script type="text/template" id="tmpl-managed-service-factory-row">
 		<td>
 			<i><%- service.get("name") %></i>
