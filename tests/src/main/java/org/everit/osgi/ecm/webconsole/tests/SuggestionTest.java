@@ -39,8 +39,8 @@ import org.junit.Test;
 @Component(immediate = true)
 @Service(SuggestionTest.class)
 @Properties({
-        @Property(name = "eosgi.testEngine", value = "junit4"),
-        @Property(name = "eosgi.testId", value = "SuggestionTest"),
+    @Property(name = "eosgi.testEngine", value = "junit4"),
+    @Property(name = "eosgi.testId", value = "SuggestionTest"),
 })
 public class SuggestionTest {
 
@@ -76,15 +76,6 @@ public class SuggestionTest {
         BasicCredentialsProvider credProv = new BasicCredentialsProvider();
         credProv.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("admin", "admin"));
         client = HttpClientBuilder.create().setDefaultCredentialsProvider(credProv).build();
-    }
-
-    public void testFilterKeySuggestion() {
-        JSONArray array = exec("http://localhost:8080/system/console/ecm-config/serviceproperty.json"
-                + "?configAdminPid=org.apache.felix.cm.ConfigurationAdmin"
-                + "&pid=org.everit.osgi.ecm.webconsole.tests"
-                + "&attributeId=dummyService.target"
-                + "&keyPrefix=servi");
-        // array.getString("service.pid")
     }
 
     @Test

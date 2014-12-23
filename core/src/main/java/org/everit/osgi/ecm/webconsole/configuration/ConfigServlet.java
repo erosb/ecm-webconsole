@@ -260,16 +260,11 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
         }
     }
 
-    private void printServicePropKeyPrefixSuggestions(final HttpServletResponse resp, final String configAdminPid,
-            final String pid,
-            final String attributeId, final String keyPrefix) {
-
-    }
-
     private void printServiceSuggestions(final HttpServletResponse resp, final String configAdminPid, final String pid,
-            final String attributeId) {
+            final String attributeId, final String ldapQuery) {
         try {
-            List<ServiceSuggestion> suggestions = configManager.getServiceSuggestions(configAdminPid, pid, attributeId);
+            List<ServiceSuggestion> suggestions = configManager.getServiceSuggestions(configAdminPid, pid, attributeId,
+                    ldapQuery);
             JSONWriter writer = new JSONWriter(resp.getWriter());
             writer.array();
             for (ServiceSuggestion suggestion : suggestions) {
@@ -317,15 +312,8 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
                 String configAdminPid = req.getParameter("configAdminPid");
                 String pid = req.getParameter("pid");
                 String attributeId = req.getParameter("attributeId");
-                printServiceSuggestions(resp, configAdminPid, pid, attributeId);
-            } else if (pathInfo.endsWith("/serviceproperty.json")) {
-                String configAdminPid = req.getParameter("configAdminPid");
-                String pid = req.getParameter("pid");
-                String attributeId = req.getParameter("attributeId");
-                String keyPrefix = req.getParameter("keyPrefix");
-                if (keyPrefix != null) {
-                    printServicePropKeyPrefixSuggestions(resp, configAdminPid, pid, attributeId, keyPrefix);
-                }
+                String ldapQuery = req.getParameter("query");
+                printServiceSuggestions(resp, configAdminPid, pid, attributeId, ldapQuery);
             }
         }
     }

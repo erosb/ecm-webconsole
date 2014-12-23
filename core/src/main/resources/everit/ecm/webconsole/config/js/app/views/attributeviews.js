@@ -218,16 +218,12 @@ $(document).ready(function() {
 			console.log(options)
 			this.attrModel = options.attrModel;
 			this.value = options.value;
-			this.attrModel.on("change:filter", function() {
-				this.filterInput().val(this.attrModel.get("filter"));
-			}, this);
 		},
-		keys: {
-			"space+ctrl" : "autocomplete"
+		events: {
+			"click .btn-filter" : "filterServices"
 		},
-		autocomplete: function() {
-			console.log("ctrl+space")
-			this.attrModel.autocomplete(this.filterInput().val());
+		filterServices: function() {
+			this.attrModel.loadServiceSuggestions(this.filterInput().val());
 		},
 		filterInput: function() {
 			return this.$el.find(".cnt-filter input[type=text]");
@@ -239,7 +235,7 @@ $(document).ready(function() {
 				el: this.el,
 				template: "#tmpl-service-selector",
 				data: {
-					filter: this.attrModel.get("filter"),
+					filter: "",
 					services: this.attrModel.get("services"),
 					displayedService: null
 				},
@@ -257,12 +253,20 @@ $(document).ready(function() {
 					});
 				}
 			});
+			this.attrModel.on("change:services", function() {
+				app.set("services", self.attrModel.get("services"));
+			});
 			var title = "Service Selector: " + this.attrModel.get("parentService").get("pid") + "." + this.attrModel.get("id");
 			this.$el.dialog({
 				title: title,
 				modal: true,
 				width: "auto",
 				buttons: {
+					"Ok" : function() {
+						self.trigger("change", self.filterInput().val());
+						app.teardown();
+						self.$el.dialog("close");
+					},
 					"Close" : function() {
 						self.$el.dialog("close");
 					}
@@ -274,7 +278,7 @@ $(document).ready(function() {
 					2: {sorter:false}
 				}
 			});
-			this.filterInput().autocomplete({
+			this.filterInput().val(this.value).autocomplete({
 				source: function(request, response) {
 					response(self.attrModel.autocomplete(request.term));
 				},
@@ -286,6 +290,7 @@ $(document).ready(function() {
 	var ServiceAttributeView = Backbone.View.extend({
 		initialize: function(options) {
 			this.attrModel = options.attrModel;
+			this.value = options.value;
 			this.nullable = options.nullable; 
 			this.deletable = options.deletable;
 		},
@@ -295,10 +300,16 @@ $(document).ready(function() {
 		openServiceSelector: function() {
 			var self = this;
 			this.attrModel.loadServiceSuggestions().then(function(){
-				new ServiceSelectorView({
+				var selectorView = new ServiceSelectorView({
 					attrModel: self.attrModel,
 					value: self.value
-				}).render();
+				});
+				selectorView.on("change", function(value) {
+					self.$el.find("input[type=text]").val(self.value = value);
+					console.log("changed to ", value)
+					self.trigger("change", value);
+				});
+				selectorView.render();
 			});
 		},
 		render: function() {

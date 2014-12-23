@@ -44,10 +44,6 @@ $(document).ready(function() {
 	});
 	
 	var ServiceAttributeModel = ecmconfig.ServiceAttributeModel = ecmconfig.AttributeModel.extend({
-		initialize: function(options) {
-			this.set("filter", options.value);
-		},
-		filter: null,
 		suggestionsForValuePrefix: function(value, key, valuePrefix) {
 //			console.log("autocompleting for key ", key, " valuePrefix ", valuePrefix)
 			var lastOpeningParenIdx = value.lastIndexOf("(");
@@ -88,11 +84,6 @@ $(document).ready(function() {
 				service.properties.forEach(function(prop) {
 					if (prop.key.indexOf(keyPrefix) === 0) {
 						var candidate = value.substring(0, lastOpeningParenIdx + 1) + prop.key + "=";
-//						var candidateLabel = prop.key;
-//						var candidate = {
-//							label: candidateLabel,
-//							value: candidateValue
-//						};
 						if (suggestions.indexOf(candidate) == -1) {
 							suggestions.push(candidate);
 						}
@@ -113,12 +104,16 @@ $(document).ready(function() {
 				return this.suggestionsForValuePrefix(value, key, valuePrefix);
 			}
 		},
-		loadServiceSuggestions: function() {
+		loadServiceSuggestions: function(ldapQuery) {
 			var service = this.get("parentService"), self = this;
-			return $.getJSON(ecmconfig.rootPath + "/suggestion.json"
-					+ "?configAdminPid=" + service.getConfigAdminPid()
-					+ "&pid=" + service.get("pid")
-					+ "&attributeId=" + this.get("id"))
+			var url = ecmconfig.rootPath + "/suggestion.json"
+				+ "?configAdminPid=" + service.getConfigAdminPid()
+				+ "&pid=" + service.get("pid")
+				+ "&attributeId=" + this.get("id");
+			if (ldapQuery) {
+				url += "&query=" + encodeURIComponent(ldapQuery);
+			}
+			return $.getJSON(url)
 			.then(function(data){
 				console.log("returned ", data)
 				self.set("services", data);
