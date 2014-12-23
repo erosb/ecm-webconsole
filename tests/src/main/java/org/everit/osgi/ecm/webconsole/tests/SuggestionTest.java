@@ -78,6 +78,15 @@ public class SuggestionTest {
         client = HttpClientBuilder.create().setDefaultCredentialsProvider(credProv).build();
     }
 
+    public void testFilterKeySuggestion() {
+        JSONArray array = exec("http://localhost:8080/system/console/ecm-config/serviceproperty.json"
+                + "?configAdminPid=org.apache.felix.cm.ConfigurationAdmin"
+                + "&pid=org.everit.osgi.ecm.webconsole.tests"
+                + "&attributeId=dummyService.target"
+                + "&keyPrefix=servi");
+        // array.getString("service.pid")
+    }
+
     @Test
     @TestDuringDevelopment
     public void testSuggestionsForDummyService() {
@@ -85,6 +94,6 @@ public class SuggestionTest {
                 + "?configAdminPid=org.apache.felix.cm.ConfigurationAdmin"
                 + "&pid=org.everit.osgi.ecm.webconsole.tests"
                 + "&attributeId=dummyService.target");
-        Assert.assertEquals("10 dummyService suggestions are returned", 10, array.length());
+        Assert.assertEquals("15 dummyService suggestions are returned", 15, array.length());
     }
 }

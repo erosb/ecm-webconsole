@@ -31,7 +31,7 @@ public class TestConfigActivator implements BundleActivator {
 
     @Override
     public void start(final BundleContext context) throws Exception {
-        for (int i = 1; i <= 10; ++i) {
+        for (int i = 1; i <= 15; ++i) {
             DummyService service = new DummyServiceImpl();
             Dictionary<String, Object> properties = new Hashtable<>();
             properties.put("service.pid", "dummyservice" + i);

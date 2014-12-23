@@ -218,6 +218,19 @@ $(document).ready(function() {
 			console.log(options)
 			this.attrModel = options.attrModel;
 			this.value = options.value;
+			this.attrModel.on("change:filter", function() {
+				this.filterInput().val(this.attrModel.get("filter"));
+			}, this);
+		},
+		keys: {
+			"space+ctrl" : "autocomplete"
+		},
+		autocomplete: function() {
+			console.log("ctrl+space")
+			this.attrModel.autocomplete(this.filterInput().val());
+		},
+		filterInput: function() {
+			return this.$el.find(".cnt-filter input[type=text]");
 		},
 		render: function() {
 			var self = this;
@@ -226,31 +239,46 @@ $(document).ready(function() {
 				el: this.el,
 				template: "#tmpl-service-selector",
 				data: {
-					filter: this.value,
+					filter: this.attrModel.get("filter"),
 					services: this.attrModel.get("services"),
 					displayedService: null
 				},
-			      oninit: function() {
-			          this.on("change", function(e) {
-			            var id = e["displayedServiceId"];
-			            if (id !== undefined) {
-			              var services = this.get("services");
-			              services.forEach(function(service) {
-			                if (service.id === id) {
-			                  this.set("displayedService", service);
-			                }
-			              }, this);
-			            }
-			          });
-			        }
+				oninit: function() {
+					this.on("change", function(e) {
+						var id = e["displayedServiceId"];
+						if (id !== undefined) {
+							var services = this.get("services");
+							services.forEach(function(service) {
+								if (service.id === id) {
+									this.set("displayedService", service);
+								}
+							}, this);
+						}
+					});
+				}
 			});
+			var title = "Service Selector: " + this.attrModel.get("parentService").get("pid") + "." + this.attrModel.get("id");
 			this.$el.dialog({
-				title: "Service Selector",
+				title: title,
+				modal: true,
+				width: "auto",
 				buttons: {
 					"Close" : function() {
 						self.$el.dialog("close");
 					}
 				}
+			}).find("table").tablesorter({
+				headers: {
+					0: {sorter:false},
+					1: {sorter:false},
+					2: {sorter:false}
+				}
+			});
+			this.filterInput().autocomplete({
+				source: function(request, response) {
+					response(self.attrModel.autocomplete(request.term));
+				},
+				delay: 0
 			});
 		}
 	});

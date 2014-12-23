@@ -44,6 +44,75 @@ $(document).ready(function() {
 	});
 	
 	var ServiceAttributeModel = ecmconfig.ServiceAttributeModel = ecmconfig.AttributeModel.extend({
+		initialize: function(options) {
+			this.set("filter", options.value);
+		},
+		filter: null,
+		suggestionsForValuePrefix: function(value, key, valuePrefix) {
+//			console.log("autocompleting for key ", key, " valuePrefix ", valuePrefix)
+			var lastOpeningParenIdx = value.lastIndexOf("(");
+			var lastEqIdx = value.lastIndexOf("=");
+			var suggestions = [];
+			this.get("services").forEach(function(service) {
+				service.properties.forEach(function(prop) {
+					var matchingValues = [];
+					if (prop.key !== key) {
+						return;
+					}
+					if (prop.value instanceof Array) {
+						prop.value.forEach(function(val) {
+							if (new String(val).indexOf(valuePrefix) === 0) {
+								matchingValues.push(val); 
+							}
+						});
+					} else  {
+						if (new String(prop.value).indexOf(valuePrefix) === 0) {
+							matchingValues.push(prop.value); 
+						}
+					}
+					matchingValues.forEach(function(val) {
+						var candidate = value.substring(0, lastEqIdx + 1) + val + ")";
+						if (suggestions.indexOf(candidate) === -1) {
+							suggestions.push(candidate);
+						}
+					});
+				});
+			});
+			return suggestions;
+		},
+		suggestionsForKeyPrefix: function(value, keyPrefix) {
+//			console.log("autocompleting for key ", keyPrefix);
+			var lastOpeningParenIdx = value.lastIndexOf("(");
+			var suggestions = [];
+			this.get("services").forEach(function(service) {
+				service.properties.forEach(function(prop) {
+					if (prop.key.indexOf(keyPrefix) === 0) {
+						var candidate = value.substring(0, lastOpeningParenIdx + 1) + prop.key + "=";
+//						var candidateLabel = prop.key;
+//						var candidate = {
+//							label: candidateLabel,
+//							value: candidateValue
+//						};
+						if (suggestions.indexOf(candidate) == -1) {
+							suggestions.push(candidate);
+						}
+					}
+				});
+			});
+			return suggestions;
+		},
+		autocomplete: function(value) {
+			var lastOpeningParenIdx = value.lastIndexOf("(");
+			var lastEqIdx = value.lastIndexOf("=");
+			if (lastOpeningParenIdx > lastEqIdx) {
+				var keyPrefix = value.substring(lastOpeningParenIdx + 1, value.length);
+				return this.suggestionsForKeyPrefix(value, keyPrefix);
+			} else {
+				var key = value.substring(lastOpeningParenIdx + 1, lastEqIdx);
+				var valuePrefix = value.substring(lastEqIdx + 1, value.length);
+				return this.suggestionsForValuePrefix(value, key, valuePrefix);
+			}
+		},
 		loadServiceSuggestions: function() {
 			var service = this.get("parentService"), self = this;
 			return $.getJSON(ecmconfig.rootPath + "/suggestion.json"

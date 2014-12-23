@@ -76,6 +76,29 @@ span.checkbox {
 	display: inline-block;
 	border: 1px solid lightgrey;
 }
+
+.cnt-filter {
+	display: block;
+	width: 100%;
+	padding-bottom: 8px;
+}
+
+.cnt-matching-services {
+	display: inline-block
+}
+
+.cnt-service-properties {
+	display: inline-block;
+	padding: 8px;
+}
+
+.cnt-service-properties table {
+	display: inline-block;
+}
+
+.cnt-service-properties table th {
+	font-weight: bold;
+}
 </style>
 
 <script type="text/template" id="tmpl-config-admin-list">
@@ -140,21 +163,23 @@ span.checkbox {
 </script>
 
 <script type="text/ractive" id="tmpl-service-selector">
-<div id="cnt-filter">
-	Filter: <input type="text" class="ui-widget" value="{{filter}}"/>
+<div class="cnt-filter">
+	Filter: <input type="text" class="ui-widget" value="{{filter}}" style="width: 80%"/>
 	<input type="button" value="Filter" on-click="doFilter" />
 </div>
-<div id="cnt-matching-services">
+<div class="cnt-matching-services">
 	<select size="10" on-change="displayService" value="{{displayedServiceId}}">
 		{{#each services}}
 			<option value="{{id}}">{{serviceClass}}</option>
 		{{/each}}
 	</select>
 </div>
-<div id="cnt-service-properties">
-	<span>Properties of {{displayedService.name}}</span>
-	<table>
+<div class="cnt-service-properties">
+	<table class="tablesorter">
 		<thead>
+			<tr>
+				<th colspan="2">Properties of {{displayedService.serviceClass}}</th>
+			</tr>
 			<tr>
 				<th>Key</th><th>Value</th>
 			</tr>
