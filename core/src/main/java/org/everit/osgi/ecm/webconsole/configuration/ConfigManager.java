@@ -153,10 +153,10 @@ public class ConfigManager {
             newConfig.update(mapToProperties(objClassDef, attributes));
             String pid = newConfig.getPid();
             return new Configurable()
-                    .setPid(pid)
-                    .setFactoryPid(factoryPid)
-                    .setName(pid)
-                    .setDescription(objClassDef.getName());
+            .setPid(pid)
+            .setFactoryPid(factoryPid)
+            .setName(pid)
+            .setDescription(objClassDef.getName());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -183,7 +183,7 @@ public class ConfigManager {
             final String serviceLocation,
             final String configAdminPid) {
         return new AttributeLookup(getConfigAdmin(configAdminPid), bundleCtx, metaTypeService())
-        .lookupAttributes(servicePid, factoryPid, serviceLocation);
+                .lookupAttributes(servicePid, factoryPid, serviceLocation);
     }
 
     public ObjectClassDefinition getObjectClassDefinition(final ServiceReference<ManagedService> serviceRef) {
@@ -194,7 +194,7 @@ public class ConfigManager {
     }
 
     public List<ServiceSuggestion> getServiceSuggestions(final String configAdminPid, final String pid,
-            final String attributeId, final String ldapQuery) {
+            final String attributeId, final String ldapQuery) throws InvalidSyntaxException {
         ScrService scrService = bundleCtx.getService(bundleCtx.getServiceReference(ScrService.class));
         Component component = Arrays.stream(scrService.getComponents())
                 .filter((comp) -> comp.getConfigurationPid().equals(pid))
@@ -206,17 +206,13 @@ public class ConfigManager {
                 .filter((ref) -> (ref.getName() + ".target").equals(attributeId))
                 .map((ref) -> ref.getServiceName())
                 .findFirst().orElse(null);
-        try {
-            ServiceReference<?>[] refs = bundleCtx.getServiceReferences(referenceClassName, ldapQuery);
-            if (refs == null) {
-                return Collections.emptyList();
-            }
-            return Arrays.stream(refs)
-                    .map(this::serviceRefToSuggestion)
-                    .collect(Collectors.toList());
-        } catch (InvalidSyntaxException e) {
-            throw new RuntimeException(e);
+        ServiceReference<?>[] refs = bundleCtx.getServiceReferences(referenceClassName, ldapQuery);
+        if (refs == null) {
+            return Collections.emptyList();
         }
+        return Arrays.stream(refs)
+                .map(this::serviceRefToSuggestion)
+                .collect(Collectors.toList());
     }
 
     public Stream<ServiceReference<ManagedService>> listManagedServices() {
@@ -230,7 +226,7 @@ public class ConfigManager {
 
     public Collection<Configurable> lookupConfigurations() {
         return new ConfigurableLookup(cfgAdminTracker.getService(), bundleCtx, metaTypeService())
-        .lookupConfigurables();
+                .lookupConfigurables();
     }
 
     public Collection<Configurable> lookupConfigurations(final String configAdminPid) {

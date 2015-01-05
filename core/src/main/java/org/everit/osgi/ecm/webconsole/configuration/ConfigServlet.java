@@ -45,6 +45,7 @@ import org.apache.felix.webconsole.AbstractWebConsolePlugin;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONWriter;
+import org.osgi.framework.InvalidSyntaxException;
 
 public class ConfigServlet extends AbstractWebConsolePlugin {
     private static final long serialVersionUID = 1957046444200622859L;
@@ -79,7 +80,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void doDelete(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-            IOException {
+    IOException {
         String pathInfo = req.getPathInfo();
         if (pathInfo.endsWith("/configuration.json")) {
             String servicePid = req.getParameter("pid");
@@ -92,7 +93,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void doPut(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-            IOException {
+    IOException {
         String requestBody = requestBody(req);
         String pid = req.getParameter("pid");
         String factoryPid = req.getParameter("factoryPid");
@@ -103,7 +104,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             resp.setContentType("application/json");
             JSONWriter writer = new JSONWriter(resp.getWriter());
             configManager.createConfiguration(configAdminPid, factoryPid, location, attributes)
-                    .toJSON(writer);
+            .toJSON(writer);
 
         } else {
             configManager.updateConfiguration(configAdminPid, pid, factoryPid, attributes);
@@ -263,14 +264,23 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
     private void printServiceSuggestions(final HttpServletResponse resp, final String configAdminPid, final String pid,
             final String attributeId, final String ldapQuery) {
         try {
-            List<ServiceSuggestion> suggestions = configManager.getServiceSuggestions(configAdminPid, pid, attributeId,
-                    ldapQuery);
             JSONWriter writer = new JSONWriter(resp.getWriter());
-            writer.array();
-            for (ServiceSuggestion suggestion : suggestions) {
-                suggestion.toJSON(writer);
+            List<ServiceSuggestion> suggestions;
+            try {
+                suggestions = configManager.getServiceSuggestions(configAdminPid, pid, attributeId,
+                        ldapQuery);
+                writer.array();
+                for (ServiceSuggestion suggestion : suggestions) {
+                    suggestion.toJSON(writer);
+                }
+                writer.endArray();
+            } catch (InvalidSyntaxException e) {
+                resp.setStatus(403);
+                writer.object();
+                writer.key("error");
+                writer.value("invalid query: " + e.getMessage());
+                writer.endObject();
             }
-            writer.endArray();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -291,7 +301,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void renderContent(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-            IOException {
+    IOException {
         String pathInfo = req.getPathInfo();
         if (isMainPageRequest(pathInfo)) {
             loadMainPage(pathInfo, resp, req.getAttribute("felix.webconsole.pluginRoot").toString());

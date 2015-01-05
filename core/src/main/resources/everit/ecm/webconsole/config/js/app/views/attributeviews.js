@@ -36,7 +36,7 @@ $(document).ready(function() {
 		},
 		tagName: "ul",
 		events : {
-			"click .btn-new-entry[type=button]" : "buttonClicked"
+			"click .btn-new-entry" : "buttonClicked"
 		},
 		buttonClicked: function() {
 			var valueArr = this.model.get("value").slice(0);
@@ -64,7 +64,7 @@ $(document).ready(function() {
 				$("<li></li>").appendTo(this.$el).append(entryView.render());
 			}, this);
 			if (this.maxOccurences === "unbound" || this.maxOccurences > this.subviews.length) {
-				this.$el.append("<li><input type='button' value='new entry' class='btn-new-entry'/></li>");
+				this.$el.append("<li><span title='new entry' class='ui-widget ui-icon ui-icon-plus btn-new-entry'/></li>");
 			}
 			this.$el.sortable();
 			return this.$el;

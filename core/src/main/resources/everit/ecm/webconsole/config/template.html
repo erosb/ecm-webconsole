@@ -99,6 +99,10 @@ span.checkbox {
 .cnt-service-properties table th {
 	font-weight: bold;
 }
+
+.btn-delete, .btn-null {
+	display: inline-block;
+}
 </style>
 
 <script type="text/template" id="tmpl-config-admin-list">
@@ -121,10 +125,10 @@ span.checkbox {
 <script type="text/template" id="tmpl-singular-primitive">
 	<input type="<%- type %>" name="value" value="<%- value %>" placeholder="<%- placeholder %>" class="ui-state-default ui-corner-all" style="width: 80%" />
 	<% if (nullable) { %>
-		<input type="button" value="set to null" class="btn-null ui-widget ui-priority-primary" />
+		<span title="set to null" class="btn-null ui-icon ui-icon-cancel" />
 	<% } %>
 	<% if (deletable) { %>
-		<input type="button" value="delete" class="btn-delete ui-widget ui-priority-primary" />
+		<span title="delete" class="ui-icon ui-icon-trash btn-delete" />
 	<% } %>
 </script>
 

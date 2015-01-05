@@ -83,7 +83,7 @@ $(document).ready(function() {
 			this.get("services").forEach(function(service) {
 				service.properties.forEach(function(prop) {
 					if (prop.key.indexOf(keyPrefix) === 0) {
-						var candidate = value.substring(0, lastOpeningParenIdx + 1) + prop.key + "=";
+						var candidate = value.substring(0, lastOpeningParenIdx + 1) + prop.key;
 						if (suggestions.indexOf(candidate) == -1) {
 							suggestions.push(candidate);
 						}
