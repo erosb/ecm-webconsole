@@ -50,7 +50,7 @@
           <instructions>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Activator>org.everit.osgi.ecm.webconsole.tests.TestConfigActivator</Bundle-Activator>
-            <EOSGi-TestNum>3</EOSGi-TestNum>
+            <EOSGi-TestNum>5</EOSGi-TestNum>
           </instructions>
         </configuration>
       </plugin>
