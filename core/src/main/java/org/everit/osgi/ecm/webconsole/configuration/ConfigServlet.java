@@ -80,7 +80,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void doDelete(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-    IOException {
+            IOException {
         String pathInfo = req.getPathInfo();
         if (pathInfo.endsWith("/configuration.json")) {
             String servicePid = req.getParameter("pid");
@@ -93,7 +93,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void doPut(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-    IOException {
+            IOException {
         String requestBody = requestBody(req);
         String pid = req.getParameter("pid");
         String factoryPid = req.getParameter("factoryPid");
@@ -104,7 +104,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             resp.setContentType("application/json");
             JSONWriter writer = new JSONWriter(resp.getWriter());
             configManager.createConfiguration(configAdminPid, factoryPid, location, attributes)
-            .toJSON(writer);
+                    .toJSON(writer);
 
         } else {
             configManager.updateConfiguration(configAdminPid, pid, factoryPid, attributes);
@@ -275,7 +275,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
                 }
                 writer.endArray();
             } catch (InvalidSyntaxException e) {
-                resp.setStatus(403);
+                // resp.setStatus(403);
                 writer.object();
                 writer.key("error");
                 writer.value("invalid query: " + e.getMessage());
@@ -301,7 +301,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void renderContent(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-    IOException {
+            IOException {
         String pathInfo = req.getPathInfo();
         if (isMainPageRequest(pathInfo)) {
             loadMainPage(pathInfo, resp, req.getAttribute("felix.webconsole.pluginRoot").toString());

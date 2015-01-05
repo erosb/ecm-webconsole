@@ -41,8 +41,8 @@ import org.junit.Test;
 @Component(immediate = true)
 @Service(SuggestionTest.class)
 @Properties({
-        @Property(name = "eosgi.testEngine", value = "junit4"),
-        @Property(name = "eosgi.testId", value = "SuggestionTest"),
+    @Property(name = "eosgi.testEngine", value = "junit4"),
+    @Property(name = "eosgi.testId", value = "SuggestionTest"),
 })
 public class SuggestionTest {
 
@@ -104,7 +104,7 @@ public class SuggestionTest {
                 + "?configAdminPid=org.apache.felix.cm.ConfigurationAdmin"
                 + "&pid=org.everit.osgi.ecm.webconsole.tests"
                 + "&attributeId=dummyService.target"
-                + "&query=whatever", 403);
+                + "&query=whatever", 200);
         Assert.assertEquals("invalid query: Missing opening parenthesis: whatever", obj.getString("error"));
     }
 

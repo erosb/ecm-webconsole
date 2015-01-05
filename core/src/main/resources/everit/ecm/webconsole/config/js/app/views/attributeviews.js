@@ -230,7 +230,6 @@ $(document).ready(function() {
 		},
 		render: function() {
 			var self = this;
-			console.log(this.attrModel.get("services"));
 			var app = new Ractive({
 				el: this.el,
 				template: "#tmpl-service-selector",
@@ -253,8 +252,9 @@ $(document).ready(function() {
 					});
 				}
 			});
-			this.attrModel.on("change:services", function() {
+			this.attrModel.on("change:services change:queryError", function() {
 				app.set("services", self.attrModel.get("services"));
+				app.set("queryError", self.attrModel.get("queryError"));
 			});
 			var title = "Service Selector: " + this.attrModel.get("parentService").get("pid") + "." + this.attrModel.get("id");
 			this.$el.dialog({

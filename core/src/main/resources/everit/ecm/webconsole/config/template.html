@@ -167,10 +167,13 @@ span.checkbox {
 </script>
 
 <script type="text/ractive" id="tmpl-service-selector">
-<div class="cnt-filter">
+{{#queryError}}
+	<p class="ui-state-error">{{queryError}}</p>
+{{/queryError}}
+<form class="cnt-filter" on-submit="doFilter">
 	Filter: <input type="text" class="ui-widget" value="{{filter}}" style="width: 80%"/>
 	<input type="button" class="btn-filter" value="Filter" on-click="doFilter" />
-</div>
+</form>
 <div class="cnt-matching-services">
 	<select size="10" on-change="displayService" value="{{displayedServiceId}}">
 		{{#each services}}

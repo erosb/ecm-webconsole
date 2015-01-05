@@ -116,7 +116,12 @@ $(document).ready(function() {
 			return $.getJSON(url)
 			.then(function(data){
 				console.log("returned ", data)
-				self.set("services", data);
+				if (data.error) {
+					self.set("queryError", data.error);
+				} else { 
+					self.set("services", data);
+					self.set("queryError", null);
+				}
 			});
 		}
 	});
