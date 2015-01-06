@@ -40,7 +40,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.felix.webconsole.AbstractWebConsolePlugin;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -330,9 +329,10 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     private String requestBody(final HttpServletRequest req) throws IOException {
         StringBuilder sb = new StringBuilder(req.getContentLength());
-        List<String> lines = IOUtils.readLines(req.getInputStream(), charsetByRequest(req));
-        for (String line : lines) {
-            sb.append(line);
+        String line;
+        BufferedReader reader = req.getReader();
+        while ((line = reader.readLine()) != null) {
+            sb.append(line).append("\n");
         }
         return sb.toString();
     }
