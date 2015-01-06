@@ -219,11 +219,9 @@ $(document).ready(function() {
 			this.attrModel = options.attrModel;
 			this.value = options.value;
 		},
-		events: {
-			"click .btn-filter" : "filterServices"
-		},
 		filterServices: function() {
 			this.attrModel.loadServiceSuggestions(this.filterInput().val());
+			return false;
 		},
 		filterInput: function() {
 			return this.$el.find(".cnt-filter input[type=text]");
@@ -250,6 +248,7 @@ $(document).ready(function() {
 							}, this);
 						}
 					});
+					this.on("doFilter", function() { self.filterServices(); return false; });
 				}
 			});
 			this.attrModel.on("change:services change:queryError", function() {

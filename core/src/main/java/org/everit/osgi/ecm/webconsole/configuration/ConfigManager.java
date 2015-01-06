@@ -19,7 +19,6 @@ package org.everit.osgi.ecm.webconsole.configuration;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -31,8 +30,8 @@ import java.util.Vector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.felix.scr.Component;
-import org.apache.felix.scr.ScrService;
+import org.everit.osgi.ecm.webconsole.configuration.suggestion.AggregateServiceSuggestionProvider;
+import org.everit.osgi.ecm.webconsole.configuration.suggestion.ServiceSuggestionProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
@@ -52,12 +51,27 @@ public class ConfigManager {
 
     private final ServiceTracker<MetaTypeService, MetaTypeService> metaTypeSrvTracker;
 
+    private final ServiceSuggestionProvider suggestionProvider;
+
+    public ConfigManager(final BundleContext bundleCtx) {
+        this(new ServiceTracker<ConfigurationAdmin, ConfigurationAdmin>(bundleCtx, ConfigurationAdmin.class, null),
+                new AggregateServiceSuggestionProvider(
+                        new ServiceTracker<ServiceSuggestionProvider, ServiceSuggestionProvider>(bundleCtx,
+                                ServiceSuggestionProvider.class, null)),
+                new ServiceTracker<MetaTypeService, MetaTypeService>(bundleCtx, MetaTypeService.class, null),
+                bundleCtx);
+        this.cfgAdminTracker.open();
+        this.metaTypeSrvTracker.open();
+    }
+
     public ConfigManager(final ServiceTracker<ConfigurationAdmin, ConfigurationAdmin> cfgAdminTracker,
+            final ServiceSuggestionProvider suggestionProvider,
             final ServiceTracker<MetaTypeService, MetaTypeService> metaTypeSrvTracker,
             final BundleContext bundleCtx) {
         this.cfgAdminTracker = Objects.requireNonNull(cfgAdminTracker, "cfgAdminTracker cannot be null");
-        this.bundleCtx = Objects.requireNonNull(bundleCtx, "bundleCtx cannot be null");
+        this.suggestionProvider = Objects.requireNonNull(suggestionProvider, "suggestionProvider cannot be null");
         this.metaTypeSrvTracker = Objects.requireNonNull(metaTypeSrvTracker, "metaTypeSrvTracker cannot be null");
+        this.bundleCtx = Objects.requireNonNull(bundleCtx, "bundleCtx cannot be null");
     }
 
     @SuppressWarnings("unchecked")
@@ -73,7 +87,7 @@ public class ConfigManager {
             if (attrValue.isEmpty()) {
                 return null;
             }
-            return convertSingleValue(attrValue.get(0), attrDef.getType());
+            return attrValue.get(0);
         } else if (cardinality == 1) {
             if (attrValue.isEmpty() || attrValue.get(0) == null) {
                 return new String[] {};
@@ -88,51 +102,16 @@ public class ConfigManager {
         } else if (cardinality < 0) {
             Vector<String> vector = new Vector<String>(attrValue.size());
             for (String rawValue : attrValue) {
-                vector.add(convertSingleValue(rawValue, attrDef.getType()));
+                vector.add(rawValue);
             }
             return vector;
         } else { /* if (cardinality > 0) */
             String[] arr = new String[attrValue.size()];
             for (int i = 0; i < attrValue.size(); ++i) {
-                String rawValue = attrValue.get(i);
-                arr[i] = convertSingleValue(rawValue, attrDef.getType());
+                arr[i] = attrValue.get(i);
             }
             return arr;
         }
-    }
-
-    private String convertSingleValue(final String rawValue, final int type) {
-        // if (type == AttributeDefinition.BOOLEAN) {
-        // if (!"true".equals(rawValue)) {
-        // return null;
-        // }
-        // return "true";
-        // }
-        return rawValue;
-        // if (type == AttributeDefinition.STRING || type == AttributeDefinition.PASSWORD) {
-        // return rawValue;
-        // } else if (type == AttributeDefinition.SHORT) {
-        // return Short.valueOf(rawValue);
-        // } else if (type == AttributeDefinition.LONG) {
-        // return Long.valueOf(rawValue);
-        // } else if (type == AttributeDefinition.INTEGER) {
-        // return Integer.valueOf(rawValue);
-        // } else if (type == AttributeDefinition.CHARACTER) {
-        // if (rawValue.length() > 1) {
-        // throw new InvalidAttributeValueException("");
-        // }
-        // return rawValue.charAt(0);
-        // } else if (type == AttributeDefinition.BYTE) {
-        // return Byte.valueOf(rawValue);
-        // } else if (type == AttributeDefinition.DOUBLE) {
-        // return Double.valueOf(rawValue);
-        // } else if (type == AttributeDefinition.FLOAT) {
-        // return Float.valueOf(rawValue);
-        // } else if (type == AttributeDefinition.BOOLEAN) {
-        // return Boolean.valueOf(rawValue);
-        // }
-        //
-        // throw new IllegalArgumentException("unsupported attribute type: " + type);
     }
 
     private Map<String, AttributeDefinition> createAttributeMap(final ObjectClassDefinition objClassDef) {
@@ -153,10 +132,10 @@ public class ConfigManager {
             newConfig.update(mapToProperties(objClassDef, attributes));
             String pid = newConfig.getPid();
             return new Configurable()
-            .setPid(pid)
-            .setFactoryPid(factoryPid)
-            .setName(pid)
-            .setDescription(objClassDef.getName());
+                    .setPid(pid)
+                    .setFactoryPid(factoryPid)
+                    .setName(pid)
+                    .setDescription(objClassDef.getName());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -171,6 +150,12 @@ public class ConfigManager {
         }
     }
 
+    @Override
+    protected void finalize() throws Throwable {
+        cfgAdminTracker.close();
+        metaTypeSrvTracker.close();
+    }
+
     private ConfigurationAdmin getConfigAdmin(final String pid) {
         ServiceReference<ConfigurationAdmin> ref = configAdminStream()
                 .filter((serviceRef) -> serviceRef.getProperty("service.pid").equals(pid))
@@ -183,7 +168,7 @@ public class ConfigManager {
             final String serviceLocation,
             final String configAdminPid) {
         return new AttributeLookup(getConfigAdmin(configAdminPid), bundleCtx, metaTypeService())
-                .lookupAttributes(servicePid, factoryPid, serviceLocation);
+        .lookupAttributes(servicePid, factoryPid, serviceLocation);
     }
 
     public ObjectClassDefinition getObjectClassDefinition(final ServiceReference<ManagedService> serviceRef) {
@@ -195,22 +180,7 @@ public class ConfigManager {
 
     public List<ServiceSuggestion> getServiceSuggestions(final String configAdminPid, final String pid,
             final String attributeId, final String ldapQuery) throws InvalidSyntaxException {
-        ScrService scrService = bundleCtx.getService(bundleCtx.getServiceReference(ScrService.class));
-        Component component = Arrays.stream(scrService.getComponents())
-                .filter((comp) -> comp.getConfigurationPid().equals(pid))
-                .findFirst().orElse(null);
-        if (component == null) {
-            return Collections.emptyList();
-        }
-        String referenceClassName = Arrays.stream(component.getReferences())
-                .filter((ref) -> (ref.getName() + ".target").equals(attributeId))
-                .map((ref) -> ref.getServiceName())
-                .findFirst().orElse(null);
-        ServiceReference<?>[] refs = bundleCtx.getServiceReferences(referenceClassName, ldapQuery);
-        if (refs == null) {
-            return Collections.emptyList();
-        }
-        return Arrays.stream(refs)
+        return suggestionProvider.getSuggestions(pid, attributeId, ldapQuery).stream()
                 .map(this::serviceRefToSuggestion)
                 .collect(Collectors.toList());
     }
@@ -226,7 +196,7 @@ public class ConfigManager {
 
     public Collection<Configurable> lookupConfigurations() {
         return new ConfigurableLookup(cfgAdminTracker.getService(), bundleCtx, metaTypeService())
-                .lookupConfigurables();
+        .lookupConfigurables();
     }
 
     public Collection<Configurable> lookupConfigurations(final String configAdminPid) {
@@ -298,4 +268,5 @@ public class ConfigManager {
             }
         }
     }
+
 }

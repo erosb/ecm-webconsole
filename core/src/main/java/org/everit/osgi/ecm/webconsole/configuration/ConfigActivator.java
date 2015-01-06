@@ -16,61 +16,72 @@
  */
 package org.everit.osgi.ecm.webconsole.configuration;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
 import javax.servlet.Servlet;
 
+import org.everit.osgi.ecm.webconsole.configuration.suggestion.AggregateServiceSuggestionProvider;
+import org.everit.osgi.ecm.webconsole.configuration.suggestion.ScrServiceSuggestionProvider;
+import org.everit.osgi.ecm.webconsole.configuration.suggestion.ServiceSuggestionProvider;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationAdmin;
-import org.osgi.service.cm.ManagedService;
-import org.osgi.service.cm.ManagedServiceFactory;
 import org.osgi.service.metatype.MetaTypeService;
 import org.osgi.util.tracker.ServiceTracker;
 
 public class ConfigActivator implements BundleActivator {
 
-    private ServiceRegistration<Servlet> registration;
+    private Collection<ServiceRegistration<?>> registrations;
+
+    private Collection<ServiceTracker<?, ?>> trackers;
 
     private ServiceTracker<ConfigurationAdmin, ConfigurationAdmin> cfgAdminTracker;
 
-    private ServiceTracker<ManagedService, ManagedService> managedSrvTracker;
-
-    private ServiceTracker<ManagedServiceFactory, ManagedServiceFactory> managedSrvFactoryTracker;
-
     private ServiceTracker<MetaTypeService, MetaTypeService> metaTypeSrvTracker;
 
+    private ServiceTracker<ServiceSuggestionProvider, ServiceSuggestionProvider> suggestionProviderTracker;
+
     private void initServiceTrackers(final BundleContext context) {
-        cfgAdminTracker = new ServiceTracker<ConfigurationAdmin, ConfigurationAdmin>(context, ConfigurationAdmin.class,
-                null);
-        cfgAdminTracker.open();
-        managedSrvTracker = new ServiceTracker<ManagedService, ManagedService>(context, ManagedService.class, null);
-        managedSrvTracker.open();
-        managedSrvFactoryTracker = new ServiceTracker<ManagedServiceFactory, ManagedServiceFactory>(context,
-                ManagedServiceFactory.class, null);
-        managedSrvFactoryTracker.open();
-        metaTypeSrvTracker = new ServiceTracker<MetaTypeService, MetaTypeService>(context, MetaTypeService.class, null);
-        metaTypeSrvTracker.open();
+        trackers.add(cfgAdminTracker = new ServiceTracker<ConfigurationAdmin, ConfigurationAdmin>(context,
+                ConfigurationAdmin.class, null));
+        trackers.add(metaTypeSrvTracker = new ServiceTracker<MetaTypeService, MetaTypeService>(
+                context, MetaTypeService.class, null));
+        trackers.add(suggestionProviderTracker = new ServiceTracker<ServiceSuggestionProvider, ServiceSuggestionProvider>(
+                context, ServiceSuggestionProvider.class, null));
+        trackers.stream().forEach(ServiceTracker::open);
+    }
+
+    private void registerDefaultSuggestionProviders(final BundleContext context) {
+        registrations.add(context.registerService(ServiceSuggestionProvider.class, new ScrServiceSuggestionProvider(
+                context), null));
+    }
+
+    public void registerServlet(final BundleContext context, final ConfigManager configManager) {
+        Dictionary<String, String> props = new Hashtable<String, String>(2);
+        props.put("felix.webconsole.label", ConfigServlet.CONFIG_LABEL);
+        ConfigServlet servlet = new ConfigServlet(configManager);
+        registrations.add(context.registerService(Servlet.class, servlet, props));
     }
 
     @Override
     public void start(final BundleContext context) throws Exception {
-        Dictionary<String, String> props = new Hashtable<String, String>(2);
-        props.put("felix.webconsole.label", ConfigServlet.CONFIG_LABEL);
+        registrations = new ArrayList<>(2);
+        trackers = new ArrayList<>(3);
+        registerDefaultSuggestionProviders(context);
         initServiceTrackers(context);
-        ConfigManager configManager = new ConfigManager(cfgAdminTracker, metaTypeSrvTracker, context);
-        ConfigServlet servlet = new ConfigServlet(configManager);
-        registration = context.registerService(Servlet.class, servlet, props);
+        ConfigManager configManager = new ConfigManager(cfgAdminTracker, new AggregateServiceSuggestionProvider(
+                suggestionProviderTracker), metaTypeSrvTracker, context);
+        registerServlet(context, configManager);
     }
 
     @Override
     public void stop(final BundleContext context) throws Exception {
-        cfgAdminTracker.close();
-        managedSrvTracker.close();
-        managedSrvFactoryTracker.close();
-        registration.unregister();
+        trackers.stream().forEach(ServiceTracker::close);
+        registrations.stream().forEach(ServiceRegistration::unregister);
     }
 
 }
