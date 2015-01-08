@@ -117,7 +117,7 @@ span.checkbox {
 	<span>
 		<span class="ui-icon checkbox"></span>
 		<% if (nullable) { %>
-			<input type="button" value="set to null" class="btn-null ui-widget ui-priority-primary"/>
+			<span title="set to null" class="btn-null ui-icon ui-icon-cancel" />
 		<% } %>
 	</span>
 </script>
@@ -171,7 +171,7 @@ span.checkbox {
 	<p class="ui-state-error">{{queryError}}</p>
 {{/queryError}}
 <form class="cnt-filter" on-submit="doFilter">
-	Filter: <input type="text" class="ui-widget" value="{{filter}}" style="width: 80%"/>
+	Filter: <input type="text" on-keydown="filterKeyPress" class="ui-widget" value="{{filter}}" style="width: 80%"/>
 	<input type="button" class="btn-filter" value="Filter" on-click="doFilter" />
 </form>
 <div class="cnt-matching-services">
@@ -207,7 +207,7 @@ span.checkbox {
 	<input type="text" readonly="readonly" value="<%- value %>" />
 	<input type="button" class="btn-open-service-selector ui-widget ui-priority-primary" value="search"/>
 	<% if (nullable) { %>
-		<input type="button" value="set to null" class="btn-null ui-widget ui-priority-primary" />
+		<span title="set to null" class="btn-null ui-icon ui-icon-cancel" /> 
 	<% } %>
 	<% if (deletable) { %>
 		<input type="button" value="delete" class="btn-delete ui-widget ui-priority-primary" />

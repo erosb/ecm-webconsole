@@ -30,8 +30,8 @@ import java.util.Vector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.everit.osgi.ecm.webconsole.configuration.suggestion.AggregateServiceSuggestionProvider;
-import org.everit.osgi.ecm.webconsole.configuration.suggestion.ServiceSuggestionProvider;
+import org.everit.osgi.ecm.webconsole.suggestion.AggregateServiceSuggestionProvider;
+import org.everit.osgi.ecm.webconsole.suggestion.ServiceSuggestionProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;

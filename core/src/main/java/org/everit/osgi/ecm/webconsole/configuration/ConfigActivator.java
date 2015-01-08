@@ -23,9 +23,8 @@ import java.util.Hashtable;
 
 import javax.servlet.Servlet;
 
-import org.everit.osgi.ecm.webconsole.configuration.suggestion.AggregateServiceSuggestionProvider;
-import org.everit.osgi.ecm.webconsole.configuration.suggestion.ScrServiceSuggestionProvider;
-import org.everit.osgi.ecm.webconsole.configuration.suggestion.ServiceSuggestionProvider;
+import org.everit.osgi.ecm.webconsole.suggestion.AggregateServiceSuggestionProvider;
+import org.everit.osgi.ecm.webconsole.suggestion.ServiceSuggestionProvider;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -55,11 +54,6 @@ public class ConfigActivator implements BundleActivator {
         trackers.stream().forEach(ServiceTracker::open);
     }
 
-    private void registerDefaultSuggestionProviders(final BundleContext context) {
-        registrations.add(context.registerService(ServiceSuggestionProvider.class, new ScrServiceSuggestionProvider(
-                context), null));
-    }
-
     public void registerServlet(final BundleContext context, final ConfigManager configManager) {
         Dictionary<String, String> props = new Hashtable<String, String>(2);
         props.put("felix.webconsole.label", ConfigServlet.CONFIG_LABEL);
@@ -71,7 +65,6 @@ public class ConfigActivator implements BundleActivator {
     public void start(final BundleContext context) throws Exception {
         registrations = new ArrayList<>(2);
         trackers = new ArrayList<>(3);
-        registerDefaultSuggestionProviders(context);
         initServiceTrackers(context);
         ConfigManager configManager = new ConfigManager(cfgAdminTracker, new AggregateServiceSuggestionProvider(
                 suggestionProviderTracker), metaTypeSrvTracker, context);

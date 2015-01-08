@@ -249,6 +249,9 @@ $(document).ready(function() {
 						}
 					});
 					this.on("doFilter", function() { self.filterServices(); return false; });
+					this.on("filterKeyPress", function() {
+						console.log("keypress: ", arguments)
+					})
 				}
 			});
 			this.attrModel.on("change:services change:queryError", function() {
