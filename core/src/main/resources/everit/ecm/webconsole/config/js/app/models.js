@@ -18,9 +18,11 @@ $(document).ready(function() {
 (function(ecmconfig) {
 
 	var ConfigAdminModel = ecmconfig.ConfigAminModel = Backbone.Model.extend({
-		pid: null,
-		bundleId: null,
-		description: null,
+		defaults: {
+			pid: null,
+			bundleId: null,
+			description: null
+		}
 	});
 	
 	var ConfigAdminList = ecmconfig.ConfigAdminList = Backbone.Collection.extend({
@@ -28,11 +30,13 @@ $(document).ready(function() {
 	});
 	
 	var AttributeModel = ecmconfig.AttributeModel = Backbone.Model.extend({
-		id: null,
-		name: null,
-		description: null,
-		value: null,
-		type: null,
+		defaults: {
+			id: null,
+			name: null,
+			description: null,
+			value: null,
+			type: null
+		},
 		hasOptions: function() {
 			return this.get("type").options !== undefined;
 		}
@@ -45,7 +49,6 @@ $(document).ready(function() {
 	
 	var ServiceAttributeModel = ecmconfig.ServiceAttributeModel = ecmconfig.AttributeModel.extend({
 		suggestionsForValuePrefix: function(value, key, valuePrefix) {
-//			console.log("autocompleting for key ", key, " valuePrefix ", valuePrefix)
 			var lastOpeningParenIdx = value.lastIndexOf("(");
 			var lastEqIdx = value.lastIndexOf("=");
 			var suggestions = [];
@@ -77,7 +80,6 @@ $(document).ready(function() {
 			return suggestions;
 		},
 		suggestionsForKeyPrefix: function(value, keyPrefix) {
-//			console.log("autocompleting for key ", keyPrefix);
 			var lastOpeningParenIdx = value.lastIndexOf("(");
 			var suggestions = [];
 			this.get("services").forEach(function(service) {
@@ -134,13 +136,15 @@ $(document).ready(function() {
 		initialize: function(options) {
 			this.set("attributeList", new AttributeList());
 		},
-		name: null,
-		bundleName: null,
-		description: null,
-		location: null,
-		pid: null,
-		factoryPid: null,
-		visible: true,
+		defaults: {
+			name: null,
+			bundleName: null,
+			description: null,
+			location: null,
+			pid: null,
+			factoryPid: null,
+			visible: true
+		},
 		attributeList: new AttributeList(),
 		deleteConfig: function() {
 			var self = this;
@@ -253,11 +257,16 @@ $(document).ready(function() {
 				self.set("selectedConfigAdmin", configAdmin);
 			});
 			var configAdminList = new ConfigAdminList();
-			//configAdminList.on("reset", this.configAdminListChanged, this);
 			this.set("configAdminList", configAdminList);
 			this.on("change:selectedConfigAdmin", this.selectedConfigAdminChanged, this);
 			this.on("change:displayedService", this.displayedServiceChanged, this);
 			this.on("change:serviceFilter", this.serviceFilterChanged, this);
+		},
+		defaults: {
+			managedServiceList: null,
+			configAdminList: new ConfigAdminList(),
+			selectedConfigAdmin: null,
+			serviceFilter: ""
 		},
 		serviceFilterChanged: function() {
 			var filter = this.get("serviceFilter");
@@ -302,10 +311,6 @@ $(document).ready(function() {
 				}
 			}
 		},
-		managedServiceList: null,
-		configAdminList: new ConfigAdminList(),
-		selectedConfigAdmin: null,
-		serviceFilter: "",
 		getVisibleServices: function() {
 			return this.get("managedServiceList").where({visible: true});
 		},
