@@ -25,7 +25,7 @@ require.config({
 		AttributeList: ecmconfig.rootPath + "/app/models/AttributeList",
 		AttributeModel: ecmconfig.rootPath + "/app/models/AttributeModel",
 		ConfigAdminModel: ecmconfig.rootPath + "/app/models/ConfigAdminModel",
-		ConfigAdminList: ecmconfig.rootPath + "/app/models/ConfigAdminModel",
+		ConfigAdminList: ecmconfig.rootPath + "/app/models/ConfigAdminList",
 		ManagedServiceList: ecmconfig.rootPath + "/app/models/ManagedServiceList",
 		ManagedServiceModel: ecmconfig.rootPath + "/app/models/ManagedServiceModel",
 		ServiceSuggestionModel: ecmconfig.rootPath + "/app/models/ServiceSuggestionModel",
