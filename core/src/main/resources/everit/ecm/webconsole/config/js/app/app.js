@@ -20,7 +20,8 @@ require.config({
 		backbone : ecmconfig.rootPath + "/lib/backbone",
 		underscore: ecmconfig.rootPath + "/lib/underscore-min",
 		jquery: "/system/console/res/lib/jquery-1.8.3",
-		// app files
+		ractive: ecmconfig.rootPath + "/lib/ractive.min",
+		// app models
 		ApplicationModel: ecmconfig.rootPath + "/app/models/ApplicationModel",
 		AttributeList: ecmconfig.rootPath + "/app/models/AttributeList",
 		AttributeModel: ecmconfig.rootPath + "/app/models/AttributeModel",
@@ -29,7 +30,9 @@ require.config({
 		ManagedServiceList: ecmconfig.rootPath + "/app/models/ManagedServiceList",
 		ManagedServiceModel: ecmconfig.rootPath + "/app/models/ManagedServiceModel",
 		ServiceSuggestionModel: ecmconfig.rootPath + "/app/models/ServiceSuggestionModel",
-		ServiceAttributeModel: ecmconfig.rootPath + "/app/models/ServiceAttributeModel"
+		ServiceAttributeModel: ecmconfig.rootPath + "/app/models/ServiceAttributeModel",
+		// app views
+		ConfigurationDeletionView: ecmconfig.rootPath + "/app/views/ConfigurationDeletionView",
 	}
 });
 define([

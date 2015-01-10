@@ -14,128 +14,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
-$(document).ready(function() {
-(function(ecmconfig) {
+define(["backbone", "jquery"], function(Backbone, $) {
 	
 	function loadTemplate(templateId) {
 		return _.template($("#" + templateId).text());
 	}
 	
-	var ConfigurationDeletionView = Backbone.View.extend({
-		tagName: "div",
-		attributes: {
-			title: "Confirm configuration deletion"
-		},
-		render: function() {
-			var model  = this.model, self = this;
-				$dlg = $(loadTemplate("tmpl-confirm-delete-configuration")({
-				service: this.model
-			}));
-			$dlg.dialog({
-				modal: true,
-				buttons: {
-					"Yes" : function() {
-						model.deleteConfig().then(function() {
-							$dlg.dialog("close");
-						});
-					},
-					"Cancel" : function() {
-						$dlg.dialog("close");
-					}
-				},
-				close: function() {
-					self.trigger("close");
-				}
-			});
-		}
-	});
-	
-	var AttributeListView = ecmconfig.AttributeListView = Backbone.View.extend({
-		tagName: "div",
-		attributes: {
-			title: "Configuration"
-		},
-		render: function() {
-			var $el = this.$el;
-			$el.attr("title", "Configuration of " + this.model.get("name"));
-			$el.empty().html(loadTemplate("tmpl-attribute-list")({service: this.model}));
-			var $tbody = $el.find("tbody")
-			this.model.get("attributeList").forEach(function(attr) {
-				var $frame = $(loadTemplate("tmpl-attribute-frame")({model: attr}));
-				$frame.find("td:eq(1)").prepend(ecmconfig.createViewForAttribute(attr).render()).css("width", "99%");
-				$tbody.append($frame);
-			});
-			var self = this;
-			$el.dialog({
-				modal: true,
-				width: "90%",
-				buttons: {
-					"Save" : function(e) {
-						self.model.saveConfiguration().then(function() {
-							self.$el.dialog("close");
-						});
-					},
-					"Delete" : function() {
-						var delDlg = new ConfigurationDeletionView({model: self.model});
-						delDlg.render();
-						delDlg.on("close", function() {
-							$el.dialog("close");
-						})
-					}
-				},
-				close: function() {
-					self.model.get("appModel").set("displayedService", null);
-					self.trigger("close");
-				}
-			});
-		}
-	});
-	
-	var ManagedServiceFactoryRowView = Backbone.View.extend({
-		initialize: function() {
-			this.model.on("change:visible", function() {
-				this.$el[this.model.get("visible") ? "show" : "hide"]();
-			}, this);
-		},
-		tagName: "tr",
-		className: "ui-state-default managedservice-row",
-		events: {
-			"click td" : "displayConfig",
-		},
-		displayConfig: function() {
-			this.model.loadConfiguration();
-		},
-		deleteConfig: function() {
-			// nothing to do here
-		},
-		render: function() {
-			var dom = loadTemplate("tmpl-managed-service-factory-row")({service: this.model});
-			this.$el.append(dom);
-			return this.$el;
-		}
-	});
-	
-	var ManagedServiceRowView = ecmconfig.ManagedServiceRowView = ManagedServiceFactoryRowView.extend({
-		tagName: "tr",
-		className: "ui-state-default managedservice-row",
-		events: {
-			"click .ui-icon-trash" : "deleteConfig",
-			"click td" : "displayConfig"
-		},
-		deleteConfig: function(e) {
-			e.stopPropagation();
-			var deletionView = new ConfigurationDeletionView({model: this.model});
-			deletionView.on("close", function() {this.trigger("deleted")}, this)
-			deletionView.render();
-		},
-		render: function() {
-			var dom = loadTemplate("tmpl-managed-service-row")({service: this.model});
-			this.$el.append(dom);
-			return this.$el;
-		}
-	});
-	
-	var ManagedServiceListView = ecmconfig.ManagedServiceListView = Backbone.View.extend({
+	var ManagedServiceListView = Backbone.View.extend({
 		tagName: "table",
 		className: "tablesorter nicetable noauto ui-widget",
 		initialize: function(options) {
@@ -248,39 +133,5 @@ $(document).ready(function() {
 		} 
 	});
 	
-	var ConfigAdminListView = ecmconfig.ConfigAdminListView = Backbone.View.extend({
-		initialize: function() {
-			this.listenTo(this.model.get("configAdminList"), "reset", this.render);
-			this.model.on("change:selectedConfigAdmin", this.render, this);
-		},
-		render: function() {
-			this.$el.empty();
-			var dom = loadTemplate("tmpl-config-admin-list")({
-				configAdmins: this.model.get("configAdminList")
-			});
-			this.$el.append(dom);
-			return this.$el;
-		}
-	});
-	
-	var ServiceFilterView = ecmconfig.ServiceFilterView = Backbone.View.extend({
-		tagName: "span",
-		className: "ui-widget ui-widget-content ui-state-default",
-		attributes: {
-			"tabindex": 0
-		},
-		events: {
-			"keypress input" : "updateModel"
-		},
-		updateModel: function() {
-			this.model.set("serviceFilter", this.$el.find("input").val());
-		},
-		render: function() {
-			var dom = loadTemplate("tmpl-servicefilter")({serviceFilter: this.model.get("serviceFilter")});
-			this.$el.empty().append(dom).find("input").focus();
-			return this.$el;
-		}
-	});
-
-})(window.ecmconfig);
-}); 
+	return ManagedServiceListView;
+});
