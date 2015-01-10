@@ -23,9 +23,6 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.charset.IllegalCharsetNameException;
-import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -57,8 +54,17 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             "lib/backbone.keys.js",
             "lib/ractive.min.js",
             "lib/ractive-adaptors-backbone.min.js",
+            "lib/require.js",
+            "app/models/ApplicationModel.js",
+            "app/models/AttributeList.js",
+            "app/models/AttributeModel.js",
+            "app/models/ConfigAdminModel.js",
+            "app/models/ConfigAdminList.js",
+            "app/models/ManagedServiceList.js",
+            "app/models/ManagedServiceModel.js",
+            "app/models/ServiceSuggestionModel.js",
+            "app/models/ServiceAttributeModel.js",
             "app/app.js",
-            "app/models.js",
             "app/views/views.js",
             "app/views/attributeviews.js"
             ));
@@ -67,14 +73,6 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     public ConfigServlet(final ConfigManager configManager) {
         this.configManager = Objects.requireNonNull(configManager, "configManager cannot be null");
-    }
-
-    private Charset charsetByRequest(final HttpServletRequest req) {
-        try {
-            return Charset.forName(req.getCharacterEncoding());
-        } catch (IllegalCharsetNameException | UnsupportedCharsetException e) {
-            return Charset.defaultCharset();
-        }
     }
 
     @Override

@@ -14,9 +14,30 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
-$(document).ready(function() {
-(function(ecmconfig) {
-
+require.config({
+	paths: {
+		// libs
+		backbone : ecmconfig.rootPath + "/lib/backbone",
+		underscore: ecmconfig.rootPath + "/lib/underscore-min",
+		jquery: "/system/console/res/lib/jquery-1.8.3",
+		// app files
+		ApplicationModel: ecmconfig.rootPath + "/app/models/ApplicationModel",
+		AttributeList: ecmconfig.rootPath + "/app/models/AttributeList",
+		AttributeModel: ecmconfig.rootPath + "/app/models/AttributeModel",
+		ConfigAdminModel: ecmconfig.rootPath + "/app/models/ConfigAdminModel",
+		ConfigAdminList: ecmconfig.rootPath + "/app/models/ConfigAdminModel",
+		ManagedServiceList: ecmconfig.rootPath + "/app/models/ManagedServiceList",
+		ManagedServiceModel: ecmconfig.rootPath + "/app/models/ManagedServiceModel",
+		ServiceSuggestionModel: ecmconfig.rootPath + "/app/models/ServiceSuggestionModel",
+		ServiceAttributeModel: ecmconfig.rootPath + "/app/models/ServiceAttributeModel"
+	}
+});
+define([
+        "backbone",
+        "ManagedServiceList",
+        "ApplicationModel"
+], function(Backbone, ManagedServiceList, ApplicationModel) {
+	
 	var ConfigRouter = Backbone.Router.extend({
 		routes: {
 			":configAdminPid/:servicePid" : "showService",
@@ -26,9 +47,9 @@ $(document).ready(function() {
 	});
 	ecmconfig.router = new ConfigRouter();
 	
-	var managedServiceList = new ecmconfig.ManagedServiceList();
+	var managedServiceList = new ManagedServiceList();
 	
-	var appModel = new ecmconfig.ApplicationModel({
+	var appModel = new ApplicationModel({
 		managedServiceList : managedServiceList
 	});
 	
@@ -53,6 +74,12 @@ $(document).ready(function() {
 		pushState: true,
 		root: ecmconfig.rootPath
 	});
+});
+
+$(document).ready(function() {
+(function(ecmconfig) {
+	
+	
 	
 	
 })(window.ecmconfig);
