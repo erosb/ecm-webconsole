@@ -14,9 +14,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
-define(["backbone", "jquery", "tablesorter", "ManagedServiceRowView",
+define(["backbone", "backboneKeys", "jquery", "tablesorter", "ManagedServiceRowView",
         "ManagedServiceFactoryRowView",
-        "AttributeListView"], function(Backbone, $, tablesorter,
+        "AttributeListView"], function(Backbone, BackboneKeys, $, tablesorter,
 		ManagedServiceRowView,
 		ManagedServiceFactoryRowView,
 		AttributeListView) {

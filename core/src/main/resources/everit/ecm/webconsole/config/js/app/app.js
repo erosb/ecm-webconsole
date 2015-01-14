@@ -18,6 +18,7 @@ require.config({
 	paths: {
 		// libs
 		backbone : ecmconfig.rootPath + "/lib/backbone",
+		backboneKeys: ecmconfig.rootPath + "/lib/backbone.keys",
 		underscore: ecmconfig.rootPath + "/lib/underscore-min",
 		jquery: "/system/console/res/lib/jquery-1.8.3",
 		jqueryUi: "/system/console/res/lib/jquery-ui-1.9.2",

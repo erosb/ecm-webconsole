@@ -23,7 +23,6 @@ define(["backbone", "jquery", "viewfactory"], function(Backbone, $, viewfactory)
 		},
 		render: function() {
 			this.$el.empty();
-			console.log("viewfactory in ConfigAdminListView: ", viewfactory)
 			var dom = viewfactory.loadTemplate("tmpl-config-admin-list")({
 				configAdmins: this.model.get("configAdminList")
 			});
