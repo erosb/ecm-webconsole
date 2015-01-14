@@ -14,7 +14,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
-define(["backbone", "jquery"], function(Backbone, $) {
+define(["backbone", "jquery", "viewfactory"], function(Backbone, $, viewfactory) {
+	
+	console.log("ServiceAttributeView loaded: ", viewfactory);
 	
 	var ServiceAttributeView = Backbone.View.extend({
 		initialize: function(options) {
@@ -42,7 +44,8 @@ define(["backbone", "jquery"], function(Backbone, $) {
 			});
 		},
 		render: function() {
-			this.$el.empty().append(loadTemplate("tmpl-service-attribute")({
+			viewfactory = require("viewfactory");
+			this.$el.empty().append(viewfactory.loadTemplate("tmpl-service-attribute")({
 				value: this.value,
 				nullable: this.nullable,
 				deletable: this.deletable

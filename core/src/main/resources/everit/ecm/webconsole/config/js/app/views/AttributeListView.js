@@ -14,13 +14,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
-define(["backbone", "jquery"], function(Backbone, $) {
-	
-	function loadTemplate(templateId) {
-		return _.template($("#" + templateId).text());
-	}
+define(["backbone", "jquery", "viewfactory", "jqueryUi"], function(Backbone, $, viewfactory) {
 
-	var AttributeListView = ecmconfig.AttributeListView = Backbone.View.extend({
+	var AttributeListView = Backbone.View.extend({
 		tagName: "div",
 		attributes: {
 			title: "Configuration"
@@ -28,11 +24,11 @@ define(["backbone", "jquery"], function(Backbone, $) {
 		render: function() {
 			var $el = this.$el;
 			$el.attr("title", "Configuration of " + this.model.get("name"));
-			$el.empty().html(loadTemplate("tmpl-attribute-list")({service: this.model}));
+			$el.empty().html(viewfactory.loadTemplate("tmpl-attribute-list")({service: this.model}));
 			var $tbody = $el.find("tbody")
 			this.model.get("attributeList").forEach(function(attr) {
-				var $frame = $(loadTemplate("tmpl-attribute-frame")({model: attr}));
-				$frame.find("td:eq(1)").prepend(ecmconfig.createViewForAttribute(attr).render()).css("width", "99%");
+				var $frame = $(viewfactory.loadTemplate("tmpl-attribute-frame")({model: attr}));
+				$frame.find("td:eq(1)").prepend(viewfactory.createViewForAttribute(attr).render()).css("width", "99%");
 				$tbody.append($frame);
 			});
 			var self = this;

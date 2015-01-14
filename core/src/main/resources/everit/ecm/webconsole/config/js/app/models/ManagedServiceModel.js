@@ -17,8 +17,10 @@
 define([
         "backbone",
         "jquery",
-        "AttributeList"
-], function(Backbone, $, AttributeList) {
+        "AttributeList",
+        "AttributeModel",
+        "ServiceAttributeModel"
+], function(Backbone, $, AttributeList, AttributeModel, ServiceAttributeModel) {
 
 	var ManagedServiceModel = Backbone.Model.extend({
 		initialize: function(options) {

@@ -14,13 +14,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
-define(["backbone", "jquery"], function(Backbone, $) {
+define(["backbone", "jquery", "viewfactory"], function(Backbone, $, viewfactory) {
 	
-	function loadTemplate(templateId) {
-		return _.template($("#" + templateId).text());
-	}
-	
-	var ServiceFilterView = ecmconfig.ServiceFilterView = Backbone.View.extend({
+	var ServiceFilterView = Backbone.View.extend({
 		tagName: "span",
 		className: "ui-widget ui-widget-content ui-state-default",
 		attributes: {
@@ -33,10 +29,11 @@ define(["backbone", "jquery"], function(Backbone, $) {
 			this.model.set("serviceFilter", this.$el.find("input").val());
 		},
 		render: function() {
-			var dom = loadTemplate("tmpl-servicefilter")({serviceFilter: this.model.get("serviceFilter")});
+			var dom = viewfactory.loadTemplate("tmpl-servicefilter")({serviceFilter: this.model.get("serviceFilter")});
 			this.$el.empty().append(dom).find("input").focus();
 			return this.$el;
 		}
 	});
 	
+	return ServiceFilterView;
 });

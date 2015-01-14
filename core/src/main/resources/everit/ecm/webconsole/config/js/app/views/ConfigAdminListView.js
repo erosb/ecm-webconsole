@@ -14,20 +14,17 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
-define(["backbone"], function() {
-
-	function loadTemplate(templateId) {
-		return _.template($("#" + templateId).text());
-	}
+define(["backbone", "jquery", "viewfactory"], function(Backbone, $, viewfactory) {
 	
-	var ConfigAdminListView = ecmconfig.ConfigAdminListView = Backbone.View.extend({
+	var ConfigAdminListView = Backbone.View.extend({
 		initialize: function() {
 			this.listenTo(this.model.get("configAdminList"), "reset", this.render);
 			this.model.on("change:selectedConfigAdmin", this.render, this);
 		},
 		render: function() {
 			this.$el.empty();
-			var dom = loadTemplate("tmpl-config-admin-list")({
+			console.log("viewfactory in ConfigAdminListView: ", viewfactory)
+			var dom = viewfactory.loadTemplate("tmpl-config-admin-list")({
 				configAdmins: this.model.get("configAdminList")
 			});
 			this.$el.append(dom);
@@ -35,4 +32,5 @@ define(["backbone"], function() {
 		}
 	});
 	
+	return ConfigAdminListView;
 });

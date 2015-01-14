@@ -14,11 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
-define(["backbone", "jquery"], function(Backbone, $) {
-	
-	function loadTemplate(templateId) {
-		return _.template($("#" + templateId).text());
-	}
+define(["backbone", "jquery", "viewfactory"], function(Backbone, $, viewfactory) {
 	
 	var ManagedServiceFactoryRowView = Backbone.View.extend({
 		initialize: function() {
@@ -38,7 +34,7 @@ define(["backbone", "jquery"], function(Backbone, $) {
 			// nothing to do here
 		},
 		render: function() {
-			var dom = loadTemplate("tmpl-managed-service-factory-row")({service: this.model});
+			var dom = viewfactory.loadTemplate("tmpl-managed-service-factory-row")({service: this.model});
 			this.$el.append(dom);
 			return this.$el;
 		}

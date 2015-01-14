@@ -14,11 +14,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
-define(["backbone", "jquery"], function(Backbone, $) {
-	
-	function loadTemplate(templateId) {
-		return _.template($("#" + templateId).text());
-	}
+define(["backbone", "jquery", "tablesorter", "ManagedServiceRowView",
+        "ManagedServiceFactoryRowView",
+        "AttributeListView"], function(Backbone, $, tablesorter,
+		ManagedServiceRowView,
+		ManagedServiceFactoryRowView,
+		AttributeListView) {
 	
 	var ManagedServiceListView = Backbone.View.extend({
 		tagName: "table",

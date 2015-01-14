@@ -14,12 +14,22 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
-$(document).ready(function() {
-(function(ecmconfig) {
-
-	function loadTemplate(templateId) {
-		return _.template($("#" + templateId).text());
-	}
+define([
+    "backbone",
+    "jquery",
+    "SingularSelectAttributeView",
+    "SingularCheckboxAttributeView",
+    "ServiceAttributeView",
+    "SingularPrimitiveAttributeView",
+    "CheckboxListView",
+    "MultiplePrimitiveAttributeView"
+], function(Backbone, $,
+		SingularSelectAttributeView,
+		SingularCheckboxAttributeView,
+		ServiceAttributeView,
+		SingularPrimitiveAttributeView,
+		CheckboxListView,
+		MultiplePrimitiveAttributeView) {
 	
 	function getPrimitiveValue(valueArr) {
 		if (valueArr == undefined || valueArr.length === 0) {
@@ -94,7 +104,13 @@ $(document).ready(function() {
 		throw new Error("unsupported type: " + JSON.stringify(type));
 	}
 	
-	ecmconfig.createViewForAttribute = createViewForAttribute;
+	function loadTemplate(templateId) {
+		return _.template($("#" + templateId).text());
+	}
 	
-})(window.ecmconfig);
+	return {
+		createViewForAttribute: createViewForAttribute,
+		createViewForSingularAttribute: createViewForSingularAttribute,
+		loadTemplate: loadTemplate
+	};
 });

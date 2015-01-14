@@ -16,7 +16,7 @@
  */
 define(["AttributeModel", "jquery"], function(AttributeModel, $) {
 	
-	var ServiceAttributeModel = ecmconfig.AttributeModel.extend({
+	var ServiceAttributeModel = AttributeModel.extend({
 		suggestionsForValuePrefix: function(value, key, valuePrefix) {
 			var lastOpeningParenIdx = value.lastIndexOf("(");
 			var lastEqIdx = value.lastIndexOf("=");

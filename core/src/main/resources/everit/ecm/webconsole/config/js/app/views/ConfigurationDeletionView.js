@@ -14,11 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
-define(["backbone", "jquery"], function(Backbone, $) {
-	
-	function loadTemplate(templateId) {
-		return _.template($("#" + templateId).text());
-	}
+define(["backbone", "jquery", "viewfactory"], function(Backbone, $, viewfactory) {
 	
 	var ConfigurationDeletionView = Backbone.View.extend({
 		tagName: "div",
@@ -27,7 +23,7 @@ define(["backbone", "jquery"], function(Backbone, $) {
 		},
 		render: function() {
 			var model  = this.model, self = this;
-				$dlg = $(loadTemplate("tmpl-confirm-delete-configuration")({
+				$dlg = $(viewfactory.loadTemplate("tmpl-confirm-delete-configuration")({
 				service: this.model
 			}));
 			$dlg.dialog({

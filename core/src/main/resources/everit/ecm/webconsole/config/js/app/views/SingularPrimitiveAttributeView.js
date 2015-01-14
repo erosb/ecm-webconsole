@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
-define(["backbone", "jquery"], function(Backbone, $) {
+define(["backbone", "jquery", "viewfactory"], function(Backbone, $, viewfactory) {
 	
 	var SingularPrimitiveAttributeView = Backbone.View.extend({
 		initialize: function(options) {
@@ -53,7 +53,8 @@ define(["backbone", "jquery"], function(Backbone, $) {
 		},
 		render: function() {
 			var self = this;
-			this.$el.empty().append(loadTemplate("tmpl-singular-primitive")({
+			viewfactory = require("viewfactory");
+			this.$el.empty().append(viewfactory.loadTemplate("tmpl-singular-primitive")({
 				nullable: this.nullable,
 				deletable: this.deletable,
 				value: this.value === null ? "" : this.value,

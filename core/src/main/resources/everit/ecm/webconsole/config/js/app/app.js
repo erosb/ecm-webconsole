@@ -20,6 +20,8 @@ require.config({
 		backbone : ecmconfig.rootPath + "/lib/backbone",
 		underscore: ecmconfig.rootPath + "/lib/underscore-min",
 		jquery: "/system/console/res/lib/jquery-1.8.3",
+		jqueryUi: "/system/console/res/lib/jquery-ui-1.9.2",
+		tablesorter: "/system/console/res/lib/jquery.tablesorter-2.0.3",
 		ractive: ecmconfig.rootPath + "/lib/ractive.min",
 		// app models
 		ApplicationModel: ecmconfig.rootPath + "/app/models/ApplicationModel",
@@ -32,14 +34,33 @@ require.config({
 		ServiceSuggestionModel: ecmconfig.rootPath + "/app/models/ServiceSuggestionModel",
 		ServiceAttributeModel: ecmconfig.rootPath + "/app/models/ServiceAttributeModel",
 		// app views
+		viewfactory: ecmconfig.rootPath + "/app/views/viewfactory",
+		AttributeListView: ecmconfig.rootPath + "/app/views/AttributeListView",
+		CheckboxListView: ecmconfig.rootPath + "/app/views/CheckboxListView",
 		ConfigurationDeletionView: ecmconfig.rootPath + "/app/views/ConfigurationDeletionView",
+		ConfigAdminListView: ecmconfig.rootPath + "/app/views/ConfigAdminListView",
+		ManagedServiceFactoryRowView: ecmconfig.rootPath + "/app/views/ManagedServiceFactoryRowView",
+		ManagedServiceListView: ecmconfig.rootPath + "/app/views/ManagedServiceListView",
+		ManagedServiceRowView: ecmconfig.rootPath + "/app/views/ManagedServiceRowView",
+		MultiplePrimitiveAttributeView: ecmconfig.rootPath + "/app/views/MultiplePrimitiveAttributeView",
+		ServiceAttributeView: ecmconfig.rootPath + "/app/views/ServiceAttributeView",
+		ServiceFilterView: ecmconfig.rootPath + "/app/views/ServiceFilterView",
+		ServiceSelectorView: ecmconfig.rootPath + "/app/views/ServiceSelectorView",
+		SingularCheckboxAttributeView: ecmconfig.rootPath + "/app/views/SingularCheckboxAttributeView",
+		SingularPrimitiveAttributeView: ecmconfig.rootPath + "/app/views/SingularPrimitiveAttributeView",
+		SingularSelectAttributeView: ecmconfig.rootPath + "/app/views/SingularSelectAttributeView",
 	}
 });
 define([
         "backbone",
         "ManagedServiceList",
-        "ApplicationModel"
-], function(Backbone, ManagedServiceList, ApplicationModel) {
+        "ApplicationModel",
+        "ConfigAdminListView",
+        "ServiceFilterView",
+        "ManagedServiceListView"
+], function(Backbone, ManagedServiceList, ApplicationModel, ConfigAdminListView, ServiceFilterView,
+		ManagedServiceListView) {
+	
 	
 	var ConfigRouter = Backbone.Router.extend({
 		routes: {
@@ -58,17 +79,17 @@ define([
 	
 	appModel.updateConfigAdminList(ecmconfig.configAdmins);
 	
-	new ecmconfig.ConfigAdminListView({
+	new ConfigAdminListView({
 		el: document.getElementById("cnt-configadmin-list"),
 		model: appModel
 	}).render();
 	
-	new ecmconfig.ServiceFilterView({
+	new ServiceFilterView({
 		el: document.getElementById("cnt-servicefilter"),
 		model: appModel
 	}).render()
 	
-	$("#cnt-main").append(new ecmconfig.ManagedServiceListView({
+	$("#cnt-main").append(new ManagedServiceListView({
 		model: managedServiceList,
 		appModel: appModel
 	}).render());
@@ -77,13 +98,9 @@ define([
 		pushState: true,
 		root: ecmconfig.rootPath
 	});
+	
 });
 
-$(document).ready(function() {
-(function(ecmconfig) {
 	
 	
 	
-	
-})(window.ecmconfig);
-});

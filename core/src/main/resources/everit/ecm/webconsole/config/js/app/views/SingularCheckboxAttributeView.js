@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
-define(["backbone", "jquery"], function(Backbone, $) {
+define(["backbone", "jquery", "viewfactory"], function(Backbone, $, viewfactory) {
 	
 	var SingularCheckboxAttributeView = Backbone.View.extend({
 		initialize: function(options) {
@@ -38,7 +38,8 @@ define(["backbone", "jquery"], function(Backbone, $) {
 		},
 		render: function() {
 			this.$el.empty();
-			var $dom = $(loadTemplate("tmpl-threestate-checkbox")({nullable: this.nullable}));
+			viewfactory = require("viewfactory");
+			var $dom = $(viewfactory.loadTemplate("tmpl-threestate-checkbox")({nullable: this.nullable}));
 			var $checkbox = $dom.find(".checkbox");
 			if (this.value === true) {
 				$checkbox.addClass("ui-icon-check");

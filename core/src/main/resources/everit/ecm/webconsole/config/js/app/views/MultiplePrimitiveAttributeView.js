@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
-define(["backbone", "jquery"], function(Backbone, $) {
+define(["backbone", "jquery", "viewfactory"], function(Backbone, $, viewfactory) {
 	
 	var MultiplePrimitiveAttributeView = Backbone.View.extend({
 		initialize: function(options) {
@@ -39,9 +39,10 @@ define(["backbone", "jquery"], function(Backbone, $) {
 		render: function() {
 			this.subviews = [];
 			this.$el.empty();
+			viewfactory = require("viewfactory");
 			var values = this.model.get("value"), self = this;
 			values.forEach(function(value, index){
-				var entryView = createViewForSingularAttribute(this.model, value, true, true);
+				var entryView = viewfactory.createViewForSingularAttribute(this.model, value, true, true);
 				entryView.on("change", function(newValue) {
 					values[index] = newValue;
 				});
@@ -54,7 +55,6 @@ define(["backbone", "jquery"], function(Backbone, $) {
 			if (this.maxOccurences === "unbound" || this.maxOccurences > this.subviews.length) {
 				this.$el.append("<li><span title='new entry' class='ui-widget ui-icon ui-icon-plus btn-new-entry'/></li>");
 			}
-			this.$el.sortable();
 			return this.$el;
 		}
 	});

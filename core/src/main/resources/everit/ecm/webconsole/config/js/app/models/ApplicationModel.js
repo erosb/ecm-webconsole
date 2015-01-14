@@ -16,8 +16,9 @@
  */
 define(["backbone",
         "ConfigAdminList",
-        "ConfigAdminModel"
-], function(Backbone, ConfigAdminList, ConfigAdminModel) {
+        "ConfigAdminModel",
+        "ManagedServiceModel"
+], function(Backbone, ConfigAdminList, ConfigAdminModel, ManagedServiceModel) {
 	
 	var ApplicationModel = ecmconfig.ApplicationModel = Backbone.Model.extend({
 		initialize: function(options) {
