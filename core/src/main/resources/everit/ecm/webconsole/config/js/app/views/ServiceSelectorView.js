@@ -15,6 +15,7 @@
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
 define(["backbone", "jquery", "ractive"], function(Backbone, $, Ractive) {
+	"use strict";
 
 	var ServiceSelectorView = Backbone.View.extend({
 		initialize: function(options) {

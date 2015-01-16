@@ -15,6 +15,7 @@
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
 define(["AttributeModel", "jquery"], function(AttributeModel, $) {
+	"use strict";
 	
 	var ServiceAttributeModel = AttributeModel.extend({
 		suggestionsForValuePrefix: function(value, key, valuePrefix) {

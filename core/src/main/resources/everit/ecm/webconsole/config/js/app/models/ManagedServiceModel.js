@@ -21,6 +21,7 @@ define([
 	"AttributeModel",
 	"ServiceAttributeModel"
 ], function(Backbone, $, AttributeList, AttributeModel, ServiceAttributeModel) {
+	"use strict";
 
 	var ManagedServiceModel = Backbone.Model.extend({
 		initialize: function() {

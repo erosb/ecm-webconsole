@@ -62,6 +62,7 @@ define([
 	"ManagedServiceListView"
 ], function(Backbone, $, ManagedServiceList, ApplicationModel, ConfigAdminListView, ServiceFilterView,
 	ManagedServiceListView) {
+	"use strict";
 	
 	var ConfigRouter = Backbone.Router.extend({
 		routes: {

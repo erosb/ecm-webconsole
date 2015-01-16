@@ -15,6 +15,7 @@
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
 define(["backbone"], function(Backbone) {
+	"use strict";
 
 	var AttributeModel = Backbone.Model.extend({
 		defaults: {

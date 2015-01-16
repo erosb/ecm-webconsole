@@ -31,6 +31,7 @@ define([
 		SingularPrimitiveAttributeView,
 		CheckboxListView,
 		MultiplePrimitiveAttributeView) {
+	"use strict";
 	
 	function getPrimitiveValue(valueArr) {
 		if (valueArr === undefined || valueArr.length === 0) {

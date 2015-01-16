@@ -17,6 +17,7 @@
 define([ "backbone", "jquery", "ConfigurationDeletionView",
 		"ManagedServiceFactoryRowView", "viewfactory" ], function(Backbone, $,
 		ConfigurationDeletionView, ManagedServiceFactoryRowView, viewfactory) {
+	"use strict";
 
 	var ManagedServiceRowView = ManagedServiceFactoryRowView.extend({
 		tagName : "tr",

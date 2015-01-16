@@ -16,6 +16,7 @@
  */
 define([ "backbone", "jquery", "SingularCheckboxAttributeView" ], function(
 		Backbone, $, SingularCheckboxAttributeView) {
+	"use strict";
 
 	var CheckboxListView = Backbone.View.extend({
 		initialize : function(options) {

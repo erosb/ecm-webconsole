@@ -20,6 +20,7 @@ define(["backbone", "backboneKeys", "jquery", "tablesorter", "ManagedServiceRowV
 		ManagedServiceRowView,
 		ManagedServiceFactoryRowView,
 		AttributeListView) {
+	"use strict";
 	
 	var ManagedServiceListView = Backbone.View.extend({
 		tagName: "table",

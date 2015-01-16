@@ -16,6 +16,7 @@
  */
 define(["backbone", "jquery", "viewfactory", "ConfigurationDeletionView", "jqueryUi"], function(
 		Backbone, $, viewfactory, ConfigurationDeletionView) {
+	"use strict";
 
 	var AttributeListView = Backbone.View.extend({
 		tagName: "div",

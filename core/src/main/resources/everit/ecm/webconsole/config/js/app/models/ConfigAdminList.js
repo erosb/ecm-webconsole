@@ -15,6 +15,7 @@
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
 define(["backbone", "ConfigAdminModel"], function(Backbone, ConfigAdminModel) {
+	"use strict";
 	
 	var ConfigAdminList = ecmconfig.ConfigAdminList = Backbone.Collection.extend({
 		model: ConfigAdminModel

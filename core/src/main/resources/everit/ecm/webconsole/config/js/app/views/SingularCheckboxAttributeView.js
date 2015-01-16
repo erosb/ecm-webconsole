@@ -15,6 +15,7 @@
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
 define(["backbone", "jquery", "viewfactory"], function(Backbone, $, viewfactory) {
+	"use strict";
 	
 	var SingularCheckboxAttributeView = Backbone.View.extend({
 		initialize: function(options) {

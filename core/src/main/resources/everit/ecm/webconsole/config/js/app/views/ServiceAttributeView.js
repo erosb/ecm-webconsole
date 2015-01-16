@@ -17,6 +17,7 @@
 define(["backbone", "jquery", "viewfactory", "ServiceSelectorView"], function(Backbone, $,
 		viewfactory,
 		ServiceSelectorView) {
+	"use strict";
 	
 	var ServiceAttributeView = Backbone.View.extend({
 		initialize: function(options) {

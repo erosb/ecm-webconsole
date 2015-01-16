@@ -20,6 +20,7 @@ define(["backbone",
         "ConfigAdminModel",
         "ManagedServiceModel"
 ], function(Backbone, $, ConfigAdminList, ConfigAdminModel, ManagedServiceModel) {
+	"use strict";
 	
 	var ApplicationModel = ecmconfig.ApplicationModel = Backbone.Model.extend({
 		initialize: function() {

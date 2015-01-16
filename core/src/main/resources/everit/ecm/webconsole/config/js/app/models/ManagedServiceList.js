@@ -18,6 +18,7 @@ define([
 	"backbone",
 	"ManagedServiceModel"
 ], function(Backbone, ManagedServiceModel) {
+	"use strict";
 	
 	var ManagedServiceList = Backbone.Collection.extend({
 		model: ManagedServiceModel,
