@@ -53,6 +53,30 @@
           </instructions>
         </configuration>
       </plugin>
+      <plugin>
+     <groupId>com.cj.jshintmojo</groupId>
+     <artifactId>jshint-maven-plugin</artifactId>
+     <version>1.3.0</version>
+     <executions>
+         <execution>
+             <goals>
+                 <goal>lint</goal>
+             </goals>
+         </execution>
+     </executions>
+     <configuration>
+         <version>2.4.1</version>
+         <options>indent:4,maxlen:120,camelcase,forin,immed,latedef,noarg,noempty,nonew,curly,freeze,undef,unused</options>
+         <globals>document,ecmconfig,require,define</globals>
+<!--          <configFile>src/main/resources/jshint.conf.js</configFile> -->
+         <directories>
+             <directory>src/main/resources/everit/ecm/webconsole/config/js/app</directory>
+         </directories>
+         <reporter>jslint</reporter>
+         <reportFile>target/jshint.xml</reportFile>
+         <failOnError>false</failOnError>
+     </configuration>
+  </plugin>
 <!--       <plugin> -->
 <!--         <groupId>org.everit.osgi.dev</groupId> -->
 <!--         <artifactId>eosgi-maven-plugin</artifactId> -->

@@ -53,15 +53,15 @@ require.config({
 	}
 });
 define([
-        "backbone",
-        "ManagedServiceList",
-        "ApplicationModel",
-        "ConfigAdminListView",
-        "ServiceFilterView",
-        "ManagedServiceListView"
-], function(Backbone, ManagedServiceList, ApplicationModel, ConfigAdminListView, ServiceFilterView,
-		ManagedServiceListView) {
-	
+	"backbone",
+	"jquery",
+	"ManagedServiceList",
+	"ApplicationModel",
+	"ConfigAdminListView",
+	"ServiceFilterView",
+	"ManagedServiceListView"
+], function(Backbone, $, ManagedServiceList, ApplicationModel, ConfigAdminListView, ServiceFilterView,
+	ManagedServiceListView) {
 	
 	var ConfigRouter = Backbone.Router.extend({
 		routes: {
@@ -88,7 +88,7 @@ define([
 	new ServiceFilterView({
 		el: document.getElementById("cnt-servicefilter"),
 		model: appModel
-	}).render()
+	}).render();
 	
 	$("#cnt-main").append(new ManagedServiceListView({
 		model: managedServiceList,

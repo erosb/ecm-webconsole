@@ -17,13 +17,14 @@
 define([
     "backbone",
     "jquery",
+    "underscore",
     "SingularSelectAttributeView",
     "SingularCheckboxAttributeView",
     "ServiceAttributeView",
     "SingularPrimitiveAttributeView",
     "CheckboxListView",
     "MultiplePrimitiveAttributeView"
-], function(Backbone, $,
+], function(Backbone, $, _,
 		SingularSelectAttributeView,
 		SingularCheckboxAttributeView,
 		ServiceAttributeView,
@@ -32,7 +33,7 @@ define([
 		MultiplePrimitiveAttributeView) {
 	
 	function getPrimitiveValue(valueArr) {
-		if (valueArr == undefined || valueArr.length === 0) {
+		if (valueArr === undefined || valueArr.length === 0) {
 			return null;
 		}
 		return valueArr[0];
@@ -41,7 +42,7 @@ define([
 	function createViewForSingularAttribute(attrModel, value, nullable, deletable) {
 		var type = attrModel.get("type");
 		if (attrModel.hasOptions()) {
-			if (type.maxOccurences == 0) {
+			if (type.maxOccurences === 0) {
 				return new SingularSelectAttributeView({
 					value: value,
 					options: type.options 

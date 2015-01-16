@@ -15,15 +15,15 @@
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
 define([
-        "backbone",
-        "ManagedServiceModel"
+	"backbone",
+	"ManagedServiceModel"
 ], function(Backbone, ManagedServiceModel) {
 	
 	var ManagedServiceList = Backbone.Collection.extend({
 		model: ManagedServiceModel,
 		topLevelEntries: function() {
 			return this.filter(function(e) {
-				return !e.hasFactory()
+				return !e.hasFactory();
 			});
 		},
 		getInstancesOf: function(factoryService) {

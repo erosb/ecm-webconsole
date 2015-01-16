@@ -18,7 +18,6 @@ define(["backbone", "jquery", "ractive"], function(Backbone, $, Ractive) {
 
 	var ServiceSelectorView = Backbone.View.extend({
 		initialize: function(options) {
-			console.log(options)
 			this.attrModel = options.attrModel;
 			this.value = options.value;
 		},
@@ -41,7 +40,7 @@ define(["backbone", "jquery", "ractive"], function(Backbone, $, Ractive) {
 				},
 				oninit: function() {
 					this.on("change", function(e) {
-						var id = e["displayedServiceId"];
+						var id = e.displayedServiceId;
 						if (id !== undefined) {
 							var services = this.get("services");
 							services.forEach(function(service) {
@@ -52,16 +51,14 @@ define(["backbone", "jquery", "ractive"], function(Backbone, $, Ractive) {
 						}
 					});
 					this.on("doFilter", function() { self.filterServices(); return false; });
-					this.on("filterKeyPress", function() {
-						console.log("keypress: ", arguments)
-					})
 				}
 			});
 			this.attrModel.on("change:services change:queryError", function() {
 				app.set("services", self.attrModel.get("services"));
 				app.set("queryError", self.attrModel.get("queryError"));
 			});
-			var title = "Service Selector: " + this.attrModel.get("parentService").get("pid") + "." + this.attrModel.get("id");
+			var title = "Service Selector: " + this.attrModel.get("parentService").get("pid") +
+				"." + this.attrModel.get("id");
 			this.$el.dialog({
 				title: title,
 				modal: true,

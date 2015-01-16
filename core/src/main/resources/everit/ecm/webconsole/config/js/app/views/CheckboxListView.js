@@ -14,35 +14,42 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
-define(["backbone", "jquery", "SingularCheckboxAttributeView"], function(Backbone, $, SingularCheckboxAttributeView) {
-	
+define([ "backbone", "jquery", "SingularCheckboxAttributeView" ], function(
+		Backbone, $, SingularCheckboxAttributeView) {
+
 	var CheckboxListView = Backbone.View.extend({
-		initialize: function(options) {
+		initialize : function(options) {
 			this.values = options.values;
 		},
-		tagName: "div",
-		render: function() {
+		tagName : "div",
+		createEventHandler: function(value) {
+			var values = this.values;
+			return function() {
+				var idx = values.indexOf(value);
+				if (idx > -1) {
+					values.splice(idx, 1);
+				} else {
+					values.push(value);
+				}
+			};
+		},
+		render : function() {
 			var self = this;
 			var options = this.model.get("type").options;
-			for (var text in options) {
-				var value = options[text];
-				var $checkbox = new SingularCheckboxAttributeView({value: self.values.indexOf(value) > -1});
-				$checkbox.on("change", (function(value) {
-						return function() {
-							var values = self.values;
-							var idx = values.indexOf(value);
-							if (idx > -1) {
-								values.splice(idx, 1);
-							} else {
-								values.push(value);
-							}
-						};
-				})(value));
-				this.$el.append($checkbox.render()).append(text).append("<br>");
+			for ( var text in options) {
+				if (options.hasOwnProperty(text)) {
+					var value = options[text];
+					var $checkbox = new SingularCheckboxAttributeView({
+						value : self.values.indexOf(value) > -1
+					});
+					$checkbox.on("change", this.createEventHandler(value));
+					this.$el.append($checkbox.render()).append(text).append(
+							"<br>");
+				}
 			}
 			return this.$el;
 		}
 	});
-	
+
 	return CheckboxListView;
 });

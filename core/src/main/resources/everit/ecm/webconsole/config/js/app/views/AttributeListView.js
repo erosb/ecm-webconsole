@@ -14,7 +14,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
-define(["backbone", "jquery", "viewfactory", "jqueryUi"], function(Backbone, $, viewfactory) {
+define(["backbone", "jquery", "viewfactory", "ConfigurationDeletionView", "jqueryUi"], function(
+		Backbone, $, viewfactory, ConfigurationDeletionView) {
 
 	var AttributeListView = Backbone.View.extend({
 		tagName: "div",
@@ -25,7 +26,7 @@ define(["backbone", "jquery", "viewfactory", "jqueryUi"], function(Backbone, $, 
 			var $el = this.$el;
 			$el.attr("title", "Configuration of " + this.model.get("name"));
 			$el.empty().html(viewfactory.loadTemplate("tmpl-attribute-list")({service: this.model}));
-			var $tbody = $el.find("tbody")
+			var $tbody = $el.find("tbody");
 			this.model.get("attributeList").forEach(function(attr) {
 				var $frame = $(viewfactory.loadTemplate("tmpl-attribute-frame")({model: attr}));
 				$frame.find("td:eq(1)").prepend(viewfactory.createViewForAttribute(attr).render()).css("width", "99%");
@@ -36,7 +37,7 @@ define(["backbone", "jquery", "viewfactory", "jqueryUi"], function(Backbone, $, 
 				modal: true,
 				width: "90%",
 				buttons: {
-					"Save" : function(e) {
+					"Save" : function() {
 						self.model.saveConfiguration().then(function() {
 							self.$el.dialog("close");
 						});
@@ -46,7 +47,7 @@ define(["backbone", "jquery", "viewfactory", "jqueryUi"], function(Backbone, $, 
 						delDlg.render();
 						delDlg.on("close", function() {
 							$el.dialog("close");
-						})
+						});
 					}
 				},
 				close: function() {

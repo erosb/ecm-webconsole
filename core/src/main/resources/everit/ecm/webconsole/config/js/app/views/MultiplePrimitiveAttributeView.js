@@ -53,7 +53,8 @@ define(["backbone", "jquery", "viewfactory"], function(Backbone, $, viewfactory)
 				$("<li></li>").appendTo(this.$el).append(entryView.render());
 			}, this);
 			if (this.maxOccurences === "unbound" || this.maxOccurences > this.subviews.length) {
-				this.$el.append("<li><span title='new entry' class='ui-widget ui-icon ui-icon-plus btn-new-entry'/></li>");
+				this.$el.append("<li><span title='new entry' class='ui-widget ui-icon ui-icon-plus btn-new-entry'/>" +
+						"</li>");
 			}
 			return this.$el;
 		}

@@ -15,13 +15,14 @@
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
 define(["backbone",
+        "jquery",
         "ConfigAdminList",
         "ConfigAdminModel",
         "ManagedServiceModel"
-], function(Backbone, ConfigAdminList, ConfigAdminModel, ManagedServiceModel) {
+], function(Backbone, $, ConfigAdminList, ConfigAdminModel, ManagedServiceModel) {
 	
 	var ApplicationModel = ecmconfig.ApplicationModel = Backbone.Model.extend({
-		initialize: function(options) {
+		initialize: function() {
 			var self = this;
 			ecmconfig.router.on("route:showService", function(configAdminPid, servicePid) {
 				self.set("selectedConfigAdmin", self.get("configAdminList").findWhere({pid: configAdminPid}));
@@ -70,9 +71,8 @@ define(["backbone",
 		configAdminListChanged: function() {
 			var configAdminList = this.get("configAdminList");
 			var selectedConfigAdmin = this.get("selectedConfigAdmin");
-			var configAdminPid = this.get("selectedConfigAdmin") == null ? null : selectedConfigAdmin.get("pid");
-			if (configAdminPid == null
-					&& configAdminList.length > 0) {
+			var configAdminPid = this.get("selectedConfigAdmin") === null ? null : selectedConfigAdmin.get("pid");
+			if (configAdminPid === null && configAdminList.length > 0) {
 				this.set("selectedConfigAdmin", configAdminList.at(0));
 			}
 		},
@@ -83,8 +83,7 @@ define(["backbone",
 			} else {
 				var configAdminPid = this.get("selectedConfigAdmin").get("pid");
 				ecmconfig.router.navigate(configAdminPid);
-				if (ecmconfig.managedServices !== null
-						&& ecmconfig.managedServices[configAdminPid] !== undefined) {
+				if (ecmconfig.managedServices !== null && ecmconfig.managedServices[configAdminPid] !== undefined) {
 					this.updateManagedServiceList(ecmconfig.managedServices[configAdminPid]);
 				} else {
 					this.refreshManagedServiceList();
@@ -94,7 +93,7 @@ define(["backbone",
 		getVisibleServices: function() {
 			return this.get("managedServiceList").where({visible: true});
 		},
-		refreshConfigAdminList: function(onReady) {
+		refreshConfigAdminList: function() {
 			var self = this;
 			$.getJSON(ecmconfig.rootPath + "/configadmin.json").then(function(data) {
 				self.updateConfigAdminList(data);
@@ -103,7 +102,7 @@ define(["backbone",
 		updateConfigAdminList: function(rawConfigAdmins) {
 			var newList = rawConfigAdmins.map(function(rawConfigAdmin) {
 				var configAdmin = new ConfigAdminModel(rawConfigAdmin);
-				configAdmin.set("appModel", self);
+				configAdmin.set("appModel", this);
 				return configAdmin;
 			});
 			this.get("configAdminList").reset(newList);

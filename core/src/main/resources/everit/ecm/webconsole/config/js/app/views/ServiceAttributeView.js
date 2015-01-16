@@ -37,7 +37,6 @@ define(["backbone", "jquery", "viewfactory", "ServiceSelectorView"], function(Ba
 				});
 				selectorView.on("change", function(value) {
 					self.$el.find("input[type=text]").val(self.value = value);
-					console.log("changed to ", value)
 					self.trigger("change", value);
 				});
 				selectorView.render();

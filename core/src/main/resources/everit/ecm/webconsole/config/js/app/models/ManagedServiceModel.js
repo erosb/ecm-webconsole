@@ -15,15 +15,15 @@
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
 define([
-        "backbone",
-        "jquery",
-        "AttributeList",
-        "AttributeModel",
-        "ServiceAttributeModel"
+	"backbone",
+	"jquery",
+	"AttributeList",
+	"AttributeModel",
+	"ServiceAttributeModel"
 ], function(Backbone, $, AttributeList, AttributeModel, ServiceAttributeModel) {
 
 	var ManagedServiceModel = Backbone.Model.extend({
-		initialize: function(options) {
+		initialize: function() {
 			this.set("attributeList", new AttributeList());
 		},
 		defaults: {
@@ -39,14 +39,16 @@ define([
 		deleteConfig: function() {
 			var self = this;
 			var configAdminPid = this.get("appModel").get("selectedConfigAdmin").get("pid");
-			return $.ajax(ecmconfig.rootPath + "/configuration.json?pid="
-					+ this.get("pid")
-					+ "&location=" + this.get("location")
-					+ "&configAdminPid=" + configAdminPid, {
+			return $.ajax(ecmconfig.rootPath + "/configuration.json?pid=" +
+					this.get("pid") +
+					"&location=" + this.get("location") +
+					"&configAdminPid=" + configAdminPid, {
 				type: "DELETE",
 				dataType: "json"
 			}).then(function() {
-				self.hasFactory() && self.get("appModel").get("managedServiceList").remove(self);
+				if (self.hasFactory()) {
+					self.get("appModel").get("managedServiceList").remove(self); 
+				}
 			});
 		},
 		hasFactory: function() {
@@ -62,7 +64,7 @@ define([
 			});
 			return JSON.stringify(rval);
 		},
-		saveConfiguration: function(onSuccess) {
+		saveConfiguration: function() {
 			var url = ecmconfig.rootPath + "/configuration.json?configAdminPid=" + this.getConfigAdminPid();
 			if (this.isFactory() || this.hasFactory()) {
 				url += "&factoryPid=" + this.get("factoryPid");
@@ -76,7 +78,9 @@ define([
 				dataType: "json",
 				data: this.attributeValuesToJSON()
 			}).then(function(data) {
-				data.pid && self.get("appModel").addNewEntry(data);
+				if (data.pid) {
+					self.get("appModel").addNewEntry(data);
+				}
 			});
 		},
 		getConfigAdminPid: function() {

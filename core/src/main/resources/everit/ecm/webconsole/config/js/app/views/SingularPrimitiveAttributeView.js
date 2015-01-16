@@ -52,7 +52,6 @@ define(["backbone", "jquery", "viewfactory"], function(Backbone, $, viewfactory)
 			this.trigger("delete");
 		},
 		render: function() {
-			var self = this;
 			viewfactory = require("viewfactory");
 			this.$el.empty().append(viewfactory.loadTemplate("tmpl-singular-primitive")({
 				nullable: this.nullable,

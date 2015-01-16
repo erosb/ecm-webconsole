@@ -14,33 +14,35 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
-define(["backbone", "jquery",
-        "ConfigurationDeletionView",
-        "ManagedServiceFactoryRowView",
-        "viewfactory"], function(Backbone, $,
-        		ConfigurationDeletionView,
-        		ManagedServiceFactoryRowView,
-        		viewfactory) {
-	
+define([ "backbone", "jquery", "ConfigurationDeletionView",
+		"ManagedServiceFactoryRowView", "viewfactory" ], function(Backbone, $,
+		ConfigurationDeletionView, ManagedServiceFactoryRowView, viewfactory) {
+
 	var ManagedServiceRowView = ManagedServiceFactoryRowView.extend({
-		tagName: "tr",
-		className: "ui-state-default managedservice-row",
-		events: {
+		tagName : "tr",
+		className : "ui-state-default managedservice-row",
+		events : {
 			"click .ui-icon-trash" : "deleteConfig",
 			"click td" : "displayConfig"
 		},
-		deleteConfig: function(e) {
+		deleteConfig : function(e) {
 			e.stopPropagation();
-			var deletionView = new ConfigurationDeletionView({model: this.model});
-			deletionView.on("close", function() {this.trigger("deleted")}, this)
+			var deletionView = new ConfigurationDeletionView({
+				model : this.model
+			});
+			deletionView.on("close", function() {
+				this.trigger("deleted");
+			}, this);
 			deletionView.render();
 		},
-		render: function() {
-			var dom = viewfactory.loadTemplate("tmpl-managed-service-row")({service: this.model});
+		render : function() {
+			var dom = viewfactory.loadTemplate("tmpl-managed-service-row")({
+				service : this.model
+			});
 			this.$el.append(dom);
 			return this.$el;
 		}
 	});
-	
+
 	return ManagedServiceRowView;
 });

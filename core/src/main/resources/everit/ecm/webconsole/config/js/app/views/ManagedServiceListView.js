@@ -70,8 +70,7 @@ define(["backbone", "backboneKeys", "jquery", "tablesorter", "ManagedServiceRowV
 			rowViews[++this.focusedRowIdx].$el.addClass(this.activeRowClass);
 		},
 		isKeyEventToBeHandled: function(e) {
-			return (e.target == this.rowViews[this.focusedRowIdx]
-				|| e.target == this.el);
+			return (e.target == this.rowViews[this.focusedRowIdx] || e.target == this.el);
 		},
 		alignFocusedRowIdx: function() {
 			var visibleServices = this.appModel.getVisibleServices();
@@ -110,11 +109,10 @@ define(["backbone", "backboneKeys", "jquery", "tablesorter", "ManagedServiceRowV
 		},
 		render: function() {
 			this.$el.empty().html($("#tmpl-managed-service-list").text());
-			var $tbody = this.$el.find("tbody");
-			var rowViews = this.rowViews = [];
+			var $tbody = this.$el.find("tbody"), rowView, rowViews = this.rowViews = [];
 			this.model.topLevelEntries().forEach(function(service) {
 				if (service.isFactory()) {
-					var rowView = new ManagedServiceFactoryRowView({model: service});
+					rowView = new ManagedServiceFactoryRowView({model: service});
 					rowViews.push(rowView);
 					$tbody.append(rowView.render());
 					this.model.getInstancesOf(service).forEach(function(inst) {
@@ -123,8 +121,8 @@ define(["backbone", "backboneKeys", "jquery", "tablesorter", "ManagedServiceRowV
 						$tbody.append(rowView.render());
 					});
 				} else {
-					var rowView = new ManagedServiceRowView({model: service});
-					rowView.on("deleted", function(){this.$el.focus()}, this)
+					rowView = new ManagedServiceRowView({model: service});
+					rowView.on("deleted", function(){this.$el.focus();}, this);
 					rowViews.push(rowView);
 					$tbody.append(rowView.render());
 				}

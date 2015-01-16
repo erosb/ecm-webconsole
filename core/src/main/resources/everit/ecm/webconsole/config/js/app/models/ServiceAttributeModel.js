@@ -18,7 +18,6 @@ define(["AttributeModel", "jquery"], function(AttributeModel, $) {
 	
 	var ServiceAttributeModel = AttributeModel.extend({
 		suggestionsForValuePrefix: function(value, key, valuePrefix) {
-			var lastOpeningParenIdx = value.lastIndexOf("(");
 			var lastEqIdx = value.lastIndexOf("=");
 			var suggestions = [];
 			this.get("services").forEach(function(service) {
@@ -29,12 +28,12 @@ define(["AttributeModel", "jquery"], function(AttributeModel, $) {
 					}
 					if (prop.value instanceof Array) {
 						prop.value.forEach(function(val) {
-							if (new String(val).indexOf(valuePrefix) === 0) {
+							if (String(val).indexOf(valuePrefix) === 0) {
 								matchingValues.push(val); 
 							}
 						});
 					} else  {
-						if (new String(prop.value).indexOf(valuePrefix) === 0) {
+						if (String(prop.value).indexOf(valuePrefix) === 0) {
 							matchingValues.push(prop.value); 
 						}
 					}
@@ -77,16 +76,15 @@ define(["AttributeModel", "jquery"], function(AttributeModel, $) {
 		},
 		loadServiceSuggestions: function(ldapQuery) {
 			var service = this.get("parentService"), self = this;
-			var url = ecmconfig.rootPath + "/suggestion.json"
-				+ "?configAdminPid=" + service.getConfigAdminPid()
-				+ "&pid=" + service.get("pid")
-				+ "&attributeId=" + this.get("id");
+			var url = ecmconfig.rootPath + "/suggestion.json" +
+				"?configAdminPid=" + service.getConfigAdminPid() +
+				"&pid=" + service.get("pid") +
+				"&attributeId=" + this.get("id");
 			if (ldapQuery) {
 				url += "&query=" + encodeURIComponent(ldapQuery);
 			}
 			return $.getJSON(url)
 			.then(function(data){
-				console.log("returned ", data)
 				if (data.error) {
 					self.set("queryError", data.error);
 				} else { 
