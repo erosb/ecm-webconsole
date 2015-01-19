@@ -108,9 +108,9 @@ span.checkbox {
 
 <script type="text/template" id="tmpl-threestate-checkbox">
 	<span>
-		<span class="ui-icon checkbox"></span>
+		<span class="ui-icon checkbox" tabindex="0"></span>
 		<% if (nullable) { %>
-			<span title="set to null" class="btn-null ui-icon ui-icon-cancel" />
+			<span title="set to null (Ctrl + X)" class="btn-null ui-icon ui-icon-cancel" />
 		<% } %>
 	</span>
 </script>
@@ -118,10 +118,10 @@ span.checkbox {
 <script type="text/template" id="tmpl-singular-primitive">
 	<input type="<%- type %>" name="value" value="<%- value %>" placeholder="<%- placeholder %>" class="ui-state-default ui-corner-all" style="width: 80%" />
 	<% if (nullable) { %>
-		<span title="set to null" class="btn-null ui-icon ui-icon-cancel" />
+		<span title="set to null (Ctrl + X)" class="btn-null ui-icon ui-icon-cancel" />
 	<% } %>
 	<% if (deletable) { %>
-		<span title="delete" class="ui-icon ui-icon-trash btn-delete" />
+		<span title="delete (Ctrl + D)" class="ui-icon ui-icon-trash btn-delete" />
 	<% } %>
 </script>
 
@@ -200,7 +200,7 @@ span.checkbox {
 	<input type="text" readonly="readonly" value="<%- value %>" />
 	<input type="button" class="btn-open-service-selector ui-widget ui-priority-primary" value="search"/>
 	<% if (nullable) { %>
-		<span title="set to null" class="btn-null ui-icon ui-icon-cancel" /> 
+		<span title="set to null (Ctrl + X)" class="btn-null ui-icon ui-icon-cancel" /> 
 	<% } %>
 	<% if (deletable) { %>
 		<input type="button" value="delete" class="btn-delete ui-widget ui-priority-primary" />

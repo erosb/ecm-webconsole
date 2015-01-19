@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
-define(["backbone", "jquery", "viewfactory"], function(Backbone, $, viewfactory) {
+define(["backbone", "jquery", "viewfactory", "backboneKeys"], function(Backbone, $, viewfactory) {
 	"use strict";
 	
 	var SingularPrimitiveAttributeView = Backbone.View.extend({
@@ -31,7 +31,15 @@ define(["backbone", "jquery", "viewfactory"], function(Backbone, $, viewfactory)
 		events : {
 			"blur input[name=value]" : "valueChanged",
 			"click .btn-null": "setToNull",
-			"click .btn-delete" : "triggerDelete"
+			"click .btn-delete" : "triggerDelete",
+			"keypress": "keyPressed"
+		},
+		keyPressed: function(e) {
+			if (e.ctrlKey && e.key === "x" && this.nullable) {
+				this.setToNull(e);
+			} else if (e.ctrlKey && e.key === "d" && this.deletable) {
+				this.triggerDelete(e);
+			}
 		},
 		valueChanged: function() {
 			var $input = this.$el.find("input[name=value]");
@@ -45,9 +53,12 @@ define(["backbone", "jquery", "viewfactory"], function(Backbone, $, viewfactory)
 			}
 			this.trigger("change", this.value);
 		},
-		setToNull: function() {
-			this.trigger("change", this.value = null);
-			this.render();
+		setToNull: function(e) {
+			if (this.nullable) {
+				this.trigger("change", this.value = null);
+				this.render();
+			}
+			e.stopPropagation();
 		},
 		triggerDelete: function() {
 			this.trigger("delete");

@@ -25,7 +25,16 @@ define(["backbone", "jquery", "viewfactory"], function(Backbone, $, viewfactory)
 		tagName: "span",
 		events: {
 			"click .checkbox": "triggerChange",
-			"click .btn-null": "setToNull"
+			"click .btn-null": "setToNull",
+			"keypress" : "keyPressed"
+		},
+		keyPressed: function(e) {
+			if (e.key === " ") {
+				this.triggerChange();
+			} else if (this.nullable && e.ctrlKey && e.key === "x") {
+				this.setToNull();
+			}
+			this.$(".checkbox").focus();
 		},
 		triggerChange: function() {
 			this.value = !this.value;

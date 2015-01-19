@@ -27,7 +27,14 @@ define(["backbone", "jquery", "viewfactory", "ServiceSelectorView"], function(Ba
 			this.deletable = options.deletable;
 		},
 		events: {
-			"click .btn-open-service-selector" : "openServiceSelector"
+			"click .btn-open-service-selector" : "openServiceSelector",
+			"keypress" : "keyPressed"
+		},
+		keyPressed: function(e) {
+			e.stopPropagation();
+			if (this.nullable && e.ctrlKey && e.key === "x") {
+				this.setToNull();
+			}
 		},
 		openServiceSelector: function() {
 			var self = this;
