@@ -34,7 +34,8 @@ define([
 			location: null,
 			pid: null,
 			factoryPid: null,
-			visible: true
+			visible: true,
+			dirty: false
 		},
 		attributeList: new AttributeList(),
 		deleteConfig: function() {
@@ -82,6 +83,7 @@ define([
 				if (data.pid) {
 					self.get("appModel").addNewEntry(data);
 				}
+				self.set("dirty", false);
 			});
 		},
 		getConfigAdminPid: function() {

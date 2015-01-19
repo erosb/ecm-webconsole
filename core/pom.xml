@@ -54,63 +54,29 @@
         </configuration>
       </plugin>
       <plugin>
-     <groupId>com.cj.jshintmojo</groupId>
-     <artifactId>jshint-maven-plugin</artifactId>
-     <version>1.3.0</version>
-     <executions>
-         <execution>
-             <goals>
-                 <goal>lint</goal>
-             </goals>
-         </execution>
-     </executions>
-     <configuration>
-         <version>2.4.1</version>
-         <options>indent:4,maxlen:120,camelcase,forin,immed,latedef,noarg,noempty,nonew,curly,freeze,undef,unused,strict</options>
-         <globals>document,ecmconfig,require,define</globals>
+        <groupId>com.cj.jshintmojo</groupId>
+        <artifactId>jshint-maven-plugin</artifactId>
+        <version>1.3.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>lint</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <version>2.4.1</version>
+          <options>indent:4,maxlen:120,camelcase,forin,immed,latedef,noarg,noempty,nonew,curly,freeze,undef,unused,strict</options>
+          <globals>document,ecmconfig,require,define</globals>
 <!--          <configFile>src/main/resources/jshint.conf.js</configFile> -->
-         <directories>
-             <directory>src/main/resources/everit/ecm/webconsole/config/js/app</directory>
-         </directories>
-         <reporter>jslint</reporter>
-         <reportFile>target/jshint.xml</reportFile>
-         <failOnError>false</failOnError>
-     </configuration>
-  </plugin>
-<!--       <plugin> -->
-<!--         <groupId>org.everit.osgi.dev</groupId> -->
-<!--         <artifactId>eosgi-maven-plugin</artifactId> -->
-<!--         <version>3.1.0</version> -->
-<!--         <configuration> -->
-<!--           <sourceDistPath>${source.dist.folder}</sourceDistPath> -->
-<!--           <jacoco> -->
-<!--             <includes>org.everit.osgi.ecm.component.*</includes> -->
-<!--             <output>$${ if (System.getenv("EOSGI_STOP_AFTER_TESTS").equals("true")) "file"; else "tcpserver"; }</output> -->
-<!--           </jacoco> -->
-<!--           <environments> -->
-<!--             <environment> -->
-<!--               <id>ecmFelix</id> -->
-<!--               <framework>felix</framework> -->
-<!--               <systemProperties> -->
-<!--                 <felix.cm.dir>${wrapper_home}/../conf/configadmin</felix.cm.dir> -->
-<!--               </systemProperties> -->
-<!--               <vmOptions> -->
-<!--                 <vmOption>-Xdebug</vmOption> -->
-<!--                 <vmOption>-Xrunjdwp:server=y,transport=dt_socket,address=4000,suspend=n</vmOption> -->
-<!--               </vmOptions> -->
-<!--             </environment> -->
-<!--           </environments> -->
-<!--         </configuration> -->
-<!--         <executions> -->
-<!--           <execution> -->
-<!--             <id>integration-test</id> -->
-<!--             <phase>integration-test</phase> -->
-<!--             <goals> -->
-<!--               <goal>integration-test</goal> -->
-<!--             </goals> -->
-<!--           </execution> -->
-<!--         </executions> -->
-<!--       </plugin> -->
+          <directories>
+            <directory>src/main/resources/everit/ecm/webconsole/config/js/app</directory>
+          </directories>
+          <reporter>jslint</reporter>
+          <reportFile>target/jshint.xml</reportFile>
+          <failOnError>true</failOnError>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -151,7 +117,7 @@
       <artifactId>org.apache.felix.metatype</artifactId>
       <version>1.0.10</version>
     </dependency>
-    
+
     <dependency>
       <groupId>org.apache.felix</groupId>
       <artifactId>org.apache.felix.scr</artifactId>

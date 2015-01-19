@@ -17,11 +17,49 @@
 define(["backbone", "jquery", "viewfactory", "ConfigurationDeletionView", "jqueryUi"], function(
 		Backbone, $, viewfactory, ConfigurationDeletionView) {
 	"use strict";
+	
+	var ConfirmCloseView = Backbone.View.extend({
+		initialize: function(options) {
+			this.parentView = options.parentView;
+		},
+		attributes : {
+			title: "Confirm closing configuration"
+		},
+		render: function() {
+			var self = this;
+			this.$el.html("You have pending changes").dialog({
+				modal: true,
+				width: "auto",
+				buttons: {
+					"Discard changes" : function() {
+						self.$el.dialog("close");
+						self.parentView.forcedClose();
+					},
+					"Save pending changes" : function() {
+						self.$el.dialog("close");
+						self.parentView.saveConfig();
+					},
+					"Cancel" : function() {
+						self.$el.dialog("close");
+					}
+				}
+			});
+		}
+	});
 
 	var AttributeListView = Backbone.View.extend({
-		tagName: "div",
 		attributes: {
 			title: "Configuration"
+		},
+		saveConfig: function() {
+			var self = this;
+			this.model.saveConfiguration().then(function() {
+				self.$el.dialog("close");
+			});
+		},
+		forcedClose: function() {
+			this.model.set("dirty", false);
+			this.$el.dialog("close");
 		},
 		render: function() {
 			var $el = this.$el;
@@ -39,9 +77,7 @@ define(["backbone", "jquery", "viewfactory", "ConfigurationDeletionView", "jquer
 				width: "90%",
 				buttons: {
 					"Save" : function() {
-						self.model.saveConfiguration().then(function() {
-							self.$el.dialog("close");
-						});
+						self.saveConfig();
 					},
 					"Delete" : function() {
 						var delDlg = new ConfigurationDeletionView({model: self.model});
@@ -54,6 +90,12 @@ define(["backbone", "jquery", "viewfactory", "ConfigurationDeletionView", "jquer
 				close: function() {
 					self.model.get("appModel").set("displayedService", null);
 					self.trigger("close");
+				},
+				beforeClose: function(e) {
+					if (self.model.get("dirty")) {
+						e.preventDefault();
+						new ConfirmCloseView({parentView: self}).render();
+					}
 				}
 			});
 		}

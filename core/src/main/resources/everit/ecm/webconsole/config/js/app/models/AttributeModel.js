@@ -18,6 +18,12 @@ define(["backbone"], function(Backbone) {
 	"use strict";
 
 	var AttributeModel = Backbone.Model.extend({
+		initialize: function() {
+			this.on("change:value", this.updateDirtyFlag, this);
+		},
+		updateDirtyFlag: function() {
+			this.get("parentService").set("dirty", true);
+		},
 		defaults: {
 			id: null,
 			name: null,
