@@ -51,6 +51,16 @@ define(["backbone", "jquery", "viewfactory", "ConfigurationDeletionView", "jquer
 		attributes: {
 			title: "Configuration"
 		},
+		events: {
+			"keypress" : "keyPressed"
+		},
+		keyPressed: function(e) {
+			if (e.ctrlKey && e.key === "s") {
+				this.saveConfig();
+				e.stopPropagation();
+				e.preventDefault();
+			}
+		},
 		saveConfig: function() {
 			var self = this;
 			this.model.saveConfiguration().then(function() {

@@ -18,6 +18,20 @@ define(["AttributeModel", "jquery"], function(AttributeModel, $) {
 	"use strict";
 	
 	var ServiceAttributeModel = AttributeModel.extend({
+		defaults : {
+			displayedService: null
+		},
+		setDisplayedServiceById: function(serviceId) {
+			var services = this.get("services");
+			for (var i in services) {
+				if (services.hasOwnProperty(i)) {
+					var service = services[i];
+					if (service.id == serviceId) {
+						this.set("displayedService", service);
+					}
+				}
+			}
+		},
 		suggestionsForValuePrefix: function(value, key, valuePrefix) {
 			var lastEqIdx = value.lastIndexOf("=");
 			var suggestions = [];

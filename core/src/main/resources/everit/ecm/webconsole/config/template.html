@@ -23,7 +23,6 @@
 		"managedServices" : ${managedServices} 
 	};
 </script>
-<script type="text/javascript" src="${rootPath}/lib/ractive.min.js"></script>
 <script type="text/javascript" src="${rootPath}/lib/require.js" data-main="${rootPath}/app/app.js"></script>
 
 <style>
@@ -159,41 +158,41 @@ span.checkbox {
 	</div>
 </script>
 
-<script type="text/ractive" id="tmpl-service-selector">
-{{#queryError}}
-	<p class="ui-state-error">{{queryError}}</p>
-{{/queryError}}
-<form class="cnt-filter" on-submit="doFilter">
-	Filter: <input type="text" on-keydown="filterKeyPress" class="ui-widget" value="{{filter}}" style="width: 80%"/>
-	<input type="button" class="btn-filter" value="Filter" on-click="doFilter" />
-</form>
-<div class="cnt-matching-services">
-	<select size="10" on-change="displayService" value="{{displayedServiceId}}">
-		{{#each services}}
-			<option value="{{id}}">{{serviceClass}}</option>
-		{{/each}}
-	</select>
-</div>
-<div class="cnt-service-properties">
-	<table class="tablesorter">
+<script type="text/template" id="tmpl-service-selector">
+	<% if (queryError) { %>
+	<p class="ui-state-error"><%- queryError %></p>
+	<% } %>
+	<form class="cnt-filter">
+		Filter: <input type="text" class="ui-widget" value="<%- filter %>" style="width: 80%"/>
+		<input type="submit" value="Filter" />
+	</form>
+	<div class="cnt-matching-services">
+		<select size="10" name="matching-services">
+		<% _.each(services, function(service) { %>
+		<option value="<%- service.id %>"><%- service.serviceClass %></option>
+		<% }) %>
+		</select>
+	</div>
+	<div class="cnt-service-properties"></div>
+</script>
+
+<script type="text/template" id="tmpl-service-properties">
+	<table>
 		<thead>
 			<tr>
-				<th colspan="2">Properties of {{displayedService.serviceClass}}</th>
-			</tr>
-			<tr>
-				<th>Key</th><th>Value</th>
+				<th>Key</th>
+				<th>Value</th>
 			</tr>
 		</thead>
 		<tbody>
-			{{#each displayedService.properties}}
+			<% _.each(properties, function(property) { %>
 			<tr>
-				<td>{{key}}</td>
-				<td>{{value}}</td>
+				<td><%- property.key %></td>
+				<td><%- property.value %></td>
 			</tr>
-			{{/each}}
+			<% }) %>
 		</tbody>
 	</table>
-</div>
 </script>
 
 <script type="text/template" id="tmpl-service-attribute">
