@@ -22,7 +22,7 @@ define([ "backbone", "jquery", "tablesorter" ], function(Backbone, $) {
 			this.attrModel = options.attrModel;
 			this.value = options.value;
 			this.attrModel.on("change:displayedService", this.displayProperties, this);
-			this.attrModel.on("change:services", this.render, this);
+			this.attrModel.on("change:services change:queryError", this.render, this);
 		},
 		events: {
 			"change select[name=matching-services]" : "changeDisplayedService",

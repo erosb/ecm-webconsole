@@ -31,8 +31,8 @@ define(["backbone", "jquery", "viewfactory", "ServiceSelectorView"], function(Ba
 			"keypress" : "keyPressed"
 		},
 		keyPressed: function(e) {
-			e.stopPropagation();
 			if (this.nullable && e.ctrlKey && e.key === "x") {
+				e.stopPropagation();
 				this.setToNull();
 			}
 		},
@@ -44,7 +44,7 @@ define(["backbone", "jquery", "viewfactory", "ServiceSelectorView"], function(Ba
 					value: self.value
 				});
 				selectorView.on("change", function(value) {
-					self.$el.find("input[type=text]").val(self.value = value);
+					self.$el.find("input[type=text]").val(self.value = value).focus();
 					self.trigger("change", value);
 				});
 				selectorView.render();
