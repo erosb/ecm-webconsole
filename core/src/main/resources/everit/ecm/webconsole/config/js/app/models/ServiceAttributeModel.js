@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
-define(["AttributeModel", "jquery"], function(AttributeModel, $) {
+define(["AttributeModel", "jquery", "underscore"], function(AttributeModel, $, _) {
 	"use strict";
 	
 	var ServiceAttributeModel = AttributeModel.extend({
@@ -31,6 +31,55 @@ define(["AttributeModel", "jquery"], function(AttributeModel, $) {
 					}
 				}
 			}
+		},
+		getDisplayedServiceIdx: function() {
+			var displayedService = this.get("displayedService");
+			if (!displayedService) {
+				return null;
+			}
+			var services = this.get("services");
+			for (var i in services) {
+				if (services[i].id === displayedService.id) {
+					return i;
+				}
+			}
+			return null;
+		},
+		prevDisplayedService: function() {
+			var idx = this.getDisplayedServiceIdx();
+			if (idx === null) {
+				idx = 1;
+			}
+			--idx;
+			if (idx >= 0) {
+				this.set("displayedService", this.get("services")[idx]);
+			}
+		},
+		nextDisplayedService: function() {
+			var idx = this.getDisplayedServiceIdx();
+			if (idx === null) {
+				idx = -1;
+			}
+			++idx;
+			if (idx < this.get("services").length) {
+				this.set("displayedService", this.get("services")[idx]);
+			}
+		},
+		getServicePropertyValue: function(serviceId, propertyKey) {
+			var service = _.findWhere(this.get("services"), {id: serviceId});
+			if (service === undefined) {
+				return null;
+			}
+			var props = service.properties;
+			for (var i in props) {
+				if (props.hasOwnProperty(i)) {
+					var prop = props[i];
+					if (prop.key === propertyKey) {
+						return prop.value;
+					}
+				}
+			}
+			return null;
 		},
 		suggestionsForValuePrefix: function(value, key, valuePrefix) {
 			var lastEqIdx = value.lastIndexOf("=");

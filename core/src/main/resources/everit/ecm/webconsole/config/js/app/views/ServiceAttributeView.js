@@ -52,7 +52,7 @@ define(["backbone", "jquery", "viewfactory", "ServiceSelectorView"], function(Ba
 		},
 		render: function() {
 			viewfactory = require("viewfactory");
-			this.$el.empty().append(viewfactory.loadTemplate("tmpl-service-attribute")({
+			this.$el.html(viewfactory.loadTemplate("tmpl-service-attribute")({
 				value: this.value,
 				nullable: this.nullable,
 				deletable: this.deletable

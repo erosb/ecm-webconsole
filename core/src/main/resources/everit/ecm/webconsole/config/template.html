@@ -76,11 +76,12 @@ span.checkbox {
 }
 
 .cnt-matching-services {
-	display: inline-block
+	display: inline;
 }
 
 .cnt-service-properties {
-	display: inline-block;
+	display: inline;
+	float: right;
 	padding: 8px;
 }
 
@@ -196,7 +197,7 @@ span.checkbox {
 </script>
 
 <script type="text/template" id="tmpl-service-attribute">
-	<input type="text" readonly="readonly" value="<%- value %>" />
+	<input type="text" readonly="readonly" value="<%- value %>" style="width: 80%"/>
 	<input type="button" class="btn-open-service-selector ui-widget ui-priority-primary" value="search"/>
 	<% if (nullable) { %>
 		<span title="set to null (Ctrl + X)" class="btn-null ui-icon ui-icon-cancel" /> 

@@ -26,7 +26,32 @@ define([ "backbone", "jquery", "tablesorter" ], function(Backbone, $) {
 		},
 		events: {
 			"change select[name=matching-services]" : "changeDisplayedService",
-			"submit .cnt-filter" : "filterServices"
+			"submit .cnt-filter" : "filterServices",
+			"dblclick [name=matching-services]" : "serviceSelectedFromList",
+			"keyup" : "keyPressed"
+		},
+		keyPressed: function(e) {
+			console.log(e);
+			if (e.ctrlKey && e.keyCode === 13) { // ctrl+enter
+				this.saveAndClose();
+			} else if (e.keyCode === 13 && e.target.getAttribute("name") === "matching-services") {
+				this.serviceSelectedFromList();
+			} else if (e.keyCode === 38) {  // up arrow
+				this.attrModel.prevDisplayedService();
+			} else if (e.keyCode === 40) { // downArrow
+				this.attrModel.nextDisplayedService();
+			}
+		},
+		saveAndClose: function() {
+			this.trigger("change", this.filterInput().val());
+			this.$el.dialog("close");
+		},
+		serviceSelectedFromList: function() {
+			var serviceId = this.$("[name=matching-services]").val();
+			var pid = this.attrModel.getServicePropertyValue(serviceId, "service.pid");
+			if (pid !== null) {
+				this.filterInput().val("(service.pid=" + pid + ")");
+			}
 		},
 		changeDisplayedService : function(e) {
 			var serviceId = $(e.target).val();
@@ -42,9 +67,12 @@ define([ "backbone", "jquery", "tablesorter" ], function(Backbone, $) {
 		displayProperties : function() {
 			var viewfactory = require("viewfactory");
 			var service = this.attrModel.get("displayedService");
-			var properties = service === null ? {} : service.properties;
+			if (service) {
+				$("[name=matching-services]").val(service.id);
+			}
+			var properties = service ? service.properties : {};
 			var dom = viewfactory.loadTemplate("tmpl-service-properties")(({properties : properties}));
-			this.$(".cnt-service-properties").empty().html(dom);
+			this.$(".cnt-service-properties").empty().html(dom).tablesorter();
 		},
 		render : function() {
 			var viewfactory = require("viewfactory");
@@ -65,8 +93,7 @@ define([ "backbone", "jquery", "tablesorter" ], function(Backbone, $) {
 				width : "auto",
 				buttons : {
 					"Ok" : function() {
-						self.trigger("change", self.filterInput().val());
-						self.$el.dialog("close");
+						self.saveAndClose();
 					},
 					"Close" : function() {
 						self.$el.dialog("close");
@@ -83,7 +110,8 @@ define([ "backbone", "jquery", "tablesorter" ], function(Backbone, $) {
 					response(self.attrModel.autocomplete(request.term));
 				},
 				delay: 0
-			}).focus();
+			});
+			this.filterInput().focus();
 		}
 	});
 
