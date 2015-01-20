@@ -31,7 +31,6 @@ define([ "backbone", "jquery", "tablesorter" ], function(Backbone, $) {
 			"keyup" : "keyPressed"
 		},
 		keyPressed: function(e) {
-			console.log(e);
 			if (e.ctrlKey && e.keyCode === 13) { // ctrl+enter
 				this.saveAndClose();
 			} else if (e.keyCode === 13 && e.target.getAttribute("name") === "matching-services") {
