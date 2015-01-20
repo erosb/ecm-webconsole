@@ -40,6 +40,9 @@ define(["backbone", "jquery", "viewfactory", "backboneKeys"], function(Backbone,
 			} else if (e.ctrlKey && e.key === "d" && this.deletable) {
 				this.triggerDelete(e);
 			}
+			if (this.$("input[name=value]").val()) {
+				this.$("input[name=value]").attr("placeholder", "empty string");
+			}
 		},
 		valueChanged: function() {
 			var $input = this.$el.find("input[name=value]");
@@ -59,6 +62,7 @@ define(["backbone", "jquery", "viewfactory", "backboneKeys"], function(Backbone,
 				this.render();
 			}
 			e.stopPropagation();
+			this.$("input[name=value]").focus();
 		},
 		triggerDelete: function() {
 			this.trigger("delete");
