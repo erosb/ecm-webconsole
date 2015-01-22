@@ -23,6 +23,7 @@ require.config({
 		jquery: "/system/console/res/lib/jquery-1.8.3",
 		jqueryUi: "/system/console/res/lib/jquery-ui-1.9.2",
 		tablesorter: "/system/console/res/lib/jquery.tablesorter-2.0.3",
+		thymol: ecmconfig.rootPath + "/lib/thymol.min",
 		// app models
 		ApplicationModel: ecmconfig.rootPath + "/app/models/ApplicationModel",
 		AttributeList: ecmconfig.rootPath + "/app/models/AttributeList",
@@ -101,7 +102,3 @@ define([
 	});
 	
 });
-
-	
-	
-	
