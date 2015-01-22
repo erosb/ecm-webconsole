@@ -24,6 +24,7 @@ require.config({
 		jqueryUi: "/system/console/res/lib/jquery-ui-1.9.2",
 		tablesorter: "/system/console/res/lib/jquery.tablesorter-2.0.3",
 		thymol: ecmconfig.rootPath + "/lib/thymol.min",
+		handlebars: ecmconfig.rootPath + "/lib/handlebars-v2.0.0",
 		// app models
 		ApplicationModel: ecmconfig.rootPath + "/app/models/ApplicationModel",
 		AttributeList: ecmconfig.rootPath + "/app/models/AttributeList",

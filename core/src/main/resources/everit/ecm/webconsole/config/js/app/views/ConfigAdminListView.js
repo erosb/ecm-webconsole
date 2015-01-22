@@ -24,8 +24,8 @@ define(["backbone", "jquery", "viewfactory"], function(Backbone, $, viewfactory)
 		},
 		render: function() {
 			this.$el.empty();
-			var dom = viewfactory.loadTemplate("tmpl-config-admin-list")({
-				configAdmins: this.model.get("configAdminList")
+			var dom = viewfactory.handlebarsTpl("tmpl-config-admin-list")({
+				configAdmins: this.model.get("configAdminList").toJSON()
 			});
 			this.$el.append(dom);
 			return this.$el;

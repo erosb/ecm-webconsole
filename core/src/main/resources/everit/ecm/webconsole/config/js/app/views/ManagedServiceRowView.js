@@ -37,8 +37,9 @@ define([ "backbone", "jquery", "ConfigurationDeletionView",
 			deletionView.render();
 		},
 		render : function() {
-			var dom = viewfactory.loadTemplate("tmpl-managed-service-row")({
-				service : this.model
+			var dom = viewfactory.handlebarsTpl("tmpl-managed-service-row")({
+				service : this.model.toJSON(),
+				hasFactory: this.model.hasFactory()
 			});
 			this.$el.append(dom);
 			return this.$el;

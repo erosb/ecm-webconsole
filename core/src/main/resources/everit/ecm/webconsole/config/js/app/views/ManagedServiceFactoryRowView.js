@@ -35,7 +35,7 @@ define(["backbone", "jquery", "viewfactory"], function(Backbone, $, viewfactory)
 			// nothing to do here
 		},
 		render: function() {
-			var dom = viewfactory.loadTemplate("tmpl-managed-service-factory-row")({service: this.model});
+			var dom = viewfactory.handlebarsTpl("tmpl-managed-service-factory-row")({service: this.model.toJSON()});
 			this.$el.append(dom);
 			return this.$el;
 		}

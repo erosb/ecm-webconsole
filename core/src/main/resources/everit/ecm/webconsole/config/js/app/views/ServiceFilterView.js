@@ -30,7 +30,7 @@ define(["backbone", "jquery", "viewfactory"], function(Backbone, $, viewfactory)
 			this.model.set("serviceFilter", this.$el.find("input").val());
 		},
 		render: function() {
-			var dom = viewfactory.loadTemplate("tmpl-servicefilter")({serviceFilter: this.model.get("serviceFilter")});
+			var dom = viewfactory.handlebarsTpl("tmpl-servicefilter")({serviceFilter: this.model.get("serviceFilter")});
 			this.$el.html(dom).find("input").focus();
 			return this.$el;
 		}

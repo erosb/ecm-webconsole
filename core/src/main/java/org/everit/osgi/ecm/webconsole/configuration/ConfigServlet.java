@@ -49,10 +49,12 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
     public static final String CONFIG_LABEL = "ecm-config";
 
     private static final Set<String> loadableJavascriptFiles = new HashSet<String>(Arrays.asList(
-            "lib/underscore-min.js",
             "lib/backbone.js",
             "lib/backbone.keys.js",
+            "lib/handlebars-v2.0.0.js",
             "lib/require.js",
+            "lib/underscore-min.js",
+            // app models
             "app/models/ApplicationModel.js",
             "app/models/AttributeList.js",
             "app/models/AttributeModel.js",
@@ -63,7 +65,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             "app/models/ServiceSuggestionModel.js",
             "app/models/ServiceAttributeModel.js",
             "app/app.js",
-            // "app/views/views.js",
+            // app/views
             "app/views/AttributeListView.js",
             "app/views/attributeviews.js",
             "app/views/CheckboxListView.js",
@@ -90,7 +92,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void doDelete(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-            IOException {
+    IOException {
         String pathInfo = req.getPathInfo();
         if (pathInfo.endsWith("/configuration.json")) {
             String servicePid = req.getParameter("pid");
@@ -103,7 +105,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void doPut(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-            IOException {
+    IOException {
         String requestBody = requestBody(req);
         String pid = req.getParameter("pid");
         String factoryPid = req.getParameter("factoryPid");
@@ -114,7 +116,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             resp.setContentType("application/json");
             JSONWriter writer = new JSONWriter(resp.getWriter());
             configManager.createConfiguration(configAdminPid, factoryPid, location, attributes)
-                    .toJSON(writer);
+            .toJSON(writer);
 
         } else {
             configManager.updateConfiguration(configAdminPid, pid, factoryPid, attributes);
@@ -311,7 +313,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void renderContent(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-            IOException {
+    IOException {
         String pathInfo = req.getPathInfo();
         if (isMainPageRequest(pathInfo)) {
             loadMainPage(pathInfo, resp, req.getAttribute("felix.webconsole.pluginRoot").toString());

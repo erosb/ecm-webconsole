@@ -24,8 +24,8 @@ define(["backbone", "jquery", "viewfactory"], function(Backbone, $, viewfactory)
 		},
 		render: function() {
 			var model  = this.model, self = this;
-			var $dlg = $(viewfactory.loadTemplate("tmpl-confirm-delete-configuration")({
-				service: this.model
+			var $dlg = $(viewfactory.handlebarsTpl("tmpl-confirm-delete-configuration")({
+				service: this.model.toJSON()
 			}));
 			$dlg.dialog({
 				modal: true,

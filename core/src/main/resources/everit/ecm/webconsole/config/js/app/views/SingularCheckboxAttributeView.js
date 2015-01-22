@@ -49,7 +49,7 @@ define(["backbone", "jquery", "viewfactory"], function(Backbone, $, viewfactory)
 		render: function() {
 			this.$el.empty();
 			viewfactory = require("viewfactory");
-			var $dom = $(viewfactory.loadTemplate("tmpl-threestate-checkbox")({nullable: this.nullable}));
+			var $dom = $(viewfactory.handlebarsTpl("tmpl-threestate-checkbox")({nullable: this.nullable}));
 			var $checkbox = $dom.find(".checkbox");
 			if (this.value === true) {
 				$checkbox.addClass("ui-icon-check");

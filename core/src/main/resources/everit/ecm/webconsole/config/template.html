@@ -100,78 +100,73 @@ span.checkbox {
 
 <script type="text/template" id="tmpl-config-admin-list">
 	<select name="sel-configadmin" class="ui-widget ui-widget-content ui-state-default">
-	<% configAdmins.forEach(function(configAdmin) { %>
-		<option value="<%= configAdmin.get("pid") %>"><%- configAdmin.get("description") %></option>
-	<% }); %>
+	{{#each configAdmins}}
+		<option value="{{pid}}">{{description}}</option>
+	{{/each}}
 	</select>
 </script>
 
 <script type="text/template" id="tmpl-threestate-checkbox">
 	<span>
 		<span class="ui-icon checkbox" tabindex="0"></span>
-		<% if (nullable) { %>
+		{{#if nullable}}
 			<span title="set to null (Ctrl + X)" class="btn-null ui-icon ui-icon-cancel" />
-		<% } %>
+		{{/if}}
 	</span>
 </script>
 
 <script type="text/template" id="tmpl-singular-primitive">
-	<input type="<%- type %>" name="value" value="<%- value %>" placeholder="<%- placeholder %>" class="ui-state-default ui-corner-all" style="width: 80%" />
-	<% if (nullable) { %>
+	<input type="{{ type }}" name="value" value="{{ value }}" placeholder="{{ placeholder }}" class="ui-state-default ui-corner-all" style="width: 80%" />
+	{{#if nullable}}
 		<span title="set to null (Ctrl + X)" class="btn-null ui-icon ui-icon-cancel" />
-	<% } %>
-	<% if (deletable) { %>
+	{{/if}}
+	{{#if deletable}}
 		<span title="delete (Ctrl + D)" class="ui-icon ui-icon-trash btn-delete" />
-	<% } %>
+	{{/if}}
 </script>
 
 <script type="text/template" id="tmpl-confirm-delete-configuration">
 	<div title="Confirm configuration deletion">
-		<p>Are you sure you want to delete configuration of managed service <b><%- service.get("name") %></b>?</p>
+		<p>Are you sure you want to delete configuration of managed service <b>{{ service.name }}</b>?</p>
 	</div>
 </script>
 
 <script type="text/template" id="tmpl-attribute-frame">
 	<tr>
 		<td>
-			<%- model.get("name") %>
+			{{ model.name }}
 		</td>
 		<td>
-			<div class="description"><%- model.get("description") %></div>			
+			<div class="description">{{ model.description }}</div>			
 		</td>
 	</tr>
 </script>
 
-<script type="text/template" id="tmpl-singular-text-attribute">
-	<td><%- model.get("name") %></td>
-	<td><input type="text" class="ui-state-default ui-corner-all" value="<%- renderedValue %>" style="width: 99%"/></td>
-</script>
-
 <script type="text/template" id="tmpl-attribute-list">
 	<div>
-		<p class="description"><%- service.get("description") %></p>
+		<p class="description">{{ service.description }}</p>
 		<table class="tablesorter nicetable noauto ui-widget">
 			<tbody>
 
 			</tbody>
 		</table>
-		<p class="ui-corner-all config-info">Service PID: <%- service.get("pid") %></p>
+		<p class="ui-corner-all config-info">Service PID: {{ service.pid }}</p>
 	</div>
 </script>
 
 <script type="text/template" id="tmpl-service-selector">
-	<% if (queryError) { %>
-	<p class="ui-state-error"><%- queryError %></p>
-	<% } %>
+	{{#if queryError }}
+	<p class="ui-state-error">{{ queryError }}</p>
+	{{/if}}
 	<form class="cnt-filter">
-		Filter: <input type="text" class="ui-widget" value="<%- filter %>" style="width: 80%"/>
+		Filter: <input type="text" class="ui-widget" value="{{ filter }}" style="width: 80%"/>
 		<input type="submit" value="Filter" />
 	</form>
 	<div class="cnt-matching-services">
 		<select size="10" name="matching-services">
-		<% _.each(services, function(service) { %>
-		<option value="<%- service.id %>"><%- service.serviceClass %></option>
-		<% }) %>
+		{{#each services}}
+		<option value="{{ id }}">{{ serviceClass }}</option>
+		{{/each}}
 		</select>
 	</div>
 	<div class="cnt-service-properties"></div>
@@ -186,33 +181,33 @@ span.checkbox {
 			</tr>
 		</thead>
 		<tbody>
-			<% _.each(properties, function(property) { %>
+			{{#each properties}}
 			<tr>
-				<td><%- property.key %></td>
-				<td><%- property.value %></td>
+				<td>{{ key }}</td>
+				<td>{{ value }}</td>
 			</tr>
-			<% }) %>
+			{{/each}}
 		</tbody>
 	</table>
 </script>
 
 <script type="text/template" id="tmpl-service-attribute">
-	<input type="text" readonly="readonly" value="<%- value %>" style="width: 80%"/>
+	<input type="text" readonly="readonly" value="{{ value }}" style="width: 80%"/>
 	<input type="button" class="btn-open-service-selector ui-widget ui-priority-primary" value="search"/>
-	<% if (nullable) { %>
+	{{#if nullable}}
 		<span title="set to null (Ctrl + X)" class="btn-null ui-icon ui-icon-cancel" /> 
-	<% } %>
-	<% if (deletable) { %>
+	{{/if}}
+	{{#if deletable}}
 		<input type="button" value="delete" class="btn-delete ui-widget ui-priority-primary" />
-	<% } %>
+	{{/if}}
 </script>
 
 <script type="text/template" id="tmpl-managed-service-factory-row">
 		<td>
-			<i><%- service.get("name") %></i>
+			<i>{{ service.name }}</i>
 		</td>
 		<td>
-			<i><%- service.get("bundleName") %><i>
+			<i>{{ service.bundleName }}<i>
 		</td>
 		<td>
 			<ul class="icons">
@@ -225,12 +220,12 @@ span.checkbox {
 
 <script type="text/template" id="tmpl-managed-service-row">
 		<td>
-			<% if (service.hasFactory()) { %>
+			{{# if hasFactory}}
 			<div class="ui-icon ui-icon-triangle-1-e subpid"></div>
-			<% } %>
-			<%- service.get("name") %>
+			{{/if}}
+			{{ service.name }}
 		</td>
-		<td><%- service.get("boundBundleName") %></td>
+		<td>{{ service.boundBundleName }}</td>
 		<td>
 			<ul class="icons">
 				<li class="dynhover ui-state-default ui-corner-all">
@@ -255,7 +250,7 @@ span.checkbox {
 </script>
 
 <script type="text/template" id="tmpl-servicefilter">
-	Filter: <input type="text" class="ui-widget ui-widget-content ui-state-default" value="<%- serviceFilter %>" />
+	Filter: <input type="text" class="ui-widget ui-widget-content ui-state-default" value="{{ serviceFilter }}" />
 </script>
 
 <div id="cnt-main" style="width: 100%">

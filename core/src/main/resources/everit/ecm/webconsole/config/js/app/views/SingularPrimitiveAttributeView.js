@@ -69,7 +69,7 @@ define(["backbone", "jquery", "viewfactory", "backboneKeys"], function(Backbone,
 		},
 		render: function() {
 			viewfactory = require("viewfactory");
-			this.$el.empty().append(viewfactory.loadTemplate("tmpl-singular-primitive")({
+			this.$el.empty().append(viewfactory.handlebarsTpl("tmpl-singular-primitive")({
 				nullable: this.nullable,
 				deletable: this.deletable,
 				value: this.value === null ? "" : this.value,

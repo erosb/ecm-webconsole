@@ -37,7 +37,7 @@ define([ "backbone", "jquery", "tablesorter" ], function(Backbone, $) {
 				this.serviceSelectedFromList();
 			} else if (e.keyCode === 38) {  // up arrow
 				this.attrModel.prevDisplayedService();
-			} else if (e.keyCode === 40) { // downArrow
+			} else if (e.keyCode === 40) { // down arrow
 				this.attrModel.nextDisplayedService();
 			}
 		},
@@ -70,12 +70,12 @@ define([ "backbone", "jquery", "tablesorter" ], function(Backbone, $) {
 				$("[name=matching-services]").val(service.id);
 			}
 			var properties = service ? service.properties : {};
-			var dom = viewfactory.loadTemplate("tmpl-service-properties")(({properties : properties}));
+			var dom = viewfactory.handlebarsTpl("tmpl-service-properties")(({properties : properties}));
 			this.$(".cnt-service-properties").empty().html(dom).tablesorter();
 		},
 		render : function() {
 			var viewfactory = require("viewfactory");
-			var dom = viewfactory.loadTemplate("tmpl-service-selector")({
+			var dom = viewfactory.handlebarsTpl("tmpl-service-selector")({
 				queryError : this.attrModel.get("queryError"),
 				filter : this.attrModel.get("value"),
 				services: this.attrModel.get("services")

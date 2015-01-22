@@ -74,10 +74,10 @@ define(["backbone", "jquery", "viewfactory", "ConfigurationDeletionView", "jquer
 		render: function() {
 			var $el = this.$el;
 			$el.attr("title", "Configuration of " + this.model.get("name"));
-			$el.empty().html(viewfactory.loadTemplate("tmpl-attribute-list")({service: this.model}));
+			$el.empty().html(viewfactory.handlebarsTpl("tmpl-attribute-list")({service: this.model.toJSON()}));
 			var $tbody = $el.find("tbody");
 			this.model.get("attributeList").forEach(function(attr) {
-				var $frame = $(viewfactory.loadTemplate("tmpl-attribute-frame")({model: attr}));
+				var $frame = $(viewfactory.handlebarsTpl("tmpl-attribute-frame")({model: attr.toJSON()}));
 				$frame.find("td:eq(1)").prepend(viewfactory.createViewForAttribute(attr).render()).css("width", "99%");
 				$tbody.append($frame);
 			});

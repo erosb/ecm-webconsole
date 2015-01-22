@@ -18,13 +18,14 @@ define([
     "backbone",
     "jquery",
     "underscore",
+    "handlebars",
     "SingularSelectAttributeView",
     "SingularCheckboxAttributeView",
     "ServiceAttributeView",
     "SingularPrimitiveAttributeView",
     "CheckboxListView",
     "MultiplePrimitiveAttributeView"
-], function(Backbone, $, _,
+], function(Backbone, $, _, Handlebars,
 		SingularSelectAttributeView,
 		SingularCheckboxAttributeView,
 		ServiceAttributeView,
@@ -110,9 +111,16 @@ define([
 		return _.template($("#" + templateId).text());
 	}
 	
+	function handlebarsTpl(templateId) {
+		var source = $("#" + templateId).html();
+		var template = Handlebars.compile(source);
+		return template;
+	}
+	
 	return {
 		createViewForAttribute: createViewForAttribute,
 		createViewForSingularAttribute: createViewForSingularAttribute,
-		loadTemplate: loadTemplate
+		loadTemplate: loadTemplate,
+		handlebarsTpl: handlebarsTpl
 	};
 });
