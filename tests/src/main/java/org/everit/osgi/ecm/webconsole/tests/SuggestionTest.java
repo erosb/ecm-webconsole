@@ -120,6 +120,7 @@ public class SuggestionTest {
 
     @Test
     @TestDuringDevelopment
+    @SuppressWarnings("deprecation")
     public void testValidFilterQuery() {
         JSONArray array = readArray("http://localhost:8080/system/console/ecm-config/suggestion.json"
                 + "?configAdminPid=org.apache.felix.cm.ConfigurationAdmin"
