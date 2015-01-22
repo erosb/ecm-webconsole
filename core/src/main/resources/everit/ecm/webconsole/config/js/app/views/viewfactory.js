@@ -107,7 +107,7 @@ define([
 		throw new Error("unsupported type: " + JSON.stringify(type));
 	}
 	
-	function loadTemplate(templateId) {
+	function underscoreTpl(templateId) {
 		return _.template($("#" + templateId).text());
 	}
 	
@@ -120,7 +120,7 @@ define([
 	return {
 		createViewForAttribute: createViewForAttribute,
 		createViewForSingularAttribute: createViewForSingularAttribute,
-		loadTemplate: loadTemplate,
+		underscoreTpl: underscoreTpl,
 		handlebarsTpl: handlebarsTpl
 	};
 });
