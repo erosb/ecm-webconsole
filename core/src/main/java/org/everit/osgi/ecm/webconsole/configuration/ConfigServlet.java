@@ -54,6 +54,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             "lib/handlebars-v2.0.0.js",
             "lib/require.js",
             "lib/underscore-min.js",
+            "lib/text.js",
             // app models
             "app/models/ApplicationModel.js",
             "app/models/AttributeList.js",
@@ -81,7 +82,8 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             "app/views/SingularCheckboxAttributeView.js",
             "app/views/SingularPrimitiveAttributeView.js",
             "app/views/SingularSelectAttributeView.js",
-            "app/views/viewfactory.js"
+            "app/views/viewfactory.js",
+            "app/views/templates.html"
             ));
 
     private final ConfigManager configManager;
@@ -255,7 +257,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
         }
         templateVars.put("rootPath", pluginRoot);
         templateVars.put("configAdmins", listConfigAdminServices());
-        resp.getWriter().println(loadTemplate("/everit/ecm/webconsole/config/template.html", templateVars));
+        resp.getWriter().println(loadTemplate("/everit/ecm/webconsole/config/main.html", templateVars));
     }
 
     private String loadTemplate(final String path, final Map<String, String> templateVars) {

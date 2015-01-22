@@ -16,106 +16,25 @@
     along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<script type="text/javascript">
-	window.ecmconfig = {
-		"rootPath" : "${rootPath}",
-		"configAdmins" : ${configAdmins},
-		"managedServices" : ${managedServices} 
-	};
-</script>
-<script type="text/javascript" src="${rootPath}/lib/require.js" data-main="${rootPath}/app/app.js"></script>
-
-<style>
-#cnt-header {
-	padding: 7px 5px 7px 5px;
-}
-
-#cnt-configadmin-list {
-	display: inline-block;
-	float: right;
-}
-
-p.config-info {
-	padding: 8px 8px 8px 8px;
-	background-color: #ccc;
-	margin-top: 15px;
-}
-
-tr.managedservice-row {
-	cursor: pointer;
-}
-
-.description {
-	color: gray;
-	font-size: 90%;
-}
-
-.subpid {
-    margin-left: 1em;
-    float: left;
-}
-
-tr.ui-state-active td {
-	//background: linear-gradient(lightblue, rgba(255, 255, 255, 0), lightblue);
-	background: linear-gradient(lightgray, rgba(255, 255, 255, 0), lightgray);
-}
-
-.ui-treeview-emptyicon {
-	background-position: 20px 20px
-}
-
-span.checkbox {
-	display: inline-block;
-	border: 1px solid lightgrey;
-}
-
-.cnt-filter {
-	display: block;
-	width: 100%;
-	padding-bottom: 8px;
-}
-
-.cnt-matching-services {
-	display: inline;
-}
-
-.cnt-service-properties {
-	display: inline;
-	float: right;
-	padding: 8px;
-}
-
-.cnt-service-properties table {
-	display: inline-block;
-}
-
-.cnt-service-properties table th {
-	font-weight: bold;
-}
-
-.btn-delete, .btn-null {
-	display: inline-block;
-}
-</style>
-
-<script type="text/template" id="tmpl-config-admin-list">
+<div>
+<template id="tmpl-config-admin-list">
 	<select name="sel-configadmin" class="ui-widget ui-widget-content ui-state-default">
 	{{#each configAdmins}}
 		<option value="{{pid}}">{{description}}</option>
 	{{/each}}
 	</select>
-</script>
+</template>
 
-<script type="text/template" id="tmpl-threestate-checkbox">
+<template id="tmpl-threestate-checkbox">
 	<span>
 		<span class="ui-icon checkbox" tabindex="0"></span>
 		{{#if nullable}}
 			<span title="set to null (Ctrl + X)" class="btn-null ui-icon ui-icon-cancel" />
 		{{/if}}
 	</span>
-</script>
+</template>
 
-<script type="text/template" id="tmpl-singular-primitive">
+<template id="tmpl-singular-primitive">
 	<input type="{{ type }}" name="value" value="{{ value }}" placeholder="{{ placeholder }}" class="ui-state-default ui-corner-all" style="width: 80%" />
 	{{#if nullable}}
 		<span title="set to null (Ctrl + X)" class="btn-null ui-icon ui-icon-cancel" />
@@ -123,15 +42,15 @@ span.checkbox {
 	{{#if deletable}}
 		<span title="delete (Ctrl + D)" class="ui-icon ui-icon-trash btn-delete" />
 	{{/if}}
-</script>
+</template>
 
-<script type="text/template" id="tmpl-confirm-delete-configuration">
+<template id="tmpl-confirm-delete-configuration">
 	<div title="Confirm configuration deletion">
 		<p>Are you sure you want to delete configuration of managed service <b>{{ service.name }}</b>?</p>
 	</div>
-</script>
+</template>
 
-<script type="text/template" id="tmpl-attribute-frame">
+<template id="tmpl-attribute-frame">
 	<tr>
 		<td>
 			{{ model.name }}
@@ -140,9 +59,9 @@ span.checkbox {
 			<div class="description">{{ model.description }}</div>			
 		</td>
 	</tr>
-</script>
+</template>
 
-<script type="text/template" id="tmpl-attribute-list">
+<template id="tmpl-attribute-list">
 	<div>
 		<p class="description">{{ service.description }}</p>
 		<table class="tablesorter nicetable noauto ui-widget">
@@ -152,9 +71,9 @@ span.checkbox {
 		</table>
 		<p class="ui-corner-all config-info">Service PID: {{ service.pid }}</p>
 	</div>
-</script>
+</template>
 
-<script type="text/template" id="tmpl-service-selector">
+<template id="tmpl-service-selector">
 	{{#if queryError }}
 	<p class="ui-state-error">{{ queryError }}</p>
 	{{/if}}
@@ -170,7 +89,7 @@ span.checkbox {
 		</select>
 	</div>
 	<div class="cnt-service-properties"></div>
-</script>
+</template>
 
 <script type="text/template" id="tmpl-service-properties">
 	<table>
@@ -181,17 +100,17 @@ span.checkbox {
 			</tr>
 		</thead>
 		<tbody>
-			{{#each properties}}
+			<% _.each(properties, function(prop) { %>
 			<tr>
-				<td>{{ key }}</td>
-				<td>{{ value }}</td>
+				<td><%- prop.key %></td>
+				<td><%- prop.value %></td>
 			</tr>
-			{{/each}}
+			<% }); %>
 		</tbody>
 	</table>
 </script>
 
-<script type="text/template" id="tmpl-service-attribute">
+<template id="tmpl-service-attribute">
 	<input type="text" readonly="readonly" value="{{ value }}" style="width: 80%"/>
 	<input type="button" class="btn-open-service-selector ui-widget ui-priority-primary" value="search"/>
 	{{#if nullable}}
@@ -200,9 +119,9 @@ span.checkbox {
 	{{#if deletable}}
 		<input type="button" value="delete" class="btn-delete ui-widget ui-priority-primary" />
 	{{/if}}
-</script>
+</template>
 
-<script type="text/template" id="tmpl-managed-service-factory-row">
+<template id="tmpl-managed-service-factory-row">
 		<td>
 			<i>{{ service.name }}</i>
 		</td>
@@ -216,9 +135,9 @@ span.checkbox {
 				</li>
 			</ul>
 		</td>
-</script>
+</template>
 
-<script type="text/template" id="tmpl-managed-service-row">
+<template id="tmpl-managed-service-row">
 		<td>
 			{{# if hasFactory}}
 			<div class="ui-icon ui-icon-triangle-1-e subpid"></div>
@@ -236,9 +155,9 @@ span.checkbox {
 				</li>
 			</ul>
 		</td>
-</script>
+</template>
 
-<script type="text/template" id="tmpl-managed-service-list">
+<template id="tmpl-managed-service-list">
 		<thead>
 			<tr>
 				<th class="ui-widget-header header">Name</th>
@@ -247,15 +166,9 @@ span.checkbox {
 			</tr>
 		</thead>
 		<tbody></tbody>
-</script>
+</template>
 
-<script type="text/template" id="tmpl-servicefilter">
+<template id="tmpl-servicefilter">
 	Filter: <input type="text" class="ui-widget ui-widget-content ui-state-default" value="{{ serviceFilter }}" />
-</script>
-
-<div id="cnt-main" style="width: 100%">
-	<div id="cnt-header" class="ui-widget-header ui-corner-top">
-		<span id="cnt-servicefilter"></span>
-		<span id="cnt-configadmin-list"></span>
-	</div>
+</template>
 </div>

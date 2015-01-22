@@ -25,6 +25,7 @@ require.config({
 		tablesorter: "/system/console/res/lib/jquery.tablesorter-2.0.3",
 		thymol: ecmconfig.rootPath + "/lib/thymol.min",
 		handlebars: ecmconfig.rootPath + "/lib/handlebars-v2.0.0",
+		text: ecmconfig.rootPath + "/lib/text",
 		// app models
 		ApplicationModel: ecmconfig.rootPath + "/app/models/ApplicationModel",
 		AttributeList: ecmconfig.rootPath + "/app/models/AttributeList",
@@ -36,6 +37,7 @@ require.config({
 		ServiceSuggestionModel: ecmconfig.rootPath + "/app/models/ServiceSuggestionModel",
 		ServiceAttributeModel: ecmconfig.rootPath + "/app/models/ServiceAttributeModel",
 		// app views
+		templates: ecmconfig.rootPath + "/app/views/templates.html", 
 		viewfactory: ecmconfig.rootPath + "/app/views/viewfactory",
 		AttributeListView: ecmconfig.rootPath + "/app/views/AttributeListView",
 		CheckboxListView: ecmconfig.rootPath + "/app/views/CheckboxListView",

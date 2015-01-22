@@ -24,15 +24,19 @@ define([
     "ServiceAttributeView",
     "SingularPrimitiveAttributeView",
     "CheckboxListView",
-    "MultiplePrimitiveAttributeView"
+    "MultiplePrimitiveAttributeView",
+    "text!templates"
 ], function(Backbone, $, _, Handlebars,
 		SingularSelectAttributeView,
 		SingularCheckboxAttributeView,
 		ServiceAttributeView,
 		SingularPrimitiveAttributeView,
 		CheckboxListView,
-		MultiplePrimitiveAttributeView) {
+		MultiplePrimitiveAttributeView, templates) {
 	"use strict";
+	//console.log("received", templates)
+	
+	var parsedTemplates = $(templates);
 	
 	function getPrimitiveValue(valueArr) {
 		if (valueArr === undefined || valueArr.length === 0) {
@@ -108,11 +112,12 @@ define([
 	}
 	
 	function underscoreTpl(templateId) {
-		return _.template($("#" + templateId).text());
+		var source = parsedTemplates.find("#" + templateId).text();
+		return _.template(source);
 	}
 	
 	function handlebarsTpl(templateId) {
-		var source = $("#" + templateId).html();
+		var source = parsedTemplates.find("#" + templateId).html();
 		var template = Handlebars.compile(source);
 		return template;
 	}

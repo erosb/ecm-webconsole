@@ -16,10 +16,11 @@
  */
 define(["backbone", "backboneKeys", "jquery", "tablesorter", "ManagedServiceRowView",
         "ManagedServiceFactoryRowView",
-        "AttributeListView"], function(Backbone, BackboneKeys, $, tablesorter,
+        "AttributeListView", "viewfactory"], function(Backbone, BackboneKeys, $, tablesorter,
 		ManagedServiceRowView,
 		ManagedServiceFactoryRowView,
-		AttributeListView) {
+		AttributeListView,
+		viewfactory) {
 	"use strict";
 	
 	var ManagedServiceListView = Backbone.View.extend({
@@ -109,7 +110,7 @@ define(["backbone", "backboneKeys", "jquery", "tablesorter", "ManagedServiceRowV
 			}
 		},
 		render: function() {
-			this.$el.empty().html($("#tmpl-managed-service-list").text());
+			this.$el.empty().html(viewfactory.handlebarsTpl("tmpl-managed-service-list"));
 			var $tbody = this.$el.find("tbody"), rowView, rowViews = this.rowViews = [];
 			this.model.topLevelEntries().forEach(function(service) {
 				if (service.isFactory()) {

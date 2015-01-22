@@ -70,8 +70,8 @@ define([ "backbone", "jquery", "tablesorter" ], function(Backbone, $) {
 				$("[name=matching-services]").val(service.id);
 			}
 			var properties = service ? service.properties : {};
-			var dom = viewfactory.handlebarsTpl("tmpl-service-properties")(({properties : properties}));
-			this.$(".cnt-service-properties").empty().html(dom).tablesorter();
+			var dom = viewfactory.underscoreTpl("tmpl-service-properties")({properties : properties});
+			this.$(".cnt-service-properties").html(dom).tablesorter();
 		},
 		render : function() {
 			var viewfactory = require("viewfactory");
