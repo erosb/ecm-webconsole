@@ -91,7 +91,7 @@
         <configuration>
           <version>1.9.8</version>
           <checkSystemPath>false</checkSystemPath>
-          <script>src/main/resources/everit/ecm/webconsole/config/js/tests/phantomjs-testrunner.js</script>
+          <script>src/main/resources/everit/ecm/webconsole/config/phantomjs-testrunner.js</script>
           <arguments>
             <argument>target/classes/everit/ecm/webconsole/config/tests.html</argument>
         </arguments>

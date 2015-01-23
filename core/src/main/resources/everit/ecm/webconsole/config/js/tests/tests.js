@@ -23,7 +23,7 @@ require.config({
 		underscore: ecmconfig.rootPath + "/lib/underscore-min",
 		jquery: "https://code.jquery.com/jquery-1.11.2.min",
 		jqueryUi: "/system/console/res/lib/jquery-ui-1.9.2",
-		tablesorter: "/system/console/res/lib/jquery.tablesorter-2.0.3",
+		tablesorter: "https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.18.4/js/jquery.tablesorter.min",
 		thymol: ecmconfig.rootPath + "/lib/thymol.min",
 		handlebars: ecmconfig.rootPath + "/lib/handlebars-v2.0.0",
 		text: ecmconfig.rootPath + "/lib/text",
@@ -67,9 +67,12 @@ require.config({
 	}
 });
 
-require(["qunit", "ManagedServiceModelTest.qunit"], function(QUnit, ManagedServiceModelTest) {
+require(["qunit", "ManagedServiceModelTest",
+         "SingularCheckboxAttributeViewTest"], function(QUnit, ManagedServiceModelTest, SingularCheckboxAttributeViewTest) {
 	
 	ManagedServiceModelTest();
+	//SingularCheckboxAttributeViewTest();
+	
 	
 	// start QUnit.
 	QUnit.load();
