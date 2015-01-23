@@ -67,7 +67,7 @@ require.config({
 	}
 });
 
-require(["qunit", "ManagedServiceModelTest"], function(QUnit, ManagedServiceModelTest) {
+require(["qunit", "ManagedServiceModelTest.qunit"], function(QUnit, ManagedServiceModelTest) {
 	
 	ManagedServiceModelTest();
 	

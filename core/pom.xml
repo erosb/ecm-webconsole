@@ -76,6 +76,40 @@
           <failOnError>true</failOnError>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>com.github.klieber</groupId>
+        <artifactId>phantomjs-maven-plugin</artifactId>
+        <version>0.4</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>install</goal>
+              <goal>exec</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <version>1.9.8</version>
+          <checkSystemPath>false</checkSystemPath>
+          <script>src/main/resources/everit/ecm/webconsole/config/js/tests/phantomjs-testrunner.js</script>
+          <arguments>
+            <argument>target/classes/everit/ecm/webconsole/config/tests.html</argument>
+        </arguments>
+        </configuration>
+      </plugin>
+<!--       <plugin> -->
+<!--         <groupId>com.cj.qunit.mojo</groupId> -->
+<!--         <artifactId>qunit-maven-plugin</artifactId> -->
+<!--         <version>3.0.0</version> -->
+<!--         <executions> -->
+<!--           <execution> -->
+<!--             <phase>test</phase> -->
+<!--             <goals> -->
+<!--               <goal>test</goal> -->
+<!--             </goals> -->
+<!--           </execution> -->
+<!--         </executions> -->
+<!--       </plugin> -->
     </plugins>
   </build>
 
