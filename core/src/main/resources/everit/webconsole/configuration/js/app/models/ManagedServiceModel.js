@@ -41,7 +41,7 @@ define([
 		deleteConfig: function() {
 			var self = this;
 			var configAdminPid = this.get("appModel").get("selectedConfigAdmin").get("pid");
-			return $.ajax(ecmconfig.rootPath + "/configuration.json?pid=" +
+			return $.ajax(everitConfig.rootPath + "/configuration.json?pid=" +
 					this.get("pid") +
 					"&location=" + this.get("location") +
 					"&configAdminPid=" + configAdminPid, {
@@ -67,7 +67,7 @@ define([
 			return JSON.stringify(rval);
 		},
 		saveConfiguration: function() {
-			var url = ecmconfig.rootPath + "/configuration.json?configAdminPid=" + this.getConfigAdminPid();
+			var url = everitConfig.rootPath + "/configuration.json?configAdminPid=" + this.getConfigAdminPid();
 			if (this.isFactory() || this.hasFactory()) {
 				url += "&factoryPid=" + this.get("factoryPid");
 			} 
@@ -91,7 +91,7 @@ define([
 		},
 		loadConfiguration: function() {
 			var self = this, pid, factoryPid, location;
-			var url = ecmconfig.rootPath + "/configuration.json?configAdminPid=" + this.getConfigAdminPid();
+			var url = everitConfig.rootPath + "/configuration.json?configAdminPid=" + this.getConfigAdminPid();
 			if ((pid = this.get("pid")) !== null) {
 				url +="&pid=" + pid;
 			}

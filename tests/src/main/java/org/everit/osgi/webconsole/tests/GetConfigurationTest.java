@@ -167,7 +167,7 @@ public class GetConfigurationTest {
     @TestDuringDevelopment
     public void testGetAttributes() {
         HttpGet request = new HttpGet(
-                "http://localhost:8080/system/console/ecm-config/configuration.json?configAdminPid=org.apache.felix.cm.ConfigurationAdmin&pid=org.everit.osgi.ecm.webconsole.tests");
+                "http://localhost:8080/system/console/configuration/configuration.json?configAdminPid=org.apache.felix.cm.ConfigurationAdmin&pid=org.everit.osgi.webconsole.tests");
         try {
             HttpResponse resp = client.execute(request);
             Assert.assertEquals(200, resp.getStatusLine().getStatusCode());

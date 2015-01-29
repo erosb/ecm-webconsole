@@ -22,18 +22,18 @@ define(["backbone",
 ], function(Backbone, $, ConfigAdminList, ConfigAdminModel, ManagedServiceModel) {
 	"use strict";
 	
-	var ApplicationModel = ecmconfig.ApplicationModel = Backbone.Model.extend({
+	var ApplicationModel = everitConfig.ApplicationModel = Backbone.Model.extend({
 		initialize: function() {
 			var self = this;
-			ecmconfig.router.on("route:showService", function(configAdminPid, servicePid) {
+			everitConfig.router.on("route:showService", function(configAdminPid, servicePid) {
 				self.set("selectedConfigAdmin", self.get("configAdminList").findWhere({pid: configAdminPid}));
 				self.get("managedServiceList").findWhere({pid: servicePid}).loadConfiguration();
 			});
-			ecmconfig.router.on("route:showFactory", function(configAdminPid, factoryPid) {
+			everitConfig.router.on("route:showFactory", function(configAdminPid, factoryPid) {
 				self.set("selectedConfigAdmin", self.get("configAdminList").findWhere({pid: configAdminPid}));
 				self.get("managedServiceList").findWhere({factoryPid: factoryPid}).loadConfiguration();
 			});
-			ecmconfig.router.on("route:showConfigAdmin", function(configAdminPid) {
+			everitConfig.router.on("route:showConfigAdmin", function(configAdminPid) {
 				var list = self.get("configAdminList");
 				var configAdmin = configAdminPid === null ? list.at(0) : list.findWhere({pid: configAdminPid});
 				self.set("selectedConfigAdmin", configAdmin);
@@ -67,7 +67,7 @@ define(["backbone",
 					url += ("/" + this.get("displayedService").get("pid"));
 				}
 			}
-			ecmconfig.router.navigate(url);
+			everitConfig.router.navigate(url);
 		},
 		configAdminListChanged: function() {
 			var configAdminList = this.get("configAdminList");
@@ -80,12 +80,12 @@ define(["backbone",
 		selectedConfigAdminChanged: function() {
 			var selectedConfigAdmin = this.get("selectedConfigAdmin");
 			if (selectedConfigAdmin === null || selectedConfigAdmin === undefined) {
-				ecmconfig.router.navigate("");
+				everitConfig.router.navigate("");
 			} else {
 				var configAdminPid = this.get("selectedConfigAdmin").get("pid");
-				ecmconfig.router.navigate(configAdminPid);
-				if (ecmconfig.managedServices !== null && ecmconfig.managedServices[configAdminPid] !== undefined) {
-					this.updateManagedServiceList(ecmconfig.managedServices[configAdminPid]);
+				everitConfig.router.navigate(configAdminPid);
+				if (everitConfig.managedServices !== null && everitConfig.managedServices[configAdminPid] !== undefined) {
+					this.updateManagedServiceList(everitConfig.managedServices[configAdminPid]);
 				} else {
 					this.refreshManagedServiceList();
 				}
@@ -96,7 +96,7 @@ define(["backbone",
 		},
 		refreshConfigAdminList: function() {
 			var self = this;
-			$.getJSON(ecmconfig.rootPath + "/configadmin.json").then(function(data) {
+			$.getJSON(everitConfig.rootPath + "/configadmin.json").then(function(data) {
 				self.updateConfigAdminList(data);
 			});
 		},
@@ -124,7 +124,7 @@ define(["backbone",
 			this.get("managedServiceList").reset(newList);
 		},
 		refreshManagedServiceList : function() {
-			var self = this, url = ecmconfig.rootPath + "/managedservices.json";
+			var self = this, url = everitConfig.rootPath + "/managedservices.json";
 			var selectedConfigAdmin = this.get("selectedConfigAdmin");
 			if (selectedConfigAdmin !== null) {
 				url += "?configAdminPid=" + selectedConfigAdmin.get("pid"); 

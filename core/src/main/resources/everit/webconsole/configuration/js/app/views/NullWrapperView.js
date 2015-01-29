@@ -38,7 +38,6 @@ define(["backbone"], function(Backbone) {
 		},
 		renderSubview: function() {
 			this.$el.html(this.subview.render());
-			this.subview.gainFocus();
 		},
 		renderNotSpecified: function() {
 			this.$el.html("<a class='btn-not-specified' href='javascript:;'>Not specified (click to specify)</a>");

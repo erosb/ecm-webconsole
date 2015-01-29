@@ -46,7 +46,7 @@ import org.osgi.framework.InvalidSyntaxException;
 public class ConfigServlet extends AbstractWebConsolePlugin {
     private static final long serialVersionUID = 1957046444200622859L;
 
-    public static final String CONFIG_LABEL = "ecm-config";
+    public static final String CONFIG_LABEL = "configuration";
 
     private static final Set<String> loadableJavascriptFiles = new HashSet<String>(Arrays.asList(
             "lib/backbone.js",
@@ -95,7 +95,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void doDelete(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-            IOException {
+    IOException {
         String pathInfo = req.getPathInfo();
         if (pathInfo.endsWith("/configuration.json")) {
             String servicePid = req.getParameter("pid");
@@ -108,7 +108,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void doPut(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-            IOException {
+    IOException {
         String requestBody = requestBody(req);
         String pid = req.getParameter("pid");
         String factoryPid = req.getParameter("factoryPid");
@@ -119,7 +119,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
             resp.setContentType("application/json");
             JSONWriter writer = new JSONWriter(resp.getWriter());
             configManager.createConfiguration(configAdminPid, factoryPid, location, attributes)
-                    .toJSON(writer);
+            .toJSON(writer);
 
         } else {
             configManager.updateConfiguration(configAdminPid, pid, factoryPid, attributes);
@@ -176,7 +176,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
     public URL getResource(final String path) {
         for (String jsFile : loadableJavascriptFiles) {
             if (path.endsWith(jsFile)) {
-                return ConfigServlet.class.getResource("/everit/ecm/webconsole/config/js/" + jsFile);
+                return ConfigServlet.class.getResource("/everit/webconsole/configuration/js/" + jsFile);
             }
         }
         return null;
@@ -258,7 +258,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
         }
         templateVars.put("rootPath", pluginRoot);
         templateVars.put("configAdmins", listConfigAdminServices());
-        resp.getWriter().println(loadTemplate("/everit/ecm/webconsole/config/main.html", templateVars));
+        resp.getWriter().println(loadTemplate("/everit/webconsole/configuration/main.html", templateVars));
     }
 
     private String loadTemplate(final String path, final Map<String, String> templateVars) {
@@ -316,7 +316,7 @@ public class ConfigServlet extends AbstractWebConsolePlugin {
 
     @Override
     protected void renderContent(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-            IOException {
+    IOException {
         String pathInfo = req.getPathInfo();
         if (isMainPageRequest(pathInfo)) {
             loadMainPage(pathInfo, resp, req.getAttribute("felix.webconsole.pluginRoot").toString());

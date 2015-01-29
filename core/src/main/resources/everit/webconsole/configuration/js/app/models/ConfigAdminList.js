@@ -17,7 +17,7 @@
 define(["backbone", "ConfigAdminModel"], function(Backbone, ConfigAdminModel) {
 	"use strict";
 	
-	var ConfigAdminList = ecmconfig.ConfigAdminList = Backbone.Collection.extend({
+	var ConfigAdminList = Backbone.Collection.extend({
 		model: ConfigAdminModel
 	});
 	

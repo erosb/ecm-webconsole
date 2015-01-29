@@ -140,7 +140,7 @@ define(["AttributeModel", "jquery", "underscore"], function(AttributeModel, $, _
 		},
 		loadServiceSuggestions: function(ldapQuery) {
 			var service = this.get("parentService"), self = this;
-			var url = ecmconfig.rootPath + "/suggestion.json" +
+			var url = everitConfig.rootPath + "/suggestion.json" +
 				"?configAdminPid=" + service.getConfigAdminPid() +
 				"&pid=" + service.get("pid") +
 				"&attributeId=" + this.get("id");

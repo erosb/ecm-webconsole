@@ -51,9 +51,9 @@ public class SuggestionTest {
     @Test
     @TestDuringDevelopment
     public void firstTest() {
-        JSONArray rawArray = readArray("http://localhost:8080/system/console/ecm-config/suggestion.json"
+        JSONArray rawArray = readArray("http://localhost:8080/system/console/configuration/suggestion.json"
                 + "?configAdminPid=org.apache.felix.cm.ConfigurationAdmin"
-                + "&pid=org.everit.osgi.ecm.webconsole.tests"
+                + "&pid=org.everit.osgi.webconsole.tests"
                 + "&attributeId=eventAdmin.target");
         Assert.assertEquals(1, rawArray.length());
         Assert.assertEquals(rawArray.getJSONObject(0).getString("serviceClass"),
@@ -100,9 +100,9 @@ public class SuggestionTest {
     @Test
     @TestDuringDevelopment
     public void testInvalidFilterQuery() {
-        JSONObject obj = readObject("http://localhost:8080/system/console/ecm-config/suggestion.json"
+        JSONObject obj = readObject("http://localhost:8080/system/console/configuration/suggestion.json"
                 + "?configAdminPid=org.apache.felix.cm.ConfigurationAdmin"
-                + "&pid=org.everit.osgi.ecm.webconsole.tests"
+                + "&pid=org.everit.osgi.webconsole.tests"
                 + "&attributeId=dummyService.target"
                 + "&query=whatever", 200);
         Assert.assertEquals("invalid query: Missing opening parenthesis: whatever", obj.getString("error"));
@@ -111,9 +111,9 @@ public class SuggestionTest {
     @Test
     @TestDuringDevelopment
     public void testSuggestionsForDummyService() {
-        JSONArray array = readArray("http://localhost:8080/system/console/ecm-config/suggestion.json"
+        JSONArray array = readArray("http://localhost:8080/system/console/configuration/suggestion.json"
                 + "?configAdminPid=org.apache.felix.cm.ConfigurationAdmin"
-                + "&pid=org.everit.osgi.ecm.webconsole.tests"
+                + "&pid=org.everit.osgi.webconsole.tests"
                 + "&attributeId=dummyService.target");
         Assert.assertEquals("15 dummyService suggestions are returned", 15, array.length());
     }
@@ -122,9 +122,9 @@ public class SuggestionTest {
     @TestDuringDevelopment
     @SuppressWarnings("deprecation")
     public void testValidFilterQuery() {
-        JSONArray array = readArray("http://localhost:8080/system/console/ecm-config/suggestion.json"
+        JSONArray array = readArray("http://localhost:8080/system/console/configuration/suggestion.json"
                 + "?configAdminPid=org.apache.felix.cm.ConfigurationAdmin"
-                + "&pid=org.everit.osgi.ecm.webconsole.tests"
+                + "&pid=org.everit.osgi.webconsole.tests"
                 + "&attributeId=dummyService.target"
                 + "&query=" + URLEncoder.encode("(counter=12)"));
         Assert.assertEquals(1, array.length());

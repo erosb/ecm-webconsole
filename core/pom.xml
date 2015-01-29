@@ -66,7 +66,7 @@
         <configuration>
           <version>2.4.1</version>
           <options>indent:4,maxlen:120,camelcase,forin,immed,latedef,noarg,noempty,nonew,curly,freeze,undef,unused,strict</options>
-          <globals>document,ecmconfig,require,define</globals>
+          <globals>document,everitConfig,require,define</globals>
 <!--          <configFile>src/main/resources/jshint.conf.js</configFile> -->
           <directories>
             <directory>src/main/resources/everit/ecm/webconsole/config/js/app</directory>
