@@ -1,18 +1,18 @@
 /**
- * This file is part of Everit - Felix Webconsole ECM Configuration.
+ * This file is part of Everit - Felix Webconsole Configuration.
  *
- * Everit - Felix Webconsole ECM Configuration is free software: you can redistribute it and/or modify
+ * Everit - Felix Webconsole Configuration is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Everit - Felix Webconsole ECM Configuration is distributed in the hope that it will be useful,
+ * Everit - Felix Webconsole Configuration is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Everit - Felix Webconsole Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.everit.osgi.webconsole.configuration;
 
@@ -58,8 +58,8 @@ public class ConfigManager {
                 new AggregateServiceSuggestionProvider(
                         new ServiceTracker<ServiceSuggestionProvider, ServiceSuggestionProvider>(bundleCtx,
                                 ServiceSuggestionProvider.class, null)),
-                                new ServiceTracker<MetaTypeService, MetaTypeService>(bundleCtx, MetaTypeService.class, null),
-                                bundleCtx);
+                new ServiceTracker<MetaTypeService, MetaTypeService>(bundleCtx, MetaTypeService.class, null),
+                bundleCtx);
         this.cfgAdminTracker.open();
         this.metaTypeSrvTracker.open();
     }
@@ -132,10 +132,10 @@ public class ConfigManager {
             newConfig.update(mapToProperties(objClassDef, attributes));
             String pid = newConfig.getPid();
             return new Configurable()
-            .setPid(pid)
-            .setFactoryPid(factoryPid)
-            .setName(pid)
-            .setDescription(objClassDef.getName());
+                    .setPid(pid)
+                    .setFactoryPid(factoryPid)
+                    .setName(pid)
+                    .setDescription(objClassDef.getName());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -168,7 +168,7 @@ public class ConfigManager {
             final String serviceLocation,
             final String configAdminPid) {
         return new AttributeLookup(getConfigAdmin(configAdminPid), bundleCtx, metaTypeService())
-                .lookupAttributes(servicePid, factoryPid, serviceLocation);
+        .lookupAttributes(servicePid, factoryPid, serviceLocation);
     }
 
     public ObjectClassDefinition getObjectClassDefinition(final ServiceReference<ManagedService> serviceRef) {
@@ -196,7 +196,7 @@ public class ConfigManager {
 
     public Collection<Configurable> lookupConfigurations() {
         return new ConfigurableLookup(cfgAdminTracker.getService(), bundleCtx, metaTypeService())
-                .lookupConfigurables();
+        .lookupConfigurables();
     }
 
     public Collection<Configurable> lookupConfigurations(final String configAdminPid) {

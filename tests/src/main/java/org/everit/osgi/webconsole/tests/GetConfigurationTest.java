@@ -1,18 +1,18 @@
 /**
- * This file is part of Everit - Felix Webconsole ECM Configuration Integration Tests.
+ * This file is part of Everit - Felix Webconsole Configuration Integration Tests.
  *
- * Everit - Felix Webconsole ECM Configuration Integration Tests is free software: you can redistribute it and/or modify
+ * Everit - Felix Webconsole Configuration Integration Tests is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Everit - Felix Webconsole ECM Configuration Integration Tests is distributed in the hope that it will be useful,
+ * Everit - Felix Webconsole Configuration Integration Tests is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Everit - Felix Webconsole ECM Configuration Integration Tests.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Everit - Felix Webconsole Configuration Integration Tests.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.everit.osgi.webconsole.tests;
 
@@ -46,8 +46,8 @@ import org.osgi.service.metatype.AttributeDefinition;
 @Component(immediate = true)
 @Service(GetConfigurationTest.class)
 @Properties({
-        @Property(name = "eosgi.testEngine", value = "junit4"),
-        @Property(name = "eosgi.testId", value = "getConfigurationTest"),
+    @Property(name = "eosgi.testEngine", value = "junit4"),
+    @Property(name = "eosgi.testId", value = "getConfigurationTest"),
 })
 public class GetConfigurationTest {
 
@@ -125,34 +125,34 @@ public class GetConfigurationTest {
     private List<DisplayedAttribute> createExpectedAttributes() {
         List<DisplayedAttribute> rval = new ArrayList<DisplayedAttribute>();
         rval.add(new DisplayedAttribute()
-                .setId("stringProp")
-                .setName("string property")
-                .setDescription("description of string property")
-                .setType(AttributeDefinition.STRING)
-                .setValue(new String[] { "default value" }));
+        .setId("stringProp")
+        .setName("string property")
+        .setDescription("description of string property")
+        .setType(AttributeDefinition.STRING)
+        .setValue(new String[] { "default value" }));
         rval.add(new DisplayedAttribute()
-                .setId("enumeration")
-                .setName("enumeration")
-                .setDescription("Description for enumeration")
-                .addOption("name1", "value1")
-                .addOption("name2", "value2")
-                .addOption("name3", "value3")
-                .setType(AttributeDefinition.STRING)
-                .setValue(new String[] { "value3" }));
+        .setId("enumeration")
+        .setName("enumeration")
+        .setDescription("Description for enumeration")
+        .addOption("name1", "value1")
+        .addOption("name2", "value2")
+        .addOption("name3", "value3")
+        .setType(AttributeDefinition.STRING)
+        .setValue(new String[] { "value3" }));
         rval.add(new DisplayedAttribute()
-                .setDescription("Description for someStrings")
-                .setId("someStrings")
-                .setName("some strings")
-                .setMaxOccurences(Integer.MAX_VALUE)
-                .setType(AttributeDefinition.STRING)
-                .setValue(new String[] { "asd", "bsd" }));
+        .setDescription("Description for someStrings")
+        .setId("someStrings")
+        .setName("some strings")
+        .setMaxOccurences(Integer.MAX_VALUE)
+        .setType(AttributeDefinition.STRING)
+        .setValue(new String[] { "asd", "bsd" }));
         rval.add(new DisplayedAttribute()
-                .setDescription("this is a dummy service")
-                .setId("dummyService.target")
-                .setToService()
-                .setName("Property dummyService.target")
-                .setMaxOccurences(0)
-                .setValue(new String[] {}));
+        .setDescription("this is a dummy service")
+        .setId("dummyService.target")
+        .setToService()
+        .setName("Property dummyService.target")
+        .setMaxOccurences(0)
+        .setValue(new String[] {}));
         return rval;
     }
 
