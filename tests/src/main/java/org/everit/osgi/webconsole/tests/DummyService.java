@@ -14,8 +14,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Everit - Felix Webconsole ECM Configuration Integration Tests.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.everit.osgi.ecm.webconsole.tests;
+package org.everit.osgi.webconsole.tests;
 
-public class DummyServiceImpl implements DummyService {
+public interface DummyService {
 
 }

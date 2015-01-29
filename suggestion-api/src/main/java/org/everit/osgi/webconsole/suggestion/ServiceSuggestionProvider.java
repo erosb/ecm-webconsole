@@ -30,40 +30,24 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.everit.osgi.ecm.webconsole.suggestion;
+package org.everit.osgi.webconsole.suggestion;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
 
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
-import org.osgi.util.tracker.ServiceTracker;
 
-public class AggregateServiceSuggestionProvider implements ServiceSuggestionProvider {
+public interface ServiceSuggestionProvider {
 
-    private final ServiceTracker<ServiceSuggestionProvider, ServiceSuggestionProvider> tracker;
-
-    public AggregateServiceSuggestionProvider(
-            final ServiceTracker<ServiceSuggestionProvider, ServiceSuggestionProvider> tracker) {
-        this.tracker = Objects.requireNonNull(tracker, "tracker cannot be null");
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        tracker.close();
-    }
-
-    @Override
+    /**
+     * @param configPid
+     * @param attributeId
+     *            the attribute ID should be retrieved from an {@link ObjectClassDefinition}
+     * @param ldapQuery
+     *            should be a valid LDAP query used for filtering the suggested services, or {@code null}
+     * @return
+     */
     public Collection<ServiceReference<?>> getSuggestions(final String configPid, final String attributeId,
-            final String ldapQuery)
-                    throws InvalidSyntaxException {
-        Collection<ServiceReference<?>> rval = new HashSet<ServiceReference<?>>();
-        for (Object obj : Optional.ofNullable(tracker.getServices()).orElse(new Object[] {})) {
-            ServiceSuggestionProvider provider = (ServiceSuggestionProvider) obj;
-            rval.addAll(provider.getSuggestions(configPid, attributeId, ldapQuery));
-        }
-        return rval;
-    }
+            final String ldapQuery) throws InvalidSyntaxException;
+
 }

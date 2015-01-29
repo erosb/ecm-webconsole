@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Everit - Felix Webconsole ECM Configuration Integration Tests.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.everit.osgi.ecm.webconsole.tests;
+package org.everit.osgi.webconsole.tests;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.everit.osgi.dev.testrunner.TestDuringDevelopment;
-import org.everit.osgi.ecm.webconsole.configuration.DisplayedAttribute;
+import org.everit.osgi.webconsole.configuration.DisplayedAttribute;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;

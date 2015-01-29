@@ -30,7 +30,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.everit.osgi.ecm.webconsole.suggestion.scr;
+package org.everit.osgi.webconsole.suggestion.scr;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,7 +40,7 @@ import java.util.Optional;
 
 import org.apache.felix.scr.Component;
 import org.apache.felix.scr.ScrService;
-import org.everit.osgi.ecm.webconsole.suggestion.ServiceSuggestionProvider;
+import org.everit.osgi.webconsole.suggestion.ServiceSuggestionProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;

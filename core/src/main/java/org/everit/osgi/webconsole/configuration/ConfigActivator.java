@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Everit - Felix Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.everit.osgi.ecm.webconsole.configuration;
+package org.everit.osgi.webconsole.configuration;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,8 +23,8 @@ import java.util.Hashtable;
 
 import javax.servlet.Servlet;
 
-import org.everit.osgi.ecm.webconsole.suggestion.AggregateServiceSuggestionProvider;
-import org.everit.osgi.ecm.webconsole.suggestion.ServiceSuggestionProvider;
+import org.everit.osgi.webconsole.suggestion.AggregateServiceSuggestionProvider;
+import org.everit.osgi.webconsole.suggestion.ServiceSuggestionProvider;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
