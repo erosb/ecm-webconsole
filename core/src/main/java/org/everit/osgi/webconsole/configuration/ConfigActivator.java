@@ -23,8 +23,8 @@ import java.util.Hashtable;
 
 import javax.servlet.Servlet;
 
-import org.everit.osgi.webconsole.suggestion.AggregateServiceSuggestionProvider;
-import org.everit.osgi.webconsole.suggestion.ServiceSuggestionProvider;
+import org.everit.osgi.requirementresolver.AggregateServiceSuggestionProvider;
+import org.everit.osgi.requirementresolver.ServiceSuggestionProvider;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;

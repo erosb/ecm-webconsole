@@ -30,8 +30,8 @@ import java.util.Vector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.everit.osgi.webconsole.suggestion.AggregateServiceSuggestionProvider;
-import org.everit.osgi.webconsole.suggestion.ServiceSuggestionProvider;
+import org.everit.osgi.requirementresolver.AggregateServiceSuggestionProvider;
+import org.everit.osgi.requirementresolver.ServiceSuggestionProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
@@ -58,8 +58,8 @@ public class ConfigManager {
                 new AggregateServiceSuggestionProvider(
                         new ServiceTracker<ServiceSuggestionProvider, ServiceSuggestionProvider>(bundleCtx,
                                 ServiceSuggestionProvider.class, null)),
-                new ServiceTracker<MetaTypeService, MetaTypeService>(bundleCtx, MetaTypeService.class, null),
-                bundleCtx);
+                                new ServiceTracker<MetaTypeService, MetaTypeService>(bundleCtx, MetaTypeService.class, null),
+                                bundleCtx);
         this.cfgAdminTracker.open();
         this.metaTypeSrvTracker.open();
     }
@@ -132,10 +132,10 @@ public class ConfigManager {
             newConfig.update(mapToProperties(objClassDef, attributes));
             String pid = newConfig.getPid();
             return new Configurable()
-                    .setPid(pid)
-                    .setFactoryPid(factoryPid)
-                    .setName(pid)
-                    .setDescription(objClassDef.getName());
+            .setPid(pid)
+            .setFactoryPid(factoryPid)
+            .setName(pid)
+            .setDescription(objClassDef.getName());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -168,7 +168,7 @@ public class ConfigManager {
             final String serviceLocation,
             final String configAdminPid) {
         return new AttributeLookup(getConfigAdmin(configAdminPid), bundleCtx, metaTypeService())
-        .lookupAttributes(servicePid, factoryPid, serviceLocation);
+                .lookupAttributes(servicePid, factoryPid, serviceLocation);
     }
 
     public ObjectClassDefinition getObjectClassDefinition(final ServiceReference<ManagedService> serviceRef) {
@@ -196,7 +196,7 @@ public class ConfigManager {
 
     public Collection<Configurable> lookupConfigurations() {
         return new ConfigurableLookup(cfgAdminTracker.getService(), bundleCtx, metaTypeService())
-        .lookupConfigurables();
+                .lookupConfigurables();
     }
 
     public Collection<Configurable> lookupConfigurations(final String configAdminPid) {

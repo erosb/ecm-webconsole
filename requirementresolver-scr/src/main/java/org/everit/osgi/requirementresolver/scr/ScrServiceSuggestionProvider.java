@@ -1,4 +1,20 @@
 /**
+ * This file is part of Everit - Requirement Resolver - SCR implementation for the Webconsole ECM Configuration.
+ *
+ * Everit - Requirement Resolver - SCR implementation for the Webconsole ECM Configuration is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Everit - Requirement Resolver - SCR implementation for the Webconsole ECM Configuration is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Everit - Requirement Resolver - SCR implementation for the Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/**
  * This file is part of Everit - Service Suggestion SCR implementation for the Webconsole ECM Configuration.
  *
  * Everit - Service Suggestion SCR implementation for the Webconsole ECM Configuration is free software: you can redistribute it and/or modify
@@ -40,7 +56,7 @@ import java.util.Optional;
 
 import org.apache.felix.scr.Component;
 import org.apache.felix.scr.ScrService;
-import org.everit.osgi.webconsole.suggestion.ServiceSuggestionProvider;
+import org.everit.osgi.requirementresolver.ServiceSuggestionProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;

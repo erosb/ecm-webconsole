@@ -33,8 +33,8 @@
   
   <modules>
 	<module>core</module>
-	<module>suggestion-api</module>
-	<module>suggestion-scr</module>
+	<module>requirementresolver-api</module>
+	<module>requirementresolver-scr</module>
 	<module>tests</module>
   </modules>
   

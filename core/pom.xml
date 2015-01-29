@@ -103,7 +103,7 @@
   <dependencies>
     <dependency>
       <groupId>org.everit.osgi</groupId>
-      <artifactId>org.everit.osgi.webconsole.suggestion.api</artifactId>
+      <artifactId>org.everit.osgi.requirementresolver.api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
