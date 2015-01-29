@@ -47,6 +47,7 @@ require.config({
 		ManagedServiceListView: ecmconfig.rootPath + "/app/views/ManagedServiceListView",
 		ManagedServiceRowView: ecmconfig.rootPath + "/app/views/ManagedServiceRowView",
 		MultiplePrimitiveAttributeView: ecmconfig.rootPath + "/app/views/MultiplePrimitiveAttributeView",
+		NullWrapperView: ecmconfig.rootPath + "/app/views/NullWrapperView",
 		ServiceAttributeView: ecmconfig.rootPath + "/app/views/ServiceAttributeView",
 		ServiceFilterView: ecmconfig.rootPath + "/app/views/ServiceFilterView",
 		ServiceSelectorView: ecmconfig.rootPath + "/app/views/ServiceSelectorView",

@@ -25,6 +25,7 @@ define([
     "SingularPrimitiveAttributeView",
     "CheckboxListView",
     "MultiplePrimitiveAttributeView",
+    "NullWrapperView",
     "text!templates"
 ], function(Backbone, $, _, Handlebars,
 		SingularSelectAttributeView,
@@ -32,9 +33,10 @@ define([
 		ServiceAttributeView,
 		SingularPrimitiveAttributeView,
 		CheckboxListView,
-		MultiplePrimitiveAttributeView, templates) {
+		MultiplePrimitiveAttributeView,
+		NullWrapperView,
+		templates) {
 	"use strict";
-	//console.log("received", templates)
 	
 	var parsedTemplates = $(templates);
 	
@@ -47,25 +49,25 @@ define([
 	
 	function createViewForSingularAttribute(attrModel, value, nullable, deletable) {
 		var type = attrModel.get("type");
+		var rval;
 		if (attrModel.hasOptions()) {
 			if (type.maxOccurences === 0) {
-				return new SingularSelectAttributeView({
+				rval = new SingularSelectAttributeView({
 					value: value,
 					options: type.options 
 				});
 			} else if (type.maxOccurences === "unbound") {
-				return new SingularCheckboxAttributeView({
+				rval =new SingularCheckboxAttributeView({
 					value: false
 				});
 			}
-		}
-		if (type.baseType === "boolean") {
-			return new SingularCheckboxAttributeView({
+		} else if (type.baseType === "boolean") {
+			rval =new SingularCheckboxAttributeView({
 				value: value,
 				nullable: nullable
 			});
 		} else if (type.baseType === "service") {
-			return new ServiceAttributeView({
+			rval = new ServiceAttributeView({
 				attrModel: attrModel,
 				value: value,
 				nullable: nullable,
@@ -73,12 +75,17 @@ define([
 			});
 		} else {
 			var inputType = type.baseType === "password" ? "password" : "text";
-			return new SingularPrimitiveAttributeView({
+			rval = new SingularPrimitiveAttributeView({
 				value: value,
 				inputType: inputType,
 				nullable: nullable,
 				deletable: deletable
 			});
+		}
+		if (nullable) {
+			return new NullWrapperView({subview: rval, value: value});
+		} else {
+			return rval;
 		}
 	}
 	
