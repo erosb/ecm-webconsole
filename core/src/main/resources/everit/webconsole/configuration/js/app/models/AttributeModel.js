@@ -22,7 +22,10 @@ define(["backbone"], function(Backbone) {
 			this.on("change:value", this.updateDirtyFlag, this);
 		},
 		updateDirtyFlag: function() {
-			this.get("parentService").set("dirty", true);
+			var parentService = this.get("parentService");
+			if (parentService) {
+				parentService.set("dirty", true);
+			}
 		},
 		defaults: {
 			id: null,
