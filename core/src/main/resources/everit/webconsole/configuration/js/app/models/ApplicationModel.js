@@ -84,7 +84,8 @@ define(["backbone",
 			} else {
 				var configAdminPid = this.get("selectedConfigAdmin").get("pid");
 				everitConfig.router.navigate(configAdminPid);
-				if (everitConfig.managedServices !== null && everitConfig.managedServices[configAdminPid] !== undefined) {
+				if (everitConfig.managedServices !== null &&
+						everitConfig.managedServices[configAdminPid] !== undefined) {
 					this.updateManagedServiceList(everitConfig.managedServices[configAdminPid]);
 				} else {
 					this.refreshManagedServiceList();

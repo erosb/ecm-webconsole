@@ -37,7 +37,6 @@ define(["backbone", "jquery", "viewfactory"], function(Backbone, $, viewfactory)
 			this.$(".checkbox").focus();
 		},
 		triggerChange: function() {
-			console.log("triggerChange")
 			this.value = !this.value;
 			this.render();
 			this.trigger("change", this.value);
@@ -48,7 +47,6 @@ define(["backbone", "jquery", "viewfactory"], function(Backbone, $, viewfactory)
 			this.trigger("change", this.value);
 		},
 		render: function() {
-			console.log("re-rendering checkbox")
 			this.$el.empty();
 			viewfactory = require("viewfactory");
 			var $dom = $(viewfactory.handlebarsTpl("tmpl-threestate-checkbox")({nullable: this.nullable}));

@@ -69,7 +69,7 @@
           <globals>document,everitConfig,require,define</globals>
 <!--          <configFile>src/main/resources/jshint.conf.js</configFile> -->
           <directories>
-            <directory>src/main/resources/everit/ecm/webconsole/config/js/app</directory>
+            <directory>src/main/resources/everit/webconsole/configuration/js/app</directory>
           </directories>
           <reporter>jslint</reporter>
           <reportFile>target/jshint.xml</reportFile>
