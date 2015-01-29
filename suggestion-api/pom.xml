@@ -45,7 +45,7 @@
     <version>0.1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>org.everit.osgi.webconsole.suggestion.api</artifactId>
+  <artifactId>org.everit.osgi.requirementresolver.api</artifactId>
   
   <packaging>bundle</packaging>
   <name>Everit - Service Suggestion API for the Webconsole ECM Configuration</name>

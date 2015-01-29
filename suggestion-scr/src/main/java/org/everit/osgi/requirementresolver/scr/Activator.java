@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Everit - Service Suggestion SCR implementation for the Webconsole ECM Configuration.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.everit.osgi.webconsole.suggestion.scr;
+package org.everit.osgi.requirementresolver.scr;
 
 import org.everit.osgi.webconsole.suggestion.ServiceSuggestionProvider;
 import org.osgi.framework.BundleActivator;

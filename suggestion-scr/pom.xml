@@ -27,7 +27,7 @@
     <version>0.1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>org.everit.osgi.webconsole.suggestion.scr</artifactId>
+  <artifactId>org.everit.osgi.requirementresolver.scr</artifactId>
   
   <packaging>bundle</packaging>
   <name>Everit - Service Suggestion SCR implementation for the Webconsole ECM Configuration</name>
@@ -48,7 +48,7 @@
         <configuration>
           <instructions>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-            <Bundle-Activator>org.everit.osgi.webconsole.suggestion.scr.Activator</Bundle-Activator>
+            <Bundle-Activator>org.everit.osgi.requirementresolver.scr.Activator</Bundle-Activator>
           </instructions>
         </configuration>
       </plugin>
